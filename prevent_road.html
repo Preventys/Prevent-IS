@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevent'Road — Portail de formation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --prev:#009FC4; --prev-d:#0078A0; --prev-dd:#0C3A5C;
+  --ink:#1a2332; --muted:#64748b; --border:#e2e8f0;
+  --gry:#f8fafc; --white:#ffffff;
+  --red:#EF4444; --redL:#FEF2F2;
+  --amber:#F59E0B; --amberL:#FFFBEB;
+  --green:#22C55E; --greenL:#F0FDF4;
+  --r:8px; --r2:14px; --r3:20px;
+  --sh:0 2px 12px rgba(12,58,92,.08);
+  --sh2:0 8px 32px rgba(12,58,92,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#0a1628;color:var(--ink);min-height:100vh;overflow-x:hidden;}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:72px;
+  background:var(--prev-dd);
+  display:flex;flex-direction:column;align-items:center;
+  padding:16px 0;gap:4px;z-index:100;
+  border-right:1px solid rgba(255,255,255,.08);
+}
+.sb-logo{
+  width:44px;height:44px;background:var(--prev);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:white;
+  line-height:1.1;text-align:center;margin-bottom:12px;
+}
+.sb-sep{width:36px;height:1px;background:rgba(255,255,255,.1);margin:6px 0;}
+.sb-btn{
+  width:48px;height:48px;border-radius:12px;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  background:transparent;transition:background .15s;position:relative;
+  text-decoration:none;
+}
+.sb-btn:hover{background:rgba(255,255,255,.1);}
+.sb-btn.active{background:var(--prev);}
+.sb-btn span.icon{font-size:20px;line-height:1;}
+.sb-btn span.lbl{font-size:8px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.03em;line-height:1;}
+.sb-btn.active span.lbl{color:rgba(255,255,255,.9);}
+.sb-tooltip{
+  position:absolute;left:62px;background:var(--ink);color:white;
+  font-size:11px;font-weight:600;padding:5px 10px;border-radius:8px;
+  white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;
+}
+.sb-btn:hover .sb-tooltip{opacity:1;}
+
+/* ── MAIN ── */
+#main{
+  margin-left:72px;min-height:100vh;
+  background:var(--gry);
+  display:flex;flex-direction:column;
+}
+
+/* ── TOPBAR ── */
+#topbar{
+  background:var(--prev-dd);
+  padding:14px 28px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  position:sticky;top:0;z-index:50;
+}
+.tb-brand{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:white;
+  letter-spacing:-.01em;
+}
+.tb-brand span{color:#7DD3FA;}
+.tb-day-nav{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.tb-nav-btn{
+  background:rgba(255,255,255,.1);border:none;color:white;
+  width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;transition:background .15s;
+}
+.tb-nav-btn:hover{background:rgba(255,255,255,.2);}
+.tb-day-info{
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:white;
+  text-align:center;min-width:180px;
+}
+.tb-day-info small{display:block;font-size:10px;font-weight:400;color:rgba(255,255,255,.5);margin-top:1px;}
+.tb-date-input{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;padding:5px 10px;color:white;font-size:12px;
+  font-family:'DM Sans',sans-serif;cursor:pointer;outline:none;
+}
+.tb-date-input::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;}
+.tb-today-btn{
+  background:var(--prev);border:none;color:white;padding:5px 12px;
+  border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:background .15s;
+}
+.tb-today-btn:hover{background:var(--prev-d);}
+
+/* ── CONTENT ── */
+#content{padding:24px 28px;flex:1;}
+
+/* ── SESSION CARD ── */
+.session-card{
+  background:white;border-radius:var(--r3);
+  border:1px solid var(--border);overflow:hidden;
+  box-shadow:var(--sh2);margin-bottom:20px;
+}
+.sc-head{
+  background:linear-gradient(135deg,var(--prev-dd) 0%,var(--prev-d) 100%);
+  padding:20px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.sc-jbadge{
+  width:56px;height:56px;background:rgba(255,255,255,.15);border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:2px solid rgba(255,255,255,.25);flex-shrink:0;
+}
+.sc-jbadge .jnum{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;line-height:1;}
+.sc-jbadge .jlbl{font-size:9px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.04em;}
+.sc-info{flex:1;}
+.sc-module{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:white;margin-bottom:4px;}
+.sc-meta{display:flex;gap:12px;flex-wrap:wrap;}
+.sc-pill{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:white;
+  display:flex;align-items:center;gap:5px;
+}
+.sc-qraft{
+  display:flex;flex-direction:column;align-items:flex-end;gap:6px;
+}
+.sc-prog-lbl{font-size:10px;color:rgba(255,255,255,.5);text-align:right;}
+.sc-prog-bar{width:120px;height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden;}
+.sc-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--amber),var(--green));transition:width .5s;}
+.sc-prog-pct{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:white;}
+
+/* ── CARTES SECTION ── */
+.sc-body{padding:20px 24px;}
+.cartes-title{
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.08em;color:var(--muted);text-transform:uppercase;
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.cartes-grid{display:flex;flex-direction:column;gap:8px;}
+
+.carte-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:12px;border:2px solid transparent;
+  transition:all .15s;cursor:pointer;position:relative;
+  background:var(--gry);
+}
+.carte-row:hover{transform:translateX(4px);}
+.carte-row.s-r{border-color:var(--red);background:var(--redL);}
+.carte-row.s-j{border-color:var(--amber);background:var(--amberL);}
+.carte-row.s-v{border-color:var(--green);background:var(--greenL);}
+
+.cr-state{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;border:2px solid transparent;
+  transition:all .2s;
+}
+.s-r .cr-state{background:var(--red);border-color:#DC2626;}
+.s-j .cr-state{background:var(--amber);border-color:#D97706;}
+.s-v .cr-state{background:var(--green);border-color:#16A34A;}
+
+.cr-id{
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+  width:36px;flex-shrink:0;
+}
+.s-r .cr-id{color:#DC2626;}
+.s-j .cr-id{color:#D97706;}
+.s-v .cr-id{color:#16A34A;}
+
+.cr-titre{font-size:13px;font-weight:500;flex:1;line-height:1.3;}
+.cr-module{font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap;flex-shrink:0;}
+
+.cr-action{
+  display:flex;gap:4px;flex-shrink:0;
+}
+.cr-btn{
+  width:24px;height:24px;border-radius:6px;border:none;cursor:pointer;
+  font-size:10px;font-weight:700;transition:opacity .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.cr-btn:hover{opacity:.8;}
+.btn-j{background:var(--amber);color:white;}
+.btn-v{background:var(--green);color:white;}
+.btn-r{background:var(--red);color:white;}
+
+/* ── OUTILS SECTION ── */
+.outils-section{
+  background:white;border-radius:var(--r3);border:1px solid var(--border);
+  box-shadow:var(--sh);margin-bottom:20px;overflow:hidden;
+}
+.os-head{
+  padding:14px 20px;background:var(--gry);border-bottom:1px solid var(--border);
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.08em;color:var(--muted);text-transform:uppercase;
+}
+.outils-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));
+  gap:1px;background:var(--border);
+}
+.outil-link{
+  background:white;padding:14px 16px;text-decoration:none;
+  display:flex;flex-direction:column;gap:5px;transition:background .15s;
+}
+.outil-link:hover{background:#EFF6FF;}
+.ol-icon{font-size:22px;}
+.ol-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--ink);}
+.ol-desc{font-size:10px;color:var(--muted);line-height:1.3;}
+.ol-badge{
+  display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;
+  border-radius:99px;margin-top:2px;
+}
+
+/* ── MINI CALENDRIER ── */
+.cal-section{
+  background:white;border-radius:var(--r3);border:1px solid var(--border);
+  box-shadow:var(--sh);margin-bottom:20px;overflow:hidden;
+}
+.cal-head{
+  padding:14px 20px;background:var(--gry);border-bottom:1px solid var(--border);
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.08em;color:var(--muted);text-transform:uppercase;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cal-grid{display:flex;gap:4px;padding:14px;flex-wrap:wrap;}
+.cal-day{
+  width:38px;height:48px;border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  cursor:pointer;transition:all .15s;border:1.5px solid transparent;
+}
+.cal-day:hover{background:var(--gry);}
+.cal-day.selected{border-color:var(--prev);background:#E0F4FB;}
+.cal-day.today{background:var(--prev-dd);}
+.cal-day.today .cd-num{color:white;}
+.cal-day.today .cd-lbl{color:rgba(255,255,255,.6);}
+.cal-day.off{opacity:.3;cursor:default;}
+.cd-num{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.cd-lbl{font-size:9px;color:var(--muted);}
+.cd-dot{width:5px;height:5px;border-radius:50%;margin-top:1px;}
+
+/* ── SHARE BAR ── */
+.share-section{
+  background:var(--prev-dd);border-radius:var(--r3);
+  padding:14px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.share-lbl{font-size:12px;color:rgba(255,255,255,.6);font-weight:500;white-space:nowrap;}
+.share-input{
+  flex:1;min-width:0;padding:7px 12px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);border-radius:9px;
+  font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.8);outline:none;
+}
+.share-btn{
+  background:var(--prev);border:none;color:white;padding:7px 14px;
+  border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background .15s;
+}
+.share-btn:hover{background:var(--prev-d);}
+.share-copied{font-size:11px;color:#86EFAC;font-weight:600;display:none;}
+.share-copied.show{display:inline;}
+
+/* ── CONFIG PANEL ── */
+#configPanel{
+  display:none;position:fixed;inset:0;background:rgba(10,22,40,.7);
+  z-index:300;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(4px);
+}
+#configPanel.open{display:flex;}
+.config-box{
+  background:white;border-radius:var(--r3);max-width:540px;width:100%;
+  max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.3);
+}
+.config-head{
+  background:var(--prev-dd);padding:20px 24px;border-radius:var(--r3) var(--r3) 0 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.config-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:white;}
+.config-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer;}
+.config-body{padding:24px;}
+.config-field{margin-bottom:18px;}
+.config-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;display:block;letter-spacing:.04em;text-transform:uppercase;}
+.config-input{
+  width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;
+  font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .15s;
+}
+.config-input:focus{border-color:var(--prev);}
+.config-days{display:flex;gap:6px;flex-wrap:wrap;}
+.day-toggle{
+  padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);
+  font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;
+  background:white;color:var(--muted);
+}
+.day-toggle.on{background:var(--prev);border-color:var(--prev);color:white;}
+.config-save{
+  width:100%;padding:12px;background:var(--prev);border:none;border-radius:12px;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:white;
+  cursor:pointer;transition:background .15s;margin-top:8px;
+}
+.config-save:hover{background:var(--prev-d);}
+.cfg-tab{
+  flex:1;padding:9px 6px;border:none;cursor:pointer;font-size:11px;font-weight:700;
+  font-family:'DM Sans',sans-serif;background:var(--gry);color:var(--muted);
+  border-right:1px solid var(--border);transition:all .15s;
+}
+.cfg-tab:last-child{border-right:none;}
+.cfg-tab.active{background:var(--prev-dd);color:white;}
+.cfg-tab:hover:not(.active){background:var(--border);}
+.semaine-row{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;
+  background:var(--gry);border-radius:9px;border:1.5px solid var(--border);flex-wrap:wrap;
+}
+.semaine-lbl{font-size:11px;font-weight:700;color:var(--ink);min-width:90px;flex-shrink:0;}
+.semaine-days{display:flex;gap:4px;}
+.sem-day{
+  width:26px;height:26px;border-radius:7px;border:1.5px solid var(--border);
+  font-size:9px;font-weight:700;cursor:pointer;background:white;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;transition:all .12s;
+}
+.sem-day.on{background:var(--prev);border-color:var(--prev);color:white;}
+.semaine-note{flex:1;min-width:80px;}
+.semaine-note input{
+  width:100%;padding:4px 8px;border:1.5px solid var(--border);border-radius:7px;
+  font-size:11px;font-family:'DM Sans',sans-serif;outline:none;
+}
+.sem-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:2px;}
+
+/* ── QRAFT BANDEAU 5 INDICATEURS ── */
+.qraft-band{
+  background:var(--prev-dd);border-radius:var(--r3);padding:16px 22px;
+  display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:20px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.qb-left{flex-shrink:0;}
+.qb-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:white;letter-spacing:.04em;}
+.qb-dates{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px;line-height:1.4;}
+.qb-indicators{display:flex;gap:16px;flex:1;flex-wrap:wrap;align-items:flex-end;}
+.qb-ind{display:flex;flex-direction:column;gap:3px;min-width:80px;flex:1;}
+.qb-ind-prog{min-width:100px;}
+.qb-ind-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:white;line-height:1;}
+.qb-ind-bar{height:5px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin:2px 0;}
+.qb-bar-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+.qb-ind-lbl{font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.03em;}
+
+/* ── MODAL CARTE ── */
+#modalOverlay{
+  display:none;position:fixed;inset:0;background:rgba(10,22,40,.6);
+  z-index:400;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(3px);
+}
+#modalOverlay.open{display:flex;}
+.modal-box{
+  background:white;border-radius:var(--r3);max-width:520px;width:100%;
+  max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.3);
+}
+.modal-head{padding:18px 20px;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--border);}
+.modal-id{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;}
+.modal-titre{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;flex:1;line-height:1.2;}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:0 4px;}
+.modal-body{padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+.modal-sec-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.modal-sec-val{font-size:13px;line-height:1.55;}
+.modal-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.modal-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;}
+.modal-state-btns{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--border);}
+.msb{flex:1;padding:10px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:'DM Sans',sans-serif;}
+.msb:hover{opacity:.85;}
+.msb-r{background:var(--redL);color:var(--red);border:2px solid var(--red);}
+.msb-j{background:var(--amberL);color:var(--amber);border:2px solid var(--amber);}
+.msb-v{background:var(--greenL);color:var(--green);border:2px solid var(--green);}
+.msb.active{box-shadow:0 0 0 3px rgba(0,0,0,.2);}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;padding:60px 24px;color:var(--muted);
+}
+.empty-state .es-icon{font-size:48px;margin-bottom:16px;}
+.empty-state h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;color:var(--ink);}
+
+@media(max-width:600px){
+  #sidebar{width:56px;}
+  #main{margin-left:56px;}
+  #content{padding:16px;}
+  .sc-head{padding:14px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">P'<br>Road</div>
+  <div class="sb-sep"></div>
+  <a class="sb-btn active" href="prevent_road.html">
+    <span class="icon">🗓</span><span class="lbl">Road</span>
+    <div class="sb-tooltip">Prevent'Road — Accueil</div>
+  </a>
+  <a class="sb-btn" href="preventcards_parcours__2_.html">
+    <span class="icon">🃏</span><span class="lbl">Cards</span>
+    <div class="sb-tooltip">Prevent'Cards — 84 cartes</div>
+  </a>
+  <a class="sb-btn" href="preventis_obeya_qraft_v2__2_.html">
+    <span class="icon">📊</span><span class="lbl">QRAFT</span>
+    <div class="sb-tooltip">QRAFT — Obeya promotion</div>
+  </a>
+  <a class="sb-btn" href="prevent_andon.html">
+    <span class="icon">🚨</span><span class="lbl">Andon</span>
+    <div class="sb-tooltip">Prevent'Andon — Alertes</div>
+  </a>
+  <a class="sb-btn" href="preventis_dashboard.html">
+    <span class="icon">📈</span><span class="lbl">Board</span>
+    <div class="sb-tooltip">Dashboard Prevent'IS</div>
+  </a>
+  <div class="sb-sep"></div>
+  <a class="sb-btn" href="prevent_assist.html">
+    <span class="icon">🤖</span><span class="lbl">Assist</span>
+    <div class="sb-tooltip">Prevent'Assist — IA pédagogique</div>
+  </a>
+  <a class="sb-btn" href="prevent_exam.html">
+    <span class="icon">📝</span><span class="lbl">Exam</span>
+    <div class="sb-tooltip">Prevent'Exam — Mémoire CQPM</div>
+  </a>
+  <a class="sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+    <span class="icon">📚</span><span class="lbl">Agil</span>
+    <div class="sb-tooltip">Prevent'Agil — Cours Digipad</div>
+  </a>
+  <div class="sb-sep"></div>
+  <button class="sb-btn" onclick="openConfig()">
+    <span class="icon">⚙️</span><span class="lbl">Config</span>
+    <div class="sb-tooltip">Configurer la promotion</div>
+  </button>
+</nav>
+
+<!-- TOPBAR -->
+<div id="main">
+<div id="topbar">
+  <div class="tb-brand">Prevent'<span>Road</span></div>
+  <div class="tb-day-nav">
+    <button class="tb-nav-btn" onclick="navDay(-1)">‹</button>
+    <div class="tb-day-info">
+      <span id="tbDayLabel">—</span>
+      <small id="tbDayMeta">—</small>
+    </div>
+    <button class="tb-nav-btn" onclick="navDay(1)">›</button>
+  </div>
+  <input type="date" class="tb-date-input" id="dateInput" onchange="goToDate(this.value)">
+  <button class="tb-today-btn" onclick="goToday()">Aujourd'hui</button>
+</div>
+
+<!-- CONTENT -->
+<div id="content">
+  <!-- QRAFT bandeau 5 indicateurs -->
+  <div class="qraft-band">
+    <div class="qb-left">
+      <div class="qb-title">QRAFT · Promotion en cours</div>
+      <div class="qb-dates" id="qbDates">—</div>
+    </div>
+    <div class="qb-indicators">
+      <div class="qb-ind">
+        <div class="qb-ind-val" id="qr">—</div>
+        <div class="qb-ind-bar"><div class="qb-bar-fill" id="qrbar" style="background:var(--red);width:0%"></div></div>
+        <div class="qb-ind-lbl">🔴 Non démarrées</div>
+      </div>
+      <div class="qb-ind">
+        <div class="qb-ind-val" id="qj">—</div>
+        <div class="qb-ind-bar"><div class="qb-bar-fill" id="qjbar" style="background:var(--amber);width:0%"></div></div>
+        <div class="qb-ind-lbl">🟡 En cours</div>
+      </div>
+      <div class="qb-ind">
+        <div class="qb-ind-val" id="qv">—</div>
+        <div class="qb-ind-bar"><div class="qb-bar-fill" id="qvbar" style="background:var(--green);width:0%"></div></div>
+        <div class="qb-ind-lbl">🟢 Validées</div>
+      </div>
+      <div class="qb-ind">
+        <div class="qb-ind-val" id="qjours">—</div>
+        <div class="qb-ind-bar"><div class="qb-bar-fill" id="qjoursbar" style="background:#7DD3FA;width:0%"></div></div>
+        <div class="qb-ind-lbl">📅 Jours écoulés</div>
+      </div>
+      <div class="qb-ind qb-ind-prog">
+        <div class="qb-ind-val" id="qpct">0%</div>
+        <div class="qb-ind-bar" style="height:8px;"><div class="qb-bar-fill" id="qfill" style="background:linear-gradient(90deg,var(--red),var(--amber),var(--green));width:0%"></div></div>
+        <div class="qb-ind-lbl">⚡ Progression</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session du jour -->
+  <div id="sessionZone"></div>
+
+  <!-- Mini calendrier -->
+  <div class="cal-section">
+    <div class="cal-head">
+      <span>📅 Calendrier de la promotion</span>
+      <span id="calMonthLabel" style="font-size:12px;font-weight:600;color:var(--prev);"></span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <!-- Outils -->
+  <div class="outils-section">
+    <div class="os-head">🛠 Écosystème Prevent'IS</div>
+    <div class="outils-grid">
+      <a class="outil-link" href="preventcards_parcours__2_.html">
+        <div class="ol-icon">🃏</div>
+        <div class="ol-name">Prevent'Cards</div>
+        <div class="ol-desc">84 cartes · PERT · Profils · Outils</div>
+        <span class="ol-badge" style="background:#DBEAFE;color:#1D4ED8;">Pédagogie</span>
+      </a>
+      <a class="outil-link" href="preventis_obeya_qraft_v2__2_.html">
+        <div class="ol-icon">📊</div>
+        <div class="ol-name">QRAFT Obeya</div>
+        <div class="ol-desc">Pilotage promotion 75 jours</div>
+        <span class="ol-badge" style="background:#DCFCE7;color:#15803D;">Pilotage</span>
+      </a>
+      <a class="outil-link" href="prevent_andon.html">
+        <div class="ol-icon">🚨</div>
+        <div class="ol-name">Prevent'Andon</div>
+        <div class="ol-desc">Signal dysfonctionnement temps réel</div>
+        <span class="ol-badge" style="background:#FEE2E2;color:#DC2626;">Alerte</span>
+      </a>
+      <a class="outil-link" href="preventis_dashboard.html">
+        <div class="ol-icon">📈</div>
+        <div class="ol-name">Dashboard</div>
+        <div class="ol-desc">Tableau de bord formation</div>
+        <span class="ol-badge" style="background:#DCFCE7;color:#15803D;">Pilotage</span>
+      </a>
+      <a class="outil-link" href="prevent_assist.html">
+        <div class="ol-icon">🤖</div>
+        <div class="ol-name">Prevent'Assist</div>
+        <div class="ol-desc">Assistant IA Socratique</div>
+        <span class="ol-badge" style="background:#EDE9FE;color:#7C3AED;">IA</span>
+      </a>
+      <a class="outil-link" href="prevent_exam.html">
+        <div class="ol-icon">📝</div>
+        <div class="ol-name">Prevent'Exam</div>
+        <div class="ol-desc">Assistant mémoire CQPM</div>
+        <span class="ol-badge" style="background:#EDE9FE;color:#7C3AED;">IA</span>
+      </a>
+      <a class="outil-link" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+        <div class="ol-icon">📚</div>
+        <div class="ol-name">Prevent'Agil</div>
+        <div class="ol-desc">Cours en ligne · Digipad formateurs</div>
+        <span class="ol-badge" style="background:#DBEAFE;color:#1D4ED8;">Cours</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Share QRAFT -->
+  <div class="share-section">
+    <span class="share-lbl">🔗 Lien QRAFT à partager :</span>
+    <input class="share-input" id="shareInput" placeholder="Générez ou collez un lien Prevent'Cards…" readonly onclick="this.select()">
+    <button class="share-btn" onclick="genererLien()">Générer</button>
+    <button class="share-btn" onclick="copierLien()" style="background:rgba(255,255,255,.15);">Copier</button>
+    <span class="share-copied" id="shareCopied">✓ Copié !</span>
+  </div>
+</div><!-- /content -->
+</div><!-- /main -->
+
+<!-- CONFIG PANEL -->
+<div id="configPanel">
+  <div class="config-box" style="max-width:620px;">
+    <div class="config-head">
+      <div class="config-title">⚙️ Configuration de la promotion</div>
+      <button class="config-close" onclick="closeConfig()">✕</button>
+    </div>
+    <div class="config-body">
+
+      <!-- ONGLETS CONFIG -->
+      <div style="display:flex;gap:0;margin-bottom:20px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border);">
+        <button class="cfg-tab active" id="tabDates" onclick="showCfgTab('dates')">📅 Dates clés</button>
+        <button class="cfg-tab" id="tabJours" onclick="showCfgTab('jours')">🗓 Jours & horaires</button>
+        <button class="cfg-tab" id="tabSemaines" onclick="showCfgTab('semaines')">📋 Planning semaines</button>
+      </div>
+
+      <!-- ONGLET DATES CLÉS -->
+      <div id="cfgTabDates">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="config-field">
+            <label class="config-label">🟢 Début de promotion</label>
+            <input type="date" class="config-input" id="cfgStartDate">
+          </div>
+          <div class="config-field">
+            <label class="config-label">🔴 Fin de promotion</label>
+            <input type="date" class="config-input" id="cfgEndDate">
+          </div>
+          <div class="config-field">
+            <label class="config-label">📋 Remise situations professionnelles</label>
+            <input type="date" class="config-input" id="cfgDateSP">
+          </div>
+          <div class="config-field">
+            <label class="config-label">📓 Remise livrets de suivi</label>
+            <input type="date" class="config-input" id="cfgDateLS">
+          </div>
+          <div class="config-field" style="grid-column:1/-1;">
+            <label class="config-label">🎓 Remise mémoires pour jury</label>
+            <input type="date" class="config-input" id="cfgDateMem">
+          </div>
+        </div>
+        <div class="config-field" style="margin-top:4px;">
+          <label class="config-label">Nom de la promotion</label>
+          <input type="text" class="config-input" id="cfgNomPromo" placeholder="ex: CQPM QSE 2025-2026">
+        </div>
+      </div>
+
+      <!-- ONGLET JOURS & HORAIRES -->
+      <div id="cfgTabJours" style="display:none;">
+        <div class="config-field">
+          <label class="config-label">Jours de formation habituels</label>
+          <div class="config-days">
+            <button class="day-toggle" data-d="1">Lun</button>
+            <button class="day-toggle" data-d="2">Mar</button>
+            <button class="day-toggle" data-d="3">Mer</button>
+            <button class="day-toggle" data-d="4">Jeu</button>
+            <button class="day-toggle" data-d="5">Ven</button>
+          </div>
+        </div>
+        <div class="config-field">
+          <label class="config-label">Modalité par défaut</label>
+          <select class="config-input" id="cfgModalite">
+            <option value="Distance">Distance (distanciel)</option>
+            <option value="Lavaur">Lavaur (présentiel)</option>
+            <option value="Mixte">Mixte</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="config-field">
+            <label class="config-label">⏰ Matin — début</label>
+            <input type="time" class="config-input" id="cfgMatin1" value="08:30">
+          </div>
+          <div class="config-field">
+            <label class="config-label">⏰ Matin — fin</label>
+            <input type="time" class="config-input" id="cfgMatin2" value="12:30">
+          </div>
+          <div class="config-field">
+            <label class="config-label">⏰ Après-midi — début</label>
+            <input type="time" class="config-input" id="cfgApm1" value="13:30">
+          </div>
+          <div class="config-field">
+            <label class="config-label">⏰ Après-midi — fin</label>
+            <input type="time" class="config-input" id="cfgApm2" value="16:30">
+          </div>
+        </div>
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 14px;font-size:11px;color:#15803D;">
+          ✅ Durée journée : <strong id="dureeJour">7h</strong> (matin + après-midi)
+        </div>
+      </div>
+
+      <!-- ONGLET PLANNING SEMAINES -->
+      <div id="cfgTabSemaines" style="display:none;">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">
+          Définissez semaine par semaine les jours de formation. Les semaines sans saisie utilisent les jours par défaut.
+        </div>
+        <div id="semainesGrid" style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;"></div>
+        <button onclick="ajouterSemaine()" style="margin-top:10px;width:100%;padding:8px;border:1.5px dashed var(--border);border-radius:9px;background:white;cursor:pointer;font-size:12px;color:var(--muted);font-weight:600;">+ Ajouter une semaine</button>
+      </div>
+
+      <button class="config-save" onclick="saveConfig()">✓ Sauvegarder et générer le planning</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CARTE -->
+<div id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-id" id="mId"></div>
+      <div class="modal-titre" id="mTitre"></div>
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div><div class="modal-sec-lbl">🎯 Objectif</div><div class="modal-sec-val" id="mObj"></div></div>
+      <div><div class="modal-sec-lbl">✈ Livrable ACO</div><div class="modal-sec-val" id="mLiv"></div></div>
+      <div><div class="modal-sec-lbl">🏁 Seuil de validation</div><div class="modal-sec-val" id="mSeuil"></div></div>
+      <div><div class="modal-sec-lbl">📋 Compétences CQPM</div><div class="modal-tags" id="mComps"></div></div>
+      <div id="mAntSec" style="display:none"><div class="modal-sec-lbl">🔗 Antériorités</div><div class="modal-tags" id="mAnt"></div></div>
+    </div>
+    <div class="modal-state-btns">
+      <button class="msb msb-r" id="msbR" onclick="setCarteState('r')">🔴 Non démarrée</button>
+      <button class="msb msb-j" id="msbJ" onclick="setCarteState('j')">🟡 En cours</button>
+      <button class="msb msb-v" id="msbV" onclick="setCarteState('v')">🟢 Validée</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// DONNÉES PLANNING (trame fixe — seules les dates changent)
+// ════════════════════════════════════════════════════════
+const PLANNING_MODULES = [
+  {id:'M01', titre:'Posture métier — Fonctionnement entreprise', h:14, formateur:'Dominique BRU', cartes:['C-01','C-02','C-03','C-04'], modalite:'Distance'},
+  {id:'M02', titre:'Normes et systèmes de management (SMI)', h:21, formateur:'Dominique BRU', cartes:['C-05','C-06','C-07','C-08'], modalite:'Distance'},
+  {id:'M03', titre:'Processus et procédures', h:21, formateur:'Alexis PAYNON', cartes:['C-09','C-10','C-11','C-12'], modalite:'Lavaur'},
+  {id:'M04', titre:'Gestion de projet', h:21, formateur:'Dominique BRU', cartes:['C-13','C-14','C-15','C-16','C-17','C-18'], modalite:'Distance'},
+  {id:'M05', titre:'Communication orale, réunions, médiation', h:28, formateur:'Angel QUIROS', cartes:['C-19','C-20','C-21','C-22','C-23'], modalite:'Lavaur'},
+  {id:'M06', titre:'Tableaux de bord', h:14, formateur:'Dominique BRU', cartes:['C-24','C-25','C-26','C-27','C-28'], modalite:'Distance'},
+  {id:'M07', titre:'Audit', h:21, formateur:'Catherine HARROCH', cartes:['C-29','C-30','C-31','C-32'], modalite:'Lavaur'},
+  {id:'M08', titre:'Méthodes amélioration continue', h:21, formateur:'Dominique BRU', cartes:['C-33','C-34','C-35','C-36'], modalite:'Distance'},
+  {id:'M09', titre:'Ergonomie et santé au travail', h:14, formateur:'Angel QUIROS', cartes:['C-37','C-38','C-39','C-40'], modalite:'Lavaur'},
+  {id:'M10', titre:'QVCT', h:14, formateur:'Dominique BRU', cartes:['C-41','C-42','C-43'], modalite:'Distance'},
+  {id:'M11', titre:'Enquêtes de satisfaction', h:7, formateur:'Dominique BRU', cartes:['C-44','C-45','C-46'], modalite:'Distance'},
+  {id:'M12', titre:'Élaboration et suivi budgétaire', h:7, formateur:'Denis ERRERA', cartes:['C-47','C-48','C-49','C-50'], modalite:'Lavaur'},
+  {id:'M13', titre:'Accueil et intégration nouveau salarié', h:7, formateur:'Dominique BRU', cartes:['C-51','C-52','C-53'], modalite:'Distance'},
+  {id:'M14', titre:'Conformité des équipements et produits', h:14, formateur:'Cécile SAC', cartes:['C-54','C-55','C-56','C-57'], modalite:'Lavaur'},
+  {id:'M15', titre:'Hygiène et sécurité alimentaire', h:14, formateur:'Dominique BRU', cartes:['C-58','C-59','C-60','C-61'], modalite:'Distance'},
+  {id:'M16', titre:'Maîtrise statistique des processus', h:14, formateur:'Dominique BRU', cartes:['C-62','C-63','C-64','C-65'], modalite:'Distance'},
+  {id:'M17', titre:'Gestion des déchets', h:7, formateur:'Dominique BRU', cartes:['C-66','C-67','C-68'], modalite:'Distance'},
+  {id:'M18', titre:'Initiation à la RSE', h:7, formateur:'Dominique BRU', cartes:['C-69','C-70','C-71'], modalite:'Distance'},
+  {id:'M19', titre:'Textes et réglementations de référence', h:14, formateur:'Dominique BRU', cartes:['C-72','C-73','C-74'], modalite:'Distance'},
+  {id:'M20', titre:'Informatique', h:84, formateur:'Catherine HARROCH', cartes:['C-75','C-76','C-77','C-78'], modalite:'Distance'},
+  {id:'M21', titre:'Lean management', h:21, formateur:'Yannick CRASNIER', cartes:['C-79','C-80','C-81','C-82','C-83'], modalite:'Lavaur'},
+  {id:'M22', titre:'AMDEC et gestion des risques', h:21, formateur:'Dominique BRU', cartes:['C-84'], modalite:'Distance'},
+];
+
+// Données cartes (condensé — mêmes données que preventcards)
+const CARTES_DATA = {
+'C-01':{t:'Lire une organisation',o:"lire et décoder l'organigramme d'une organisation pour identifier les acteurs clés",c:['C1'],l:'Organigramme ACO annoté avec rôles et flux',s:'Identification correcte de 100% des acteurs et de leurs interfaces',a:[]},
+'C-02':{t:'Analyser le contexte',o:"conduire une analyse de contexte interne et externe à partir d'outils structurés",c:['C2'],l:'Matrice SWOT ACO complétée et commentée',s:'4 quadrants renseignés avec au moins 3 éléments chacun',a:['C-01']},
+'C-03':{t:'Identifier les parties prenantes',o:"cartographier les parties prenantes et évaluer leurs attentes et leur influence",c:['C1','C2'],l:'Matrice pouvoir-intérêt ACO avec stratégie de communication',s:'Matrice complète, stratégie justifiée pour chaque quadrant',a:['C-01','C-02']},
+'C-04':{t:'Formuler une politique QSE',o:"rédiger une politique QSE alignée sur les enjeux stratégiques de l'organisation",c:['C1'],l:"Projet de politique QSE ACO — 1 page signée DG",s:'Engagement visible sur 3 axes QSE, objectifs mesurables',a:['C-02','C-03']},
+'C-05':{t:'Structure HLS',o:"expliquer la logique de la structure HLS et son intérêt pour l'intégration des normes",c:['C2'],l:'Tableau comparatif des 10 chapitres HLS appliqués à ACO',s:'10 chapitres identifiés, points communs 9001/14001/45001 expliqués',a:['C-04']},
+'C-06':{t:'ISO 9001 — Exigences',o:"analyser les exigences de l'ISO 9001:2015 et identifier les preuves de conformité",c:['C2'],l:'Checklist ISO 9001 appliquée au processus de production ACO',s:'80% des exigences analysées avec preuves identifiées',a:['C-05']},
+'C-07':{t:'ISO 14001 — Aspects environnementaux',o:"identifier et évaluer les aspects environnementaux significatifs d'une activité",c:['C3'],l:'Tableau AES ACO avec cotation et plan de maîtrise',s:'AES significatifs identifiés, critères de cotation explicités',a:['C-05']},
+'C-08':{t:'ISO 45001 — Évaluation des risques SSE',o:"conduire une évaluation des risques SSE selon la logique ISO 45001",c:['C3'],l:'Document unique ACO — volet SSE avec plan de prévention',s:'Risques cotés G×P, hiérarchisés et associés à des mesures',a:['C-05','C-07']},
+'C-09':{t:'Identifier les processus',o:"identifier et classer les processus d'une organisation selon les 3 familles",c:['C2'],l:'Cartographie macro ACO — 3 niveaux de processus',s:'Processus classés en management/réalisation/support, pilotes nommés',a:['C-04']},
+'C-10':{t:'Cartographier un processus',o:"réaliser une cartographie détaillée d'un processus avec SIPOC et logigramme",c:['C2'],l:'SIPOC + logigramme du processus inscription équipe ACO',s:'SIPOC complet, logigramme lisible avec décisions et acteurs',a:['C-09']},
+'C-11':{t:'Rédiger une fiche processus',o:"rédiger une fiche processus complète conforme aux exigences du SMI",c:['C2'],l:'Fiche processus officielle ACO — pilote, indicateurs, interfaces',s:'7 rubriques renseignées, indicateurs SMART, pilote identifié',a:['C-10']},
+'C-12':{t:'Modéliser avec un logigramme',o:"modéliser un processus décisionnel avec un logigramme en swimlanes",c:['C2'],l:'Logigramme ACO du processus de gestion des réclamations',s:'Swimlanes par acteur, décisions binaires, formats normalisés',a:['C-10','C-11']},
+'C-13':{t:'Cadrer un projet',o:"rédiger une charte de projet complète avec parties prenantes et contraintes",c:['C4'],l:'Charte de projet ACO World League — objectifs, périmètre, contraintes',s:'Charte validée avec 6 rubriques min, sponsors et pilote nommés',a:['C-03']},
+'C-14':{t:'Analyser les besoins',o:"conduire une analyse fonctionnelle pour traduire les besoins en fonctions mesurables",c:['C4'],l:'CdCF ACO — fonctions de service et contraintes cotées',s:'FP et FC identifiées, critères et niveaux renseignés',a:['C-13']},
+'C-15':{t:'Décomposer le travail (WBS)',o:"construire un WBS hiérarchique sur 3 niveaux minimum",c:['C4'],l:'WBS projet ACO World League — 3 niveaux, lots identifiés',s:'Structure exhaustive, lots estimés, aucun chevauchement',a:['C-14']},
+'C-16':{t:'Planifier avec le PERT',o:"construire un réseau PERT avec chemin critique et marges",c:['C4'],l:'Réseau PERT projet ACO avec dates au plus tôt/tard et marges',s:'Chemin critique identifié, marges calculées, cohérence vérifiée',a:['C-15']},
+'C-17':{t:'Planifier avec le GANTT',o:"traduire un réseau PERT en diagramme de GANTT avec jalons",c:['C4'],l:'GANTT ACO sur Excel avec jalons et ressources',s:'Barres, jalons et chemin critique visibles, ressources affectées',a:['C-16']},
+'C-18':{t:'Piloter et clôturer',o:"piloter un projet par les indicateurs QCD et rédiger un bilan de clôture",c:['C4'],l:'Tableau de bord projet ACO + bilan de clôture',s:'Indicateurs QCD suivis, écarts analysés, RETEX rédigé',a:['C-17']},
+'C-19':{t:'Adapter sa communication',o:"identifier son profil DISC et adapter sa communication à son interlocuteur",c:['C5'],l:'Autodiagnostic DISC + plan de communication ACO adapté',s:'Profil identifié, 4 styles maîtrisés, stratégie d\'adaptation formulée',a:['C-04']},
+'C-20':{t:'Animer une réunion',o:"préparer et animer une réunion efficace selon les techniques de facilitation",c:['C5'],l:'Compte-rendu de réunion ACO avec plan d\'action et décisions',s:'Ordre du jour respecté, participants actifs, CR dans les 24h',a:['C-19']},
+'C-21':{t:'Gérer les conflits',o:"analyser une situation conflictuelle et choisir une stratégie de médiation adaptée",c:['C5'],l:'Analyse de cas ACO — tension équipe + plan de médiation',s:'Causes identifiées, stratégie justifiée, issue constructive proposée',a:['C-19','C-20']},
+'C-22':{t:'Conduire le changement',o:"accompagner une transformation organisationnelle en gérant les résistances",c:['C5'],l:'Plan de conduite du changement ACO World League',s:'Résistances identifiées, plan d\'engagement, indicateurs d\'adoption',a:['C-19','C-21']},
+'C-23':{t:'Communiquer par écrit',o:"rédiger des documents professionnels clairs, structurés et adaptés au public",c:['C5'],l:'Rapport de synthèse ACO — note de cadrage + supports',s:'Structure logique, registre adapté, absence de fautes',a:['C-19']},
+'C-24':{t:'Définir un indicateur',o:"concevoir un indicateur SMART lié à un objectif de processus",c:['C6'],l:'Fiche indicateur ACO — formule, cible, fréquence, responsable',s:'Indicateur SMART, lié au processus, avec cible et alarme',a:['C-11']},
+'C-25':{t:'Construire un tableau de bord',o:"concevoir un tableau de bord opérationnel lisible en 30 secondes",c:['C6'],l:'Tableau de bord ACO — vue SQCDP hebdomadaire',s:'5 axes couverts, code RAG visible, lecture < 30 secondes',a:['C-24']},
+'C-26':{t:'Analyser les données',o:"exploiter un jeu de données avec des outils statistiques descriptifs",c:['C6'],l:'Analyse TCD ACO — tendances, anomalies et recommandations',s:'TCD réalisé, 3 axes d\'analyse, recommandations argumentées',a:['C-25']},
+'C-27':{t:'Visualiser la performance',o:"choisir et construire des graphiques adaptés au message à transmettre",c:['C6'],l:'Dashboard ACO avec 4 graphiques commentés',s:'Graphiques adaptés au type de données, titres et légendes',a:['C-26']},
+'C-28':{t:'Piloter par les indicateurs',o:"conduire une revue de performance et déclencher des actions correctives",c:['C6'],l:'Compte-rendu de revue de performance ACO + actions',s:'Écarts analysés, causes identifiées, actions avec responsable et délai',a:['C-25','C-27']},
+'C-29':{t:'Posture de l\'auditeur',o:"adopter la posture d'un auditeur : observation, questionnement, neutralité",c:['C7'],l:'Journal d\'observation ACO — 10 constats objectifs',s:'Constats basés sur preuves, aucun jugement, reformulation vérifiée',a:['C-11','C-12']},
+'C-30':{t:'Préparer un audit',o:"préparer un audit processus avec plan d'audit, guide de questions et check-list",c:['C7'],l:'Dossier de préparation audit ACO — plan + guide + check-list',s:'Critères d\'audit définis, questions ouvertes, timing respecté',a:['C-29']},
+'C-31':{t:'Conduire un entretien d\'audit',o:"conduire un entretien d'audit en appliquant la triade critère/constat/preuve",c:['C7'],l:'Rapport d\'entretien ACO avec constats et preuves associées',s:'Triade respectée, 100% des constats avec preuve, pas d\'opinion',a:['C-29','C-30']},
+'C-32':{t:'Rédiger un rapport d\'audit',o:"rédiger un rapport d'audit avec synthèse des écarts et plan d'actions",c:['C7'],l:'Rapport d\'audit ACO — synthèse, écarts classifiés, recommandations',s:'Écarts majeurs/mineurs distingués, rapport lisible par un non-auditeur',a:['C-31']},
+'C-33':{t:'Résoudre avec le 8D',o:"conduire une résolution de problème structurée avec le rapport 8D",c:['C8'],l:'8D ACO — problème de non-conformité au concours',s:'8 étapes renseignées, cause racine vérifiée, actions pérennisées',a:['C-12']},
+'C-34':{t:'Analyser les causes',o:"identifier et hiérarchiser les causes d'un problème avec Ishikawa et Pareto",c:['C8'],l:'Diagramme Ishikawa + Pareto ACO avec priorisation',s:'5M complets, Pareto avec ABC, 20% des causes couvrant 80% des effets',a:['C-33']},
+'C-35':{t:'Remonter à la cause racine',o:"appliquer les 5 Pourquoi pour remonter à la cause racine systémique",c:['C8'],l:'Arbre 5P ACO — de l\'effet à la cause racine vérifiée',s:'5 niveaux minimum, cause racine vérifiable, action systémique',a:['C-34']},
+'C-36':{t:'Construire un plan d\'actions',o:"formaliser un plan d'actions SMART avec suivi PDCA",c:['C8'],l:'Plan d\'actions ACO avec PDCA et indicateurs de suivi',s:'Actions SMART, responsables, délais, indicateurs de succès',a:['C-35']},
+'C-37':{t:'Analyser un poste de travail',o:"réaliser une analyse ergonomique d'un poste selon la méthode REBA/RULA",c:['C9'],l:'Grille d\'analyse ergonomique poste pilote ACO',s:'Contraintes physiques identifiées, score calculé, pistes d\'amélioration',a:['C-09']},
+'C-38':{t:'Identifier les TMS',o:"identifier les facteurs de risque TMS et proposer des mesures de prévention",c:['C9'],l:'Diagnostic TMS ACO + mesures techniques et organisationnelles',s:'Facteurs de risque cotés, mesures hiérarchisées selon prévention',a:['C-37']},
+'C-39':{t:'Évaluer les RPS',o:"conduire une évaluation des risques psychosociaux avec un outil validé",c:['C9'],l:'Grille d\'évaluation RPS ACO — équipe logistique',s:'6 facteurs RPS analysés, niveau de risque coté, plan de prévention',a:['C-38']},
+'C-40':{t:'Concevoir un poste adapté',o:"proposer des solutions d'adaptation du poste de travail selon les contraintes identifiées",c:['C9'],l:'Fiche de préconisations ergonomiques ACO avec ROI estimé',s:'Solutions techniques et organisationnelles, gains mesurables proposés',a:['C-37','C-38','C-39']},
+'C-41':{t:'Diagnostiquer la QVCT',o:"conduire un diagnostic QVCT selon les 7 dimensions de l'ANI 2013",c:['C10'],l:'Rapport de diagnostic QVCT ACO avec priorisation des axes',s:'7 dimensions analysées, points forts et axes d\'amélioration identifiés',a:['C-39']},
+'C-42':{t:'Construire un plan QVCT',o:"formaliser un plan d'actions QVCT avec indicateurs de mesure de l'impact",c:['C10'],l:'Plan QVCT ACO — actions, responsables, indicateurs bien-être',s:'Actions liées aux résultats du diagnostic, indicateurs qualitatifs et quantitatifs',a:['C-41']},
+'C-43':{t:'Piloter la QVCT',o:"animer un suivi de la démarche QVCT et communiquer sur les résultats",c:['C10'],l:'Compte-rendu de revue QVCT ACO + communication équipe',s:'Indicateurs suivis, résultats communiqués, plan ajusté',a:['C-42']},
+'C-44':{t:'Concevoir une enquête',o:"concevoir un questionnaire de satisfaction valide avec échelle de mesure adaptée",c:['C11'],l:'Questionnaire satisfaction participants ACO — pré-test inclus',s:'Questions SMART, échelle validée, biais identifiés et limités',a:['C-24']},
+'C-45':{t:'Déployer et analyser',o:"déployer une enquête et analyser les résultats avec des outils statistiques",c:['C11'],l:'Rapport d\'analyse satisfaction ACO avec NPS et verbatims',s:'Taux de réponse > 70%, NPS calculé, verbatims catégorisés',a:['C-44']},
+'C-46':{t:'Restituer les résultats',o:"restituer les résultats d'une enquête de façon lisible et orientée action",c:['C11'],l:'Présentation ACO — résultats satisfaction + plan d\'amélioration',s:'Graphiques adaptés, messages clés, actions priorisées',a:['C-45']},
+'C-47':{t:'Lire un budget',o:"analyser un budget prévisionnel et identifier les charges fixes et variables",c:['C6'],l:'Analyse budget ACO World League — charges décomposées',s:'CF/CV distinguées, seuil de rentabilité calculé, interprétation juste',a:['C-26']},
+'C-48':{t:'Construire un budget',o:"élaborer un budget prévisionnel d'une action QSE avec justifications",c:['C6'],l:'Budget prévisionnel action prévention ACO — chiffré et justifié',s:'Toutes charges identifiées, hypothèses explicitées, écart plan/réel < 10%',a:['C-47']},
+'C-49':{t:'Calculer le coût de non-qualité',o:"calculer et analyser les coûts de non-qualité selon le modèle PAQ",c:['C6'],l:'Tableau CNQ ACO — 4 familles, total et ratio',s:'4 familles PAQ renseignées, ratio CNQ/CA calculé, pistes identifiées',a:['C-47']},
+'C-50':{t:'Calculer le ROI',o:"calculer le retour sur investissement d'une action de prévention",c:['C6'],l:'Fiche ROI prévention ACO — gains vs coûts sur 3 ans',s:'Gains quantifiés, ROI calculé, délai de récupération estimé',a:['C-48','C-49']},
+'C-51':{t:'Concevoir un parcours d\'intégration',o:"concevoir un parcours d'intégration QSE pour un nouveau collaborateur",c:['C5'],l:'Programme d\'intégration ACO — J1, S1, M1, M3, M6',s:'Jalons définis, responsables nommés, critères de réussite clairs',a:['C-22']},
+'C-52':{t:'Construire un livret d\'accueil',o:"rédiger un livret d'accueil QSE complet et adapté au poste",c:['C5'],l:'Livret d\'accueil ACO — règles, risques, consignes, contacts',s:'Règles QSE essentielles, visuel attractif, niveau de lecture adapté',a:['C-51']},
+'C-53':{t:'Évaluer l\'intégration',o:"évaluer l'efficacité d'un parcours d'intégration avec des indicateurs adaptés",c:['C5'],l:'Grille d\'évaluation intégration ACO — J30 et J90',s:'Indicateurs comportementaux et de conformité, plan de correction si besoin',a:['C-51','C-52']},
+'C-54':{t:'Maîtriser la métrologie',o:"gérer un plan de métrologie avec étalonnage, incertitude et raccordement",c:['C7'],l:'Plan de métrologie ACO — liste EME, fréquences, prestataires',s:'100% des EME listés, raccordement COFRAC pour les critiques',a:['C-11']},
+'C-55':{t:'Contrôler par échantillonnage',o:"appliquer un plan d\'échantillonnage ISO 2859 pour décider accepter/rejeter",c:['C7'],l:'Plan de contrôle ACO — NQA défini, plan d\'échantillonnage appliqué',s:'NQA justifié, plan appliqué, décision A/R argumentée',a:['C-54']},
+'C-56':{t:'Rédiger un plan de contrôle',o:"formaliser un plan de surveillance des caractéristiques critiques",c:['C7'],l:'Plan de surveillance ACO — caractéristiques, méthodes, fréquences',s:'Caractéristiques critiques identifiées, réactions documentées',a:['C-55']},
+'C-57':{t:'Gérer la conformité réglementaire',o:"identifier et suivre les VGP et obligations réglementaires applicables",c:['C3'],l:'Registre légal ACO — VGP, fréquences, organismes, échéances',s:'100% des obligations identifiées, registre tenu à jour',a:['C-08']},
+'C-58':{t:'Appliquer les BPH',o:"vérifier la conformité des BPH (Bonnes Pratiques d'Hygiène) sur un site alimentaire",c:['C3'],l:'Check-list BPH ACO espace restauration — résultats et actions',s:'14 points BPH vérifiés, non-conformités classifiées, actions planifiées',a:['C-29']},
+'C-59':{t:'Construire le plan HACCP',o:"concevoir un plan HACCP complet en 7 principes pour un processus alimentaire",c:['C3'],l:'Plan HACCP ACO restauration — dangers, CCP, limites critiques',s:'7 principes appliqués, CCP identifiés et documentés',a:['C-58']},
+'C-60':{t:'Gérer la food fraud',o:"identifier les vulnérabilités à la fraude alimentaire et construire un plan VACCP",c:['C3'],l:'Analyse VACCP ACO — ingrédients critiques et mesures',s:'Vulnérabilités cotées, mesures prioritaires définies',a:['C-59']},
+'C-61':{t:'Assurer la food defense',o:"évaluer les risques d'actes malveillants et définir des mesures de protection",c:['C3'],l:'Plan food defense ACO — évaluation des menaces et barrières',s:'Menaces identifiées, barrières physiques et organisationnelles proposées',a:['C-60']},
+'C-62':{t:'Calculer la capabilité',o:"calculer et interpréter les indices Cp et Cpk d'un processus",c:['C8'],l:'Analyse capabilité ACO — processus découpe avec Cp/Cpk',s:'Cp et Cpk calculés, interprétation correcte, plan si Cpk < 1.33',a:['C-26']},
+'C-63':{t:'Construire une carte X̄/R',o:"construire et interpréter une carte de contrôle X̄/R pour mesures groupées",c:['C8'],l:'Carte X̄/R ACO — 25 sous-groupes, limites calculées',s:'Limites calculées, signaux de Nelson interprétés, processus sous contrôle',a:['C-62']},
+'C-64':{t:'Construire une carte I/MR',o:"construire et interpréter une carte de contrôle I/MR pour mesures individuelles",c:['C8'],l:'Carte I/MR ACO — mesures individuelles distance vol',s:'Limites calculées, signaux détectés, interprétation juste',a:['C-62','C-63']},
+'C-65':{t:'Calculer le niveau sigma',o:"calculer le DPMO et le niveau sigma d\'un processus",c:['C8'],l:'Tableau DPMO ACO — calcul et benchmark six sigma',s:'DPMO calculé, niveau sigma identifié, objectif d\'amélioration fixé',a:['C-64']},
+'C-66':{t:'Classer les déchets',o:"classer les déchets selon la nomenclature européenne et identifier les filières",c:['C3'],l:'Registre déchets ACO — classification, quantités, filières',s:'100% des déchets classifiés, codes à 6 chiffres, filières conformes',a:['C-07']},
+'C-67':{t:'Gérer les BSD',o:"établir et suivre les bordereaux de suivi des déchets dangereux",c:['C3'],l:'BSD ACO complété — traçabilité de A à Z',s:'BSD conforme, chaîne de traçabilité complète, archivage 5 ans',a:['C-66']},
+'C-68':{t:'Réduire à la source',o:"proposer un plan de réduction des déchets à la source avec indicateurs",c:['C3'],l:'Plan de réduction déchets ACO — objectifs, actions, indicateurs',s:'Objectifs de réduction chiffrés, actions par flux, indicateurs de suivi',a:['C-66','C-67']},
+'C-69':{t:'Comprendre la RSE',o:"expliquer les 3 piliers RSE et les enjeux pour une organisation comme ACO",c:['C3'],l:'Note RSE ACO — enjeux, parties prenantes, priorités',s:'3 piliers articulés, enjeux propres à ACO identifiés',a:['C-07']},
+'C-70':{t:'Choisir un label RSE',o:"comparer les labels RSE et recommander le plus adapté au contexte ACO",c:['C3'],l:'Tableau comparatif Lucie / Ecovadis / PME+ pour ACO',s:'Critères comparés, recommandation argumentée, plan d\'obtention esquissé',a:['C-69']},
+'C-71':{t:'Calculer un bilan carbone',o:"réaliser un bilan carbone simplifié sur les 3 scopes pour ACO",c:['C3'],l:'Bilan carbone ACO — émissions par scope, plan de réduction',s:'3 scopes renseignés, émissions en éq. CO₂, 2 actions prioritaires',a:['C-69','C-70']},
+'C-72':{t:'Construire un tableau de veille',o:"construire et alimenter un tableau de veille réglementaire structuré",c:['C3'],l:'Tableau de veille ACO — textes, échéances, responsables',s:'Sources identifiées, fréquence définie, au moins 5 textes analysés',a:['C-57']},
+'C-73':{t:'Analyser une réglementation',o:"analyser un texte réglementaire et identifier ses obligations applicables",c:['C3'],l:'Analyse réglementaire ACO — obligations extraites et planifiées',s:'Obligations identifiées, applicabilité évaluée, actions planifiées',a:['C-72']},
+'C-74':{t:'Rédiger une note de conformité',o:"rédiger une note de conformité réglementaire destinée à la direction",c:['C3'],l:'Note de conformité ACO — état des lieux et recommandations',s:'Synthèse lisible, risques de non-conformité identifiés, plan proposé',a:['C-73']},
+'C-75':{t:'Maîtriser Word professionnel',o:"produire des documents Word professionnels avec styles, TdM et pagination",c:['C6'],l:'Rapport ACO formaté — styles, TdM automatique, numérotation',s:'Styles appliqués, TdM générée, en-têtes/pieds de page conformes',a:[]},
+'C-76':{t:'Maîtriser Excel analyse',o:"exploiter Excel pour l'analyse de données : formules, TCD, graphiques",c:['C6'],l:'Tableau de bord ACO Excel — TCD + graphiques + formules',s:'TCD réalisé, 5 fonctions avancées utilisées, graphiques commentés',a:['C-75']},
+'C-77':{t:'Maîtriser PowerPoint',o:"concevoir une présentation PowerPoint professionnelle et percutante",c:['C5'],l:'Présentation ACO — 10 slides max, maître de diapo, animations',s:'Maître appliqué, hiérarchie des titres, règle des 3 secondes',a:['C-75']},
+'C-78':{t:'Maîtriser les outils collaboratifs',o:"utiliser les outils Drive/Teams pour le travail collaboratif et le partage",c:['C5'],l:'Espace Drive ACO organisé + procédure de partage équipe',s:'Arborescence logique, droits configurés, procédure documentée',a:['C-76','C-77']},
+'C-79':{t:'Comprendre le Lean',o:"expliquer la philosophie Lean, les 7 gaspillages et la valeur ajoutée",c:['C2'],l:'Cartographie VA/NVA ACO — processus assembly avec mudas identifiés',s:'7 mudas identifiés sur le processus, VA/NVA distinguées, % NVA calculé',a:['C-10']},
+'C-80':{t:'Déployer les 5S',o:"conduire un chantier 5S complet avec diagnostic, plan d'actions et audit",c:['C8'],l:'Dossier 5S ACO poste assemblage — avant/après + audit',s:'5 étapes réalisées, photos avant/après, score audit > 70%',a:['C-79']},
+'C-81':{t:'Analyser les flux',o:"réaliser un diagramme spaghetti et calculer la distance parcourue",c:['C8'],l:'Diagramme spaghetti ACO — distance avant/après optimisation',s:'Distance calculée, gain > 20%, nouveau layout proposé',a:['C-79','C-80']},
+'C-82':{t:'Piloter avec le SQCDP',o:"animer une AIC quotidienne avec tableau SQCDP en 7 minutes",c:['C6'],l:'Tableau SQCDP ACO + compte-rendu AIC avec plan d\'actions',s:'5 axes renseignés, AIC < 7 min, actions tracées',a:['C-25']},
+'C-83':{t:'Conduire un Gemba Walk',o:"préparer et conduire un Gemba Walk structuré avec grille d'observation",c:['C8'],l:'Rapport Gemba Walk ACO — 10 observations terrain',s:'Grille respectée, observations objectives, aucun jugement de personne',a:['C-82']},
+'C-84':{t:'Réaliser une AMDEC',o:"conduire une analyse AMDEC processus complète avec plan de prévention",c:['C2','C8'],l:'AMDEC ACO — 5 modes de défaillance avec IPR et actions',s:'G×O×D calculés, IPR > 27 traités, plan d\'actions préventives',a:['C-11','C-12','C-36']},
+};
+
+// ════════════════════════════════════════════════════════
+// CONFIG & ÉTAT
+// ════════════════════════════════════════════════════════
+let CONFIG = {
+  startDate: '2025-06-30',
+  endDate: '',
+  nomPromo: 'CQPM QSE',
+  dateSP: '',
+  dateLS: '',
+  dateMem: '',
+  days: [1,2,3,4,5],
+  modalite: 'Distance',
+  matin1: '08:30', matin2: '12:30',
+  apm1: '13:30', apm2: '16:30',
+  semaines: [] // [{lundi:'2025-06-30', days:[1,3,5], note:'Semaine 1'}]
+};
+let ETATS = {};
+let CALENDAR = []; // liste ordonnée des dates de formation générées
+let currentDate = null;
+let modalCarteId = null;
+
+function loadConfig(){
+  const saved = localStorage.getItem('pr_config');
+  if(saved) try{ CONFIG = JSON.parse(saved); }catch(e){}
+  const savedEtats = localStorage.getItem('pr_etats');
+  if(savedEtats) try{ ETATS = JSON.parse(savedEtats); }catch(e){}
+  // URL params
+  const params = new URLSearchParams(window.location.search);
+  const s = params.get('s');
+  if(s) try{ ETATS = JSON.parse(atob(s)); }catch(e){}
+}
+
+function saveEtats(){
+  localStorage.setItem('pr_etats',JSON.stringify(ETATS));
+}
+
+// Générer le calendrier de formation
+function generateCalendar(){
+  CALENDAR = [];
+  let d = new Date(CONFIG.startDate);
+  let maxDays = 0;
+  PLANNING_MODULES.forEach(m => { maxDays += Math.ceil(m.h / 7); });
+  maxDays += 10; // marge
+  let count = 0;
+  while(count < maxDays * 3){
+    const dow = d.getDay(); // 0=dim, 1=lun...
+    if(CONFIG.days.includes(dow)){
+      CALENDAR.push(new Date(d));
+      count++;
+      if(count >= maxDays) break;
+    }
+    d.setDate(d.getDate()+1);
+  }
+  // Init états pour toutes les cartes
+  PLANNING_MODULES.forEach(m => m.cartes.forEach(id => {
+    if(!ETATS[id]) ETATS[id] = 'r';
+  }));
+}
+
+// Trouver le module + cartes pour une date donnée
+function getSessionForDate(targetDate){
+  const td = new Date(targetDate);
+  td.setHours(0,0,0,0);
+  // Trouver l'index dans CALENDAR
+  let calIdx = CALENDAR.findIndex(d => {
+    const dd = new Date(d); dd.setHours(0,0,0,0);
+    return dd.getTime() === td.getTime();
+  });
+  if(calIdx < 0) return null;
+  // Compter les heures cumulées
+  let hCum = 0;
+  let modIdx = 0;
+  let carteStart = 0;
+  for(let i = 0; i <= calIdx; i++){
+    // chaque jour = 7h
+    hCum += 7;
+  }
+  // Trouver le module correspondant
+  let h = 0;
+  for(let mi = 0; mi < PLANNING_MODULES.length; mi++){
+    const m = PLANNING_MODULES[mi];
+    if(hCum <= h + m.h){
+      // Ce module est en cours ce jour
+      const hInModule = hCum - h;
+      const carteIdx = Math.min(Math.floor((hInModule-1)/7), m.cartes.length-1);
+      // Cartes à traiter ce jour
+      const cartesJour = [m.cartes[carteIdx]].filter(Boolean);
+      // si 14h module, peut-être 2 cartes/jour
+      const cartesParJour = Math.ceil(m.cartes.length / (m.h/7));
+      const debut = Math.max(0, carteIdx - (cartesParJour-1));
+      const fin = Math.min(m.cartes.length, carteIdx + 1);
+      return {
+        module: m,
+        cartes: m.cartes.slice(debut, fin),
+        jourNum: calIdx + 1,
+        totalJours: CALENDAR.length
+      };
+    }
+    h += m.h;
+  }
+  return null;
+}
+
+// ════════════════════════════════════════════════════════
+// RENDU
+// ════════════════════════════════════════════════════════
+function findNearestTrainingDay(target){
+  const t = new Date(target); t.setHours(0,0,0,0);
+  // Chercher la date de formation la plus proche
+  let best = null; let bestDiff = Infinity;
+  CALENDAR.forEach(d => {
+    const dd = new Date(d); dd.setHours(0,0,0,0);
+    const diff = Math.abs(dd - t);
+    if(diff < bestDiff){ bestDiff = diff; best = dd; }
+  });
+  return best;
+}
+
+function renderTopbar(){
+  if(!currentDate){ document.getElementById('tbDayLabel').textContent = '—'; return; }
+  const d = new Date(currentDate);
+  const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const mois = ['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  const session = getSessionForDate(currentDate);
+  document.getElementById('tbDayLabel').textContent =
+    jours[d.getDay()] + ' ' + d.getDate() + ' ' + mois[d.getMonth()] + ' ' + d.getFullYear();
+  document.getElementById('tbDayMeta').textContent =
+    session ? 'J' + session.jourNum + ' · ' + session.module.modalite + ' · ' + session.module.formateur : 'Hors formation';
+  document.getElementById('dateInput').value = d.toISOString().split('T')[0];
+}
+
+function renderSession(){
+  const zone = document.getElementById('sessionZone');
+  const session = getSessionForDate(currentDate);
+  if(!session){
+    zone.innerHTML = `<div class="empty-state"><div class="es-icon">📅</div>
+      <h3>Aucune session ce jour</h3>
+      <p>Ce jour ne fait pas partie du calendrier de formation.<br>Naviguez vers un jour de formation.</p></div>`;
+    return;
+  }
+  const m = session.module;
+  const allCartes = m.cartes;
+  const nv = allCartes.filter(id=>ETATS[id]==='v').length;
+  const nj = allCartes.filter(id=>ETATS[id]==='j').length;
+  const prog = Math.round((nj*0.5+nv)/allCartes.length*100);
+
+  const cartesHtml = session.cartes.map(id => {
+    const c = CARTES_DATA[id];
+    if(!c) return '';
+    const st = ETATS[id]||'r';
+    const icons = {r:'⬜',j:'🟡',v:'✅'};
+    return `<div class="carte-row s-${st}" onclick="openModal('${id}')">
+      <div class="cr-state">${icons[st]}</div>
+      <div class="cr-id">${id}</div>
+      <div class="cr-titre">${c.t}</div>
+      <div class="cr-module">${m.id}</div>
+      <div class="cr-action">
+        <button class="cr-btn btn-j" onclick="event.stopPropagation();quickState('${id}','j')" title="En cours">🟡</button>
+        <button class="cr-btn btn-v" onclick="event.stopPropagation();quickState('${id}','v')" title="Valider">✅</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Cartes du module complètes pour aperçu
+  const allHtml = allCartes.map(id => {
+    const c = CARTES_DATA[id];
+    if(!c) return '';
+    const st = ETATS[id]||'r';
+    const isToday = session.cartes.includes(id);
+    return `<div class="carte-row s-${st}" style="${isToday?'':'opacity:.55;'}" onclick="openModal('${id}')">
+      <div class="cr-state">${{r:'⬜',j:'🟡',v:'✅'}[st]}</div>
+      <div class="cr-id">${id}</div>
+      <div class="cr-titre">${c.t}</div>
+      ${isToday?'<span style="font-size:9px;font-weight:700;color:var(--prev);background:#E0F4FB;padding:2px 7px;border-radius:99px;">Aujourd\'hui</span>':''}
+      <div class="cr-action">
+        <button class="cr-btn btn-j" onclick="event.stopPropagation();quickState('${id}','j')" title="En cours">🟡</button>
+        <button class="cr-btn btn-v" onclick="event.stopPropagation();quickState('${id}','v')" title="Valider">✅</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  zone.innerHTML = `<div class="session-card">
+    <div class="sc-head">
+      <div class="sc-jbadge"><div class="jnum">${session.jourNum}</div><div class="jlbl">JOUR</div></div>
+      <div class="sc-info">
+        <div class="sc-module">${m.titre}</div>
+        <div class="sc-meta">
+          <div class="sc-pill">👤 ${m.formateur}</div>
+          <div class="sc-pill">${m.modalite==='Lavaur'?'🏫':'💻'} ${m.modalite}</div>
+          <div class="sc-pill">⏱ ${m.h}h · ${m.cartes.length} cartes</div>
+          <div class="sc-pill">📍 J${session.jourNum} / ${CALENDAR.length}</div>
+        </div>
+      </div>
+      <div class="sc-qraft">
+        <div class="sc-prog-lbl">Module ${nv}/${allCartes.length} validées</div>
+        <div class="sc-prog-bar"><div class="sc-prog-fill" style="width:${prog}%"></div></div>
+        <div class="sc-prog-pct">${prog}%</div>
+      </div>
+    </div>
+    <div class="sc-body">
+      <div class="cartes-title">📋 Cartes du jour <span style="color:var(--prev);font-weight:700;">(${session.cartes.length})</span></div>
+      <div class="cartes-grid">${cartesHtml}</div>
+      ${allCartes.length > session.cartes.length ? `
+      <div class="cartes-title" style="margin-top:18px;">📦 Toutes les cartes du module (${allCartes.length})</div>
+      <div class="cartes-grid">${allHtml}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderCalendar(){
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const cur = currentDate ? new Date(currentDate) : today;
+  cur.setHours(0,0,0,0);
+
+  // Trouver le mois de currentDate et afficher ±2 semaines
+  const shown = CALENDAR.slice(0, Math.min(CALENDAR.length, 60));
+  let months = {};
+  shown.forEach(d => {
+    const m = d.getMonth();
+    if(!months[m]) months[m] = 0;
+    months[m]++;
+  });
+  const dominantMonth = Object.entries(months).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('calMonthLabel').textContent = '';
+
+  shown.forEach((d,i) => {
+    const dd = new Date(d); dd.setHours(0,0,0,0);
+    const isToday = dd.getTime() === today.getTime();
+    const isSelected = dd.getTime() === cur.getTime();
+    const session = getSessionForDate(dd);
+    const jours = ['Di','Lu','Ma','Me','Je','Ve','Sa'];
+    const div = document.createElement('div');
+    div.className = 'cal-day' + (isToday?' today':'') + (isSelected?' selected':'');
+    const dotColor = session ? (()=>{
+      const cartes = session.module.cartes;
+      const nv = cartes.filter(id=>ETATS[id]==='v').length;
+      const nj = cartes.filter(id=>ETATS[id]==='j').length;
+      if(nv===cartes.length) return 'var(--green)';
+      if(nj+nv>0) return 'var(--amber)';
+      return 'var(--red)';
+    })() : 'transparent';
+    div.innerHTML = `<div class="cd-num">${d.getDate()}</div>
+      <div class="cd-lbl">${jours[d.getDay()]}</div>
+      <div class="cd-dot" style="background:${dotColor}"></div>`;
+    div.onclick = () => { currentDate = dd; renderAll(); };
+    grid.appendChild(div);
+  });
+}
+
+function renderQRAFT(){
+  const all = Object.values(ETATS);
+  const total = all.length || 84;
+  const nr = all.filter(v=>v==='r').length || total;
+  const nj = all.filter(v=>v==='j').length;
+  const nv = all.filter(v=>v==='v').length;
+  const prog = Math.round((nj*0.5+nv)/total*100);
+  // Jours écoulés depuis début promotion
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = CONFIG.startDate ? new Date(CONFIG.startDate) : null;
+  const end = CONFIG.endDate ? new Date(CONFIG.endDate) : null;
+  let joursEcoules = 0, totalJoursPossible = 1;
+  if(start){
+    joursEcoules = Math.max(0, Math.floor((today - start)/(1000*60*60*24)));
+    if(end) totalJoursPossible = Math.max(1, Math.floor((end - start)/(1000*60*60*24)));
+  }
+  // Indicateurs
+  document.getElementById('qr').textContent = nr;
+  document.getElementById('qrbar').style.width = Math.round(nr/total*100)+'%';
+  document.getElementById('qj').textContent = nj;
+  document.getElementById('qjbar').style.width = Math.round(nj/total*100)+'%';
+  document.getElementById('qv').textContent = nv;
+  document.getElementById('qvbar').style.width = Math.round(nv/total*100)+'%';
+  document.getElementById('qjours').textContent = joursEcoules+'j';
+  document.getElementById('qjoursbar').style.width = Math.min(100,Math.round(joursEcoules/totalJoursPossible*100))+'%';
+  document.getElementById('qfill').style.width = prog+'%';
+  document.getElementById('qpct').textContent = prog+'%';
+  // Dates clés dans le bandeau
+  const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '—';
+  const parts = [];
+  if(CONFIG.nomPromo) parts.push(CONFIG.nomPromo);
+  if(CONFIG.startDate) parts.push('Début : '+fmt(CONFIG.startDate));
+  if(CONFIG.endDate) parts.push('Fin : '+fmt(CONFIG.endDate));
+  if(CONFIG.dateMem) parts.push('Mémoires : '+fmt(CONFIG.dateMem));
+  document.getElementById('qbDates').textContent = parts.join(' · ') || 'Configurer la promotion ⚙️';
+}
+
+function renderAll(){
+  renderTopbar();
+  renderSession();
+  renderCalendar();
+  renderQRAFT();
+  saveEtats();
+}
+
+// ════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════
+function navDay(dir){
+  if(!currentDate) return;
+  const cur = new Date(currentDate);
+  cur.setHours(0,0,0,0);
+  // Trouver l'index actuel dans CALENDAR
+  let idx = CALENDAR.findIndex(d => {
+    const dd = new Date(d); dd.setHours(0,0,0,0);
+    return dd.getTime() === cur.getTime();
+  });
+  if(idx < 0){
+    currentDate = findNearestTrainingDay(cur);
+  } else {
+    const newIdx = Math.max(0, Math.min(CALENDAR.length-1, idx+dir));
+    currentDate = new Date(CALENDAR[newIdx]);
+  }
+  currentDate.setHours(0,0,0,0);
+  renderAll();
+}
+
+function goToDate(val){
+  if(!val) return;
+  const d = new Date(val); d.setHours(0,0,0,0);
+  const nearest = findNearestTrainingDay(d);
+  currentDate = nearest || d;
+  renderAll();
+}
+
+function goToday(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const nearest = findNearestTrainingDay(today);
+  currentDate = nearest || today;
+  renderAll();
+}
+
+// ════════════════════════════════════════════════════════
+// ÉTATS CARTES
+// ════════════════════════════════════════════════════════
+function quickState(id, state){
+  ETATS[id] = state;
+  renderAll();
+}
+
+// ════════════════════════════════════════════════════════
+// MODAL CARTE
+// ════════════════════════════════════════════════════════
+function openModal(id){
+  const c = CARTES_DATA[id];
+  if(!c) return;
+  modalCarteId = id;
+  // Trouver module
+  let mod = null;
+  PLANNING_MODULES.forEach(m => { if(m.cartes.includes(id)) mod = m; });
+  document.getElementById('mId').textContent = id;
+  document.getElementById('mId').style.color = mod ? '#009FC4' : '#475569';
+  document.getElementById('mTitre').textContent = c.t;
+  document.getElementById('mObj').textContent = 'Je suis capable de ' + c.o;
+  document.getElementById('mLiv').textContent = c.l;
+  document.getElementById('mSeuil').textContent = c.s;
+  document.getElementById('mComps').innerHTML = c.c.map(x=>`<span class="modal-tag" style="background:#DBEAFE;color:#1D4ED8;">${x}</span>`).join('');
+  const antSec = document.getElementById('mAntSec');
+  if(c.a.length){
+    document.getElementById('mAnt').innerHTML = c.a.map(a=>`<span class="modal-tag" style="background:#FEE2E2;color:#DC2626;">${a}</span>`).join('');
+    antSec.style.display='block';
+  } else antSec.style.display='none';
+  // Boutons état
+  const st = ETATS[id]||'r';
+  ['r','j','v'].forEach(s => {
+    document.getElementById('msb'+s.toUpperCase()).classList.toggle('active', st===s);
+  });
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function setCarteState(state){
+  if(!modalCarteId) return;
+  ETATS[modalCarteId] = state;
+  ['r','j','v'].forEach(s => {
+    document.getElementById('msb'+s.toUpperCase()).classList.toggle('active', state===s);
+  });
+  renderSession();
+  renderCalendar();
+  renderQRAFT();
+  saveEtats();
+}
+
+function closeModal(e){
+  if(e.target===document.getElementById('modalOverlay')) closeModalBtn();
+}
+function closeModalBtn(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  modalCarteId = null;
+}
+
+// ════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════
+function showCfgTab(tab){
+  ['dates','jours','semaines'].forEach(t => {
+    document.getElementById('cfgTab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'':'none';
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
+  });
+}
+function calcDureeJour(){
+  const m1 = document.getElementById('cfgMatin1').value||'08:30';
+  const m2 = document.getElementById('cfgMatin2').value||'12:30';
+  const a1 = document.getElementById('cfgApm1').value||'13:30';
+  const a2 = document.getElementById('cfgApm2').value||'16:30';
+  const toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
+  const dur = (toMin(m2)-toMin(m1)) + (toMin(a2)-toMin(a1));
+  const h = Math.floor(dur/60), m = dur%60;
+  document.getElementById('dureeJour').textContent = h+'h'+(m?m:'');
+}
+let _semainesData = [];
+function ajouterSemaine(){
+  const lundi = getProchainLundi();
+  _semainesData.push({lundi, days:[...CONFIG.days], note:''});
+  renderSemainesGrid();
+}
+function getProchainLundi(){
+  const last = _semainesData.length ? _semainesData[_semainesData.length-1].lundi : CONFIG.startDate;
+  const d = new Date(last); d.setDate(d.getDate()+7);
+  while(d.getDay()!==1) d.setDate(d.getDate()+1);
+  return d.toISOString().split('T')[0];
+}
+function renderSemainesGrid(){
+  const grid = document.getElementById('semainesGrid');
+  grid.innerHTML = '';
+  const jours = ['','Lu','Ma','Me','Je','Ve'];
+  _semainesData.forEach((sem,i) => {
+    const d = new Date(sem.lundi);
+    const lbl = 'S'+(i+1)+' · '+d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+    const daysHtml = [1,2,3,4,5].map(j =>
+      `<div class="sem-day${sem.days.includes(j)?' on':''}" onclick="toggleSemDay(${i},${j})">${jours[j]}</div>`
+    ).join('');
+    const row = document.createElement('div');
+    row.className = 'semaine-row';
+    row.innerHTML = `<div class="semaine-lbl">${lbl}</div>
+      <div class="semaine-days">${daysHtml}</div>
+      <div class="semaine-note"><input type="text" placeholder="Note (ex: Présentiel Lavaur)" value="${sem.note||''}" oninput="_semainesData[${i}].note=this.value"></div>
+      <button class="sem-del" onclick="_semainesData.splice(${i},1);renderSemainesGrid()">🗑</button>`;
+    grid.appendChild(row);
+  });
+}
+function toggleSemDay(semIdx, day){
+  const sem = _semainesData[semIdx];
+  if(sem.days.includes(day)) sem.days = sem.days.filter(d=>d!==day);
+  else sem.days.push(day);
+  renderSemainesGrid();
+}
+function openConfig(){
+  document.getElementById('cfgStartDate').value = CONFIG.startDate||'';
+  document.getElementById('cfgEndDate').value = CONFIG.endDate||'';
+  document.getElementById('cfgDateSP').value = CONFIG.dateSP||'';
+  document.getElementById('cfgDateLS').value = CONFIG.dateLS||'';
+  document.getElementById('cfgDateMem').value = CONFIG.dateMem||'';
+  document.getElementById('cfgNomPromo').value = CONFIG.nomPromo||'';
+  document.getElementById('cfgModalite').value = CONFIG.modalite||'Distance';
+  document.getElementById('cfgMatin1').value = CONFIG.matin1||'08:30';
+  document.getElementById('cfgMatin2').value = CONFIG.matin2||'12:30';
+  document.getElementById('cfgApm1').value = CONFIG.apm1||'13:30';
+  document.getElementById('cfgApm2').value = CONFIG.apm2||'16:30';
+  document.querySelectorAll('.day-toggle').forEach(btn => {
+    const d = parseInt(btn.dataset.d);
+    btn.classList.toggle('on', CONFIG.days.includes(d));
+    btn.onclick = () => btn.classList.toggle('on');
+  });
+  _semainesData = JSON.parse(JSON.stringify(CONFIG.semaines||[]));
+  renderSemainesGrid();
+  ['cfgMatin1','cfgMatin2','cfgApm1','cfgApm2'].forEach(id =>
+    document.getElementById(id).addEventListener('input', calcDureeJour));
+  calcDureeJour();
+  showCfgTab('dates');
+  document.getElementById('configPanel').classList.add('open');
+}
+function closeConfig(){ document.getElementById('configPanel').classList.remove('open'); }
+function saveConfig(){
+  CONFIG.startDate = document.getElementById('cfgStartDate').value||CONFIG.startDate;
+  CONFIG.endDate = document.getElementById('cfgEndDate').value;
+  CONFIG.dateSP = document.getElementById('cfgDateSP').value;
+  CONFIG.dateLS = document.getElementById('cfgDateLS').value;
+  CONFIG.dateMem = document.getElementById('cfgDateMem').value;
+  CONFIG.nomPromo = document.getElementById('cfgNomPromo').value;
+  CONFIG.modalite = document.getElementById('cfgModalite').value;
+  CONFIG.matin1 = document.getElementById('cfgMatin1').value;
+  CONFIG.matin2 = document.getElementById('cfgMatin2').value;
+  CONFIG.apm1 = document.getElementById('cfgApm1').value;
+  CONFIG.apm2 = document.getElementById('cfgApm2').value;
+  CONFIG.days = [];
+  document.querySelectorAll('.day-toggle.on').forEach(btn => CONFIG.days.push(parseInt(btn.dataset.d)));
+  CONFIG.semaines = JSON.parse(JSON.stringify(_semainesData));
+  localStorage.setItem('pr_config', JSON.stringify(CONFIG));
+  closeConfig();
+  generateCalendar();
+  goToday();
+}
+
+// ════════════════════════════════════════════════════════
+// PARTAGE
+// ════════════════════════════════════════════════════════
+function genererLien(){
+  const encoded = btoa(JSON.stringify(ETATS));
+  const url = window.location.origin + window.location.pathname + '?s=' + encoded;
+  document.getElementById('shareInput').value = url;
+}
+function copierLien(){
+  const input = document.getElementById('shareInput');
+  if(!input.value) genererLien();
+  input.select();
+  navigator.clipboard.writeText(input.value).then(()=>{
+    const msg = document.getElementById('shareCopied');
+    msg.classList.add('show');
+    setTimeout(()=>msg.classList.remove('show'),2500);
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  loadConfig();
+  generateCalendar();
+  document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModalBtn(); closeConfig(); }});
+  goToday();
+});
+</script>
+</body>
+</html>
