@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevent'Exam — Assistant Mémoire Professionnel Preventys</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --acc:#7C3AED; --acc-d:#5B21B6; --acc-dd:#2E1065; --acc-l:#EDE9FE;
+  --gold:#B45309; --gold-l:#FEF9C3;
+  --ink:#1A1626; --muted:#6B6480; --faint:#A09BB8;
+  --white:#FFFFFF; --cream:#F7F5FB; --warm:#EFECF8;
+  --border:#DDD8EE; --border-l:#EAE7F4;
+  --user-bg:#2E1065;
+  --shadow:0 2px 12px rgba(44,16,101,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;height:100vh;overflow:hidden;
+  font-size:15px;line-height:1.6;
+}
+
+/* GRAIN */
+body::after{
+  content:'';pointer-events:none;position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  opacity:.5;
+}
+
+/* HEADER */
+header{
+  position:relative;z-index:10;
+  background:linear-gradient(135deg,var(--acc-dd) 0%,var(--acc-d) 100%);
+  padding:0 clamp(16px,3vw,32px);height:58px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 2px 20px rgba(46,16,101,.3);flex-shrink:0;
+}
+.h-brand{display:flex;align-items:center;gap:11px;}
+.h-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,#A78BFA,#7C3AED);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 2px 8px rgba(124,58,237,.4);flex-shrink:0;
+}
+.h-name{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(16px,2.5vw,20px);letter-spacing:.04em;color:white;}
+.h-name span{color:#C4B5FD;font-weight:600;}
+.h-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;}
+
+.h-progress{display:flex;align-items:center;gap:10px;}
+.hp-label{font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap;}
+.hp-steps{display:flex;gap:4px;}
+.hp-step{
+  width:28px;height:5px;border-radius:99px;
+  background:rgba(255,255,255,.15);transition:background .3s;
+}
+.hp-step.done{background:#A78BFA;}
+.hp-step.active{background:white;}
+
+.h-clear{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:5px 12px;color:rgba(255,255,255,.5);
+  font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;
+}
+.h-clear:hover{background:rgba(255,255,255,.14);color:rgba(255,255,255,.8);}
+
+/* ÉTAPE TRACKER */
+.stage-bar{
+  position:relative;z-index:9;
+  background:var(--warm);border-bottom:1px solid var(--border);
+  padding:8px clamp(16px,3vw,32px);
+  display:flex;align-items:center;gap:6px;overflow-x:auto;flex-shrink:0;
+}
+.stage-bar::-webkit-scrollbar{display:none;}
+.stage-item{
+  display:flex;align-items:center;gap:5px;
+  background:white;border:1.5px solid var(--border);border-radius:99px;
+  padding:4px 12px;font-size:11px;color:var(--muted);white-space:nowrap;
+  font-weight:500;flex-shrink:0;transition:all .2s;cursor:pointer;
+}
+.stage-item:hover{border-color:var(--acc);color:var(--acc);}
+.stage-item.active{background:var(--acc);border-color:var(--acc);color:white;}
+.stage-item.done{background:var(--acc-l);border-color:var(--acc);color:var(--acc-d);}
+.stage-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* CHAT AREA */
+#chatArea{
+  flex:1;overflow-y:auto;
+  padding:clamp(16px,3vw,28px) clamp(16px,3vw,32px);
+  display:flex;flex-direction:column;gap:18px;
+  position:relative;z-index:5;
+}
+#chatArea::-webkit-scrollbar{width:4px;}
+#chatArea::-webkit-scrollbar-track{background:transparent;}
+#chatArea::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+/* MESSAGES */
+.msg{display:flex;gap:10px;animation:msg-in .3s ease both;}
+.msg.user{flex-direction:row-reverse;}
+@keyframes msg-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.msg-avatar{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:15px;margin-top:2px;
+}
+.msg.user .msg-avatar{
+  background:var(--user-bg);color:white;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+}
+.msg.assist .msg-avatar{
+  background:linear-gradient(135deg,#A78BFA,#7C3AED);color:white;font-size:16px;
+  box-shadow:0 2px 8px rgba(124,58,237,.25);
+}
+
+.msg-bubble{
+  max-width:min(78%,640px);padding:12px 16px;border-radius:16px;
+  font-size:14px;line-height:1.65;position:relative;
+}
+.msg.user .msg-bubble{
+  background:var(--user-bg);color:white;border-radius:16px 4px 16px 16px;
+  box-shadow:0 2px 10px rgba(46,16,101,.2);
+}
+.msg.assist .msg-bubble{
+  background:white;color:var(--ink);border-radius:4px 16px 16px 16px;
+  border:1.5px solid var(--border-l);box-shadow:var(--shadow);
+}
+.msg-bubble p{margin-bottom:8px;}
+.msg-bubble p:last-child{margin-bottom:0;}
+.msg-bubble strong{font-weight:600;color:var(--acc-d);}
+.msg.user .msg-bubble strong{color:#C4B5FD;}
+.msg-bubble em{font-style:italic;color:var(--muted);}
+.msg.user .msg-bubble em{color:rgba(255,255,255,.6);}
+.msg-bubble ul,.msg-bubble ol{padding-left:18px;margin:6px 0;}
+.msg-bubble li{margin-bottom:4px;}
+.msg-bubble code{
+  background:rgba(124,58,237,.08);color:var(--acc-d);
+  border-radius:5px;padding:1px 6px;font-family:'DM Mono',monospace;font-size:13px;
+}
+.msg-bubble blockquote{
+  border-left:3px solid var(--acc);padding-left:12px;margin:8px 0;
+  color:var(--muted);font-style:italic;
+}
+
+/* EXEMPLE COMPARATIF */
+.compare-block{
+  background:linear-gradient(135deg,rgba(124,58,237,.05),rgba(124,58,237,.02));
+  border:1.5px solid rgba(124,58,237,.15);border-radius:12px;
+  padding:12px 14px;margin:8px 0;font-size:13px;
+}
+.compare-block .cb-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.compare-block.bad .cb-label{color:#DC2626;}
+.compare-block.good .cb-label{color:#15803D;}
+
+/* TYPING */
+.typing-dots{display:flex;gap:5px;align-items:center;padding:4px 2px;}
+.typing-dots span{
+  width:7px;height:7px;border-radius:50%;background:var(--acc);opacity:.4;
+  animation:dot-bounce .9s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.18s;}
+.typing-dots span:nth-child(3){animation-delay:.36s;}
+@keyframes dot-bounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
+
+/* WELCOME */
+.welcome{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:28px 20px;flex:1;gap:14px;animation:msg-in .5s ease both;
+}
+.welcome-icon{
+  width:64px;height:64px;border-radius:20px;
+  background:linear-gradient(135deg,#A78BFA,#7C3AED);
+  display:flex;align-items:center;justify-content:center;font-size:32px;
+  box-shadow:0 8px 24px rgba(124,58,237,.2);animation:float 4s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.welcome h2{font-family:'Syne',sans-serif;font-size:clamp(18px,3vw,24px);font-weight:800;line-height:1.2;}
+.welcome p{font-size:14px;color:var(--muted);max-width:440px;line-height:1.6;}
+
+.diplome-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px;}
+.diplome-btn{
+  background:white;border:1.5px solid var(--border);border-radius:12px;
+  padding:10px 16px;font-size:13px;color:var(--ink);cursor:pointer;
+  transition:all .15s;font-weight:500;box-shadow:var(--shadow);
+}
+.diplome-btn:hover{border-color:var(--acc);background:var(--acc-l);color:var(--acc-d);}
+
+/* UPLOAD ZONE */
+.upload-zone{
+  display:flex;align-items:center;gap:8px;
+  background:var(--warm);border:1.5px dashed var(--border);
+  border-radius:12px;padding:10px 14px;cursor:pointer;
+  transition:all .15s;margin-bottom:8px;
+}
+.upload-zone:hover{border-color:var(--acc);background:var(--acc-l);}
+.upload-zone input{display:none;}
+.uz-icon{font-size:18px;flex-shrink:0;}
+.uz-text{font-size:13px;color:var(--muted);}
+.uz-text strong{color:var(--acc-d);font-weight:600;}
+.file-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--acc-l);border:1px solid rgba(124,58,237,.2);
+  border-radius:8px;padding:4px 10px;font-size:12px;color:var(--acc-d);
+  margin-bottom:8px;
+}
+.file-chip-x{cursor:pointer;opacity:.6;margin-left:2px;}
+.file-chip-x:hover{opacity:1;}
+
+/* INPUT ZONE */
+.input-zone{
+  position:relative;z-index:10;
+  background:var(--warm);border-top:1px solid var(--border);
+  padding:clamp(10px,2vw,14px) clamp(16px,3vw,32px);
+  flex-shrink:0;
+}
+.input-wrap{
+  display:flex;align-items:flex-end;gap:8px;
+  background:white;border:1.5px solid var(--border);border-radius:14px;
+  padding:8px 8px 8px 14px;box-shadow:var(--shadow);transition:border-color .18s;
+}
+.input-wrap:focus-within{border-color:var(--acc);}
+#userInput{
+  flex:1;border:none;outline:none;background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);
+  resize:none;min-height:24px;max-height:120px;line-height:1.5;padding-top:2px;
+}
+#userInput::placeholder{color:var(--faint);}
+.upload-btn{
+  width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border);
+  background:white;color:var(--muted);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+  flex-shrink:0;
+}
+.upload-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-l);}
+.send-btn{
+  width:36px;height:36px;border-radius:10px;border:none;flex-shrink:0;
+  background:linear-gradient(135deg,#A78BFA,#7C3AED);
+  color:white;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;box-shadow:0 2px 8px rgba(124,58,237,.3);
+}
+.send-btn:hover{transform:scale(1.06);box-shadow:0 4px 12px rgba(124,58,237,.4);}
+.send-btn:disabled{background:#C4B8E8;box-shadow:none;cursor:not-allowed;transform:none;}
+.input-hint{font-size:11px;color:var(--faint);margin-top:5px;text-align:center;}
+
+/* FOOTER */
+footer{
+  position:relative;z-index:10;
+  background:var(--cream);border-top:1px solid var(--border-l);
+  padding:5px clamp(16px,3vw,32px);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.footer-left{font-size:10px;color:var(--faint);}
+.footer-right{font-size:10px;color:var(--faint);}
+
+@media(max-width:540px){.stage-bar{display:none;}.h-progress{display:none;}}
+</style>
+<style>
+/* ═══ PR-SIDEBAR UNIVERSELLE ═══ */
+body.has-pr-sidebar { margin-left: 72px; }
+#pr-sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 72px;
+  background: #0C3A5C;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 9999;
+  border-right: 1px solid rgba(255,255,255,.08);
+  font-family: 'Syne', 'DM Sans', sans-serif;
+}
+#pr-sidebar .pr-sb-logo {
+  width: 44px; height: 44px; background: #009FC4; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: white; line-height: 1.1;
+  text-align: center; margin-bottom: 8px; text-decoration: none;
+  flex-shrink: 0;
+}
+#pr-sidebar .pr-sb-sep {
+  width: 36px; height: 1px; background: rgba(255,255,255,.12); margin: 4px 0;
+}
+#pr-sidebar .pr-sb-btn {
+  width: 48px; height: 48px; border-radius: 12px; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; background: transparent; transition: background .15s;
+  position: relative; text-decoration: none;
+}
+#pr-sidebar .pr-sb-btn:hover { background: rgba(255,255,255,.1); }
+#pr-sidebar .pr-sb-btn.pr-active { background: #009FC4; }
+#pr-sidebar .pr-sb-btn .pr-icon { font-size: 18px; line-height: 1; }
+#pr-sidebar .pr-sb-btn .pr-lbl {
+  font-size: 8px; font-weight: 700; color: rgba(255,255,255,.45);
+  letter-spacing: .03em; line-height: 1;
+}
+#pr-sidebar .pr-sb-btn.pr-active .pr-lbl { color: rgba(255,255,255,.9); }
+#pr-sidebar .pr-sb-btn .pr-tip {
+  position: absolute; left: 66px; background: #1a2332; color: white;
+  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity .15s; z-index: 10000;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#pr-sidebar .pr-sb-btn:hover .pr-tip { opacity: 1; }
+</style>
+</head>
+<body class="has-pr-sidebar">
+
+<!-- ═══ PR-SIDEBAR UNIVERSELLE ═══ -->
+<nav id="pr-sidebar">
+  <a class="pr-sb-logo" href="prevent_road.html" title="Prevent'Road">P'<br>Road</a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_road.html">
+    <span class="pr-icon">🗓</span><span class="pr-lbl">Road</span>
+    <div class="pr-tip">Prevent'Road — Accueil</div>
+  </a>
+  <a class="pr-sb-btn" href="preventcards_parcours__2_.html">
+    <span class="pr-icon">🃏</span><span class="pr-lbl">Cards</span>
+    <div class="pr-tip">Prevent'Cards — 84 cartes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_obeya_qraft_v2__2_.html">
+    <span class="pr-icon">📊</span><span class="pr-lbl">QRAFT</span>
+    <div class="pr-tip">QRAFT — Obeya promotion</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_andon.html">
+    <span class="pr-icon">🚨</span><span class="pr-lbl">Andon</span>
+    <div class="pr-tip">Prevent'Andon — Alertes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_dashboard.html">
+    <span class="pr-icon">📈</span><span class="pr-lbl">Board</span>
+    <div class="pr-tip">Dashboard Prevent'IS</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_assist.html">
+    <span class="pr-icon">🤖</span><span class="pr-lbl">Assist</span>
+    <div class="pr-tip">Prevent'Assist — IA pédagogique</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_exam.html" class="pr-sb-btn pr-active">
+    <span class="pr-icon">📝</span><span class="pr-lbl">Exam</span>
+    <div class="pr-tip">Prevent'Exam — Mémoire CQPM</div>
+  </a>
+  <a class="pr-sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+    <span class="pr-icon">📚</span><span class="pr-lbl">Agil</span>
+    <div class="pr-tip">Prevent'Agil — Cours Digipad</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="FormAgil_Didacticiel1_Mere.html">
+    <span class="pr-icon">📐</span><span class="pr-lbl">Form</span>
+    <div class="pr-tip">Form'Agil — Didacticiel</div>
+  </a>
+</nav>
+
+
+<!-- HEADER -->
+<header>
+  <div class="h-brand">
+    <div class="h-icon">🎓</div>
+    <div>
+      <div class="h-name">Prevent<span>'Exam</span></div>
+      <div class="h-sub">Assistant Mémoire Professionnel · Preventys</div>
+    </div>
+  </div>
+  <div class="h-progress">
+    <div class="hp-label">Parcours</div>
+    <div class="hp-steps" id="hpSteps">
+      <div class="hp-step" title="Grille situations pro"></div>
+      <div class="hp-step" title="Livret"></div>
+      <div class="hp-step" title="Mémoire écrit"></div>
+      <div class="hp-step" title="Diaporama"></div>
+    </div>
+  </div>
+  <button class="h-clear" onclick="clearChat()">↺ Nouvelle session</button>
+</header>
+
+<!-- STAGE BAR -->
+<div class="stage-bar">
+  <div class="stage-item" id="stage-0" onclick="jumpStage(0)">
+    <div class="stage-dot"></div>Grille situations pro
+  </div>
+  <div class="stage-item" id="stage-1" onclick="jumpStage(1)">
+    <div class="stage-dot"></div>Livret *(J-3 mois)
+  </div>
+  <div class="stage-item" id="stage-2" onclick="jumpStage(2)">
+    <div class="stage-dot"></div>Mémoire écrit *(J-3 sem)
+  </div>
+  <div class="stage-item" id="stage-3" onclick="jumpStage(3)">
+    <div class="stage-dot"></div>Diaporama soutenance
+  </div>
+</div>
+
+<!-- CHAT AREA -->
+<div id="chatArea">
+  <div class="welcome" id="welcome">
+    <div class="welcome-icon">🎓</div>
+    <h2>Bonjour ! Je suis Prevent'Exam</h2>
+    <p>Ton assistant pour la rédaction de ton Mémoire Professionnel Preventys. Je suis là pour t'aider à construire un mémoire qui te ressemble et qui valorise vraiment ce que tu as fait en entreprise.</p>
+    <p style="font-size:13px;color:var(--acc-d);font-weight:500;">Pour commencer — quel diplôme prépares-tu ?</p>
+    <div class="diplome-grid">
+      <div class="diplome-btn" onclick="sendDiplome(this)">Coordonnateur QSE</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Préventeur SSE</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Technicien QSE</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Chargé de Ressources Humaines</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Green Belt Lean Six Sigma</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Coordonnateur LEAN</div>
+    </div>
+  </div>
+</div>
+
+<!-- INPUT ZONE -->
+<div class="input-zone">
+  <!-- Fichier attaché -->
+  <div id="fileChipZone"></div>
+  <!-- Upload drag zone (masquée par défaut) -->
+  <div class="upload-zone" id="uploadZone" style="display:none;" onclick="document.getElementById('fileInput').click()">
+    <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt" onchange="handleFile(this)">
+    <div class="uz-icon">📎</div>
+    <div class="uz-text"><strong>Joindre un document</strong> — ton ébauche, un passage rédigé, ta grille de situations (PDF, Word, TXT)</div>
+  </div>
+  <div class="input-wrap">
+    <textarea id="userInput" placeholder="Écris ici — ton ébauche, ta question, ton doute…" rows="1"
+      oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+    <button class="upload-btn" onclick="toggleUpload()" title="Joindre un document">📎</button>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+  </div>
+  <div class="input-hint">Entrée pour envoyer · Maj+Entrée pour saut de ligne · 📎 pour joindre un document</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">Prevent'IS · Preventys · Mémoire Professionnel</div>
+  <div class="footer-right">Propulsé par Claude · Anthropic</div>
+</footer>
+
+<script>
+// ── SYSTEM PROMPT ─────────────────────────────────────────────
+const SYSTEM_PROMPT = `# PREVENT'EXAM — System Prompt
+
+## Identité
+
+Tu es **Prevent'Exam**, l'assistant dédié à la réalisation du **Mémoire Professionnel** chez **Preventys**.
+
+Tu accompagnes des **apprenants en reconversion professionnelle** dans la rédaction de leur MP — de la définition des situations professionnelles jusqu'à la soutenance. Tu n'es pas un rédacteur : tu es un **guide de parcours**. La plume reste à l'apprenant, toujours.
+
+---
+
+## Ta première question — sans exception
+
+Dès qu'un apprenant ouvre une conversation avec toi, ta toute première question est :
+
+> "Bonjour ! Je suis Prevent'Exam, ton assistant pour la rédaction de ton Mémoire Professionnel Preventys. Je suis là pour t'aider à construire un mémoire qui te ressemble et qui valorise vraiment ce que tu as fait en entreprise. Pour commencer : **quel diplôme prépares-tu ?**"
+
+Tu attends sa réponse avant de faire quoi que ce soit d'autre. Le diplôme conditionne tout : les compétences du référentiel à couvrir, les situations professionnelles à mobiliser, les exigences du jury.
+
+**Les certifications que tu accompagnes — exclusivement :**
+- Coordonnateur QSE
+- Préventeur SSE
+- Technicien QSE
+- Chargé de Ressources Humaines
+- Green Belt Lean Six Sigma
+- Coordonnateur LEAN
+
+Si un apprenant mentionne un autre diplôme, tu l'informes avec bienveillance que Prevent'Exam est configuré pour ces six certifications uniquement, et tu l'invites à se rapprocher de son formateur Preventys pour un accompagnement adapté.
+
+---
+
+## Ce que tu sais sur le Mémoire Professionnel Preventys
+
+### L'essentiel à retenir
+
+Le MP n'est pas un rapport de stage. C'est une **démonstration de compétences**. Le jury ne veut pas savoir ce que l'apprenant a fait — il veut comprendre **comment il a mobilisé ses compétences** pour produire quelque chose d'utile à l'entreprise.
+
+Le mot clé : **l'empreinte**. Un bon mémoire montre ce qui reste dans l'entreprise une fois la mission terminée. Tout doit converger vers ce livrable.
+
+### La structure du mémoire Preventys
+
+**Introduction (7 à 9 pages)**
+- Présentation du parcours et des centres d'intérêt pour le métier
+- Présentation de l'entreprise et du poste occupé
+- Contexte métier sur lequel s'appuie le thème
+- Éléments métier mis en valeur lors de la mission
+- Présentation de la mission
+
+**Structure et fond de l'exposé (20 à 30 pages)**
+- Objectifs et identification des résultats attendus
+- Contexte de la mission / Enjeux
+- État des lieux / Diagnostic
+- Gestion de projet / plan d'action
+- Solutions proposées / mises en œuvre
+- Résultats obtenus
+
+**Conclusion (3 à 5 pages)**
+- Analyse critique du déroulement de la mission
+- Recommandations pour l'entreprise
+- Bilan professionnel
+- Bilan personnel
+
+**Annexes (20 pages maximum)**
+
+### Les règles de présentation
+- Police Arial 10 pour le corps du texte
+- Sommaire paginé et automatique
+- Numérotation des pages
+- Page de garde : logos Preventys + entreprise, nom/prénom, intitulé du diplôme, titre de la mission, cachet et signature du tuteur
+- Remerciements : 1 ou 2 personnes maximum ("vous n'êtes pas aux Oscars !")
+- Abréviations : à utiliser avec parcimonie, toujours explicitées
+
+### Les 4 documents à produire — et leur calendrier
+
+L'apprenant a 4 productions à réaliser tout au long de son parcours. Tu dois connaître ce calendrier pour contextualiser ton aide et rappeler les échéances si nécessaire.
+
+**1. La grille des situations professionnelles** *(document interne Preventys)*
+- **Quand :** après 1 mois de stage en entreprise
+- **Pourquoi :** s'assurer que les missions confiées par l'entreprise permettront bien de couvrir les compétences du référentiel du diplôme. C'est le document de cadrage — si les missions ne sont pas adaptées, c'est maintenant qu'on le détecte, pas 6 mois plus tard.
+- **Posture de Prevent'Exam :** aider l'apprenant à analyser ses missions et à les mettre en regard des compétences du référentiel. Si une compétence n'est pas couverte, l'alerter et réfléchir avec lui à comment l'aborder autrement.
+
+**2. Le livret** *(document jury)*
+- **Quand :** à fournir 3 mois avant l'examen
+- **Pourquoi :** première production formelle soumise au jury. C'est le document qui présente l'apprenant, son parcours, son entreprise et ses situations professionnelles dans les grandes lignes.
+- **Posture de Prevent'Exam :** accompagner la structuration et la formulation — en veillant particulièrement à ce que les compétences soient déjà visibles à ce stade, pas seulement les actions.
+
+**3. Le mémoire écrit**
+- **Quand :** à remettre 3 semaines avant l'examen
+- **Pourquoi :** la pièce centrale de l'évaluation. Il doit démontrer les compétences mobilisées à travers les situations professionnelles, selon la structure Preventys.
+- **Posture de Prevent'Exam :** c'est là que l'accompagnement est le plus intense — structure, rédaction centrée compétences, équilibre texte/illustrations, cohérence avec le référentiel.
+
+**4. Le diaporama de soutenance**
+- **Quand :** utilisé le jour de l'examen
+- **Pourquoi :** support de présentation orale devant le jury. Il doit être synthétique, lisible, et servir le discours — pas le remplacer.
+- **Posture de Prevent'Exam :** aider à sélectionner ce qui mérite d'être mis en slide, conseiller sur l'équilibre texte/visuel, préparer l'apprenant à parler de ses compétences à l'oral avec les mêmes mots que dans son mémoire.
+
+**Comment utiliser ce calendrier dans tes échanges**
+
+Quand un apprenant te contacte, tu identifies rapidement où il en est dans ce parcours — et tu adaptes ton aide en conséquence. Tu peux lui demander directement : "Tu en es où dans ton parcours ? Tu as déjà remis ta grille des situations professionnelles ?" Ça te permet de calibrer ce dont il a besoin maintenant.
+
+Si un apprenant travaille sur le mémoire alors que sa grille des situations professionnelles n'a pas été validée, tu l'alertes avec bienveillance : construire un mémoire sur des missions qui ne couvrent pas les compétences requises serait un risque inutile.
+
+### Les situations professionnelles
+- Chaque compétence du référentiel doit être couverte par au minimum une situation professionnelle
+- L'apprenant peut présenter de 1 à 4 situations professionnelles
+- Plusieurs situations peuvent couvrir une même compétence
+
+---
+
+## Le piège majeur : action vs compétences
+
+C'est le point sur lequel tu seras le plus vigilant. La majorité des premiers jets tombent dans le même travers : décrire ce qu'on a fait plutôt que montrer comment on l'a fait et pourquoi.
+
+**Rédaction centrée sur l'action (à éviter) :**
+> "J'ai discuté avec un opérateur au sujet des produits chimiques. Il m'a dit que certains contenants étaient difficiles à manipuler."
+
+**Rédaction centrée sur les compétences (à viser) :**
+> "J'ai choisi d'interroger un opérateur manipulant quotidiennement plusieurs produits sensibles.
+> - Objectif : comprendre les difficultés pratiques afin d'adapter l'évaluation des risques.
+> - Préparation : questions ouvertes puis questions de précision.
+> - Compétences mobilisées : écoute active, communication interpersonnelle, analyse et croisement des informations.
+> - Résultat : ses retours ont permis d'enrichir le tableau de suivi et de proposer une amélioration des contenants."
+
+Quand un apprenant te soumet un passage en mode "liste d'actions", tu ne le corriges pas directement. Tu lui poses une question qui l'amène à voir lui-même ce qui manque :
+> "C'est bien, on voit ce que tu as fait. Maintenant dis-moi : pourquoi tu as choisi de faire ça comme ça, et pas autrement ? Quelle compétence tu penses avoir mobilisée à ce moment-là ?"
+
+---
+
+## Ta posture selon les situations
+
+**Quand l'apprenant ne sait pas par où commencer**
+Tu l'ancres dans son vécu : "Raconte-moi ta mission en quelques phrases, comme si tu l'expliquais à quelqu'un qui ne connaît pas ton secteur." Puis tu l'aides à identifier les situations professionnelles significatives.
+
+**Quand il te soumet un passage rédigé**
+Tu commences par identifier ce qui fonctionne, puis tu poses une question qui ouvre vers ce qui manque. Tu ne réécris jamais à sa place — tu lui montres la direction.
+
+**Quand il est bloqué sur la structure**
+Tu lui rappelles la trame Preventys et tu l'aides à y placer ce qu'il a déjà. Souvent le matériau est là, il faut juste l'organiser.
+
+**Quand il est dans l'anxiété de la soutenance**
+Tu le ramènes sur ce qui est concret et maîtrisable : son travail, ses compétences, son expérience terrain. Tu rassures sur la méthode, pas sur le résultat.
+
+**Quand il te demande de rédiger à sa place**
+Tu déclines avec bienveillance et tu redirige : "Ce que tu viens de me dire à l'oral, c'est exactement ce qu'il faut mettre à l'écrit. Lance-toi, et montre-moi ce que tu as écrit — on affinera ensemble."
+
+---
+
+## Utilisation des ressources Preventys
+
+Tu as accès au guide de rédaction du MP Preventys, aux référentiels des diplômes préparés, et aux exemples de mémoires d'anciens apprenants. Tu les utilises comme un formateur qui connaît ses outils.
+
+- Quand un apprenant te décrit sa mission, tu t'appuies sur les exemples d'anciens pour lui montrer ce qui fonctionne — sans jamais les lui donner à copier
+- Quand il hésite sur la structure, tu lui rappelles la trame Preventys point par point
+- Quand il doute de ce qu'est une "bonne" rédaction centrée compétences, tu t'appuies sur les exemples comparatifs du guide
+- Tu ne listes pas les documents disponibles et tu ne renvoies pas l'apprenant vers un fichier — tu l'accompagnes dans la démarche
+
+---
+
+## Ce que tu ne fais jamais
+
+- **Rédiger à la place de l'apprenant** : ni paragraphes, ni introduction, ni conclusion clé en main
+- **Corriger sans valoriser d'abord** : tu commences toujours par ce qui est juste dans le raisonnement
+- **Valider une rédaction centrée sur les actions** sans avoir tenté de faire émerger la dimension compétences
+- **Ignorer le référentiel du diplôme** : chaque conseil doit être ancré dans les compétences à démontrer
+- **Pressurer l'apprenant** : le mémoire se construit progressivement, tu accompagnes le rythme de chacun
+
+---
+
+## Ta phrase d'accueil type
+
+> "Bonjour ! Je suis Prevent'Exam, ton assistant pour la rédaction de ton Mémoire Professionnel Preventys. Je suis là pour t'aider à construire un mémoire qui te ressemble et qui valorise vraiment ce que tu as fait en entreprise. Pour commencer : **quel diplôme prépares-tu ?**"
+
+---
+
+## Ce qui fait ta différence
+
+Les apprenants en reconversion ont souvent peur de "mal écrire". Ils minimisent ce qu'ils ont fait, pensent que ce n'est "pas assez bien" pour un jury. Ton rôle est de leur montrer, par tes questions et tes retours, que leur expérience terrain est une richesse — et que le mémoire est simplement le moyen de la rendre visible.
+
+**Tu valorises le raisonnement autant que le résultat. Tu valorises l'effort de formalisation autant que la forme finale.**
+
+La dignité dans l'apprentissage n'est pas un bonus : c'est le cœur de ce que tu incarnes.
+
+---
+
+## Si un document est joint à la conversation
+
+Quand un apprenant joint un document (ébauche, passage rédigé, grille de situations), tu lis attentivement son contenu avant de répondre. Tu identifies ce qui fonctionne, ce qui mérite d'être approfondi, et tu poses des questions ciblées. Tu ne réécris pas le document — tu guides l'apprenant vers ses propres améliorations.`;
+
+// ── ÉTAT ──────────────────────────────────────────────────────
+let messages   = [];
+let isLoading  = false;
+let attachedFile = null; // { name, content, type }
+let currentStage = -1;
+
+const STAGE_LABELS = [
+  'Grille situations pro',
+  'Livret',
+  'Mémoire écrit',
+  'Diaporama'
+];
+
+// ── RENDER MESSAGE ────────────────────────────────────────────
+function renderMessage(role, content) {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const area = document.getElementById('chatArea');
+  const div  = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'assist');
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = role === 'user' ? '👤' : '🎓';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = formatContent(content);
+
+  div.appendChild(avatar);
+  div.appendChild(bubble);
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+  return bubble;
+}
+
+function formatContent(text) {
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/^### (.+)$/gm,'<strong style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc-d);display:block;margin:12px 0 4px;">$1</strong>')
+    .replace(/^## (.+)$/gm,'<strong style="font-size:15px;font-family:\'Syne\',sans-serif;font-weight:700;display:block;margin:10px 0 4px;">$1</strong>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>')
+    .replace(/^(?!<)(.+)$/gm, m => m.startsWith('<') ? m : `<p>${m}</p>`)
+    .replace(/<p><\/p>/g,'');
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const div  = document.createElement('div');
+  div.className = 'msg assist'; div.id = 'typingMsg';
+  const av = document.createElement('div');
+  av.className = 'msg-avatar'; av.textContent = '🎓';
+  const b = document.createElement('div');
+  b.className = 'msg-bubble';
+  b.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  div.appendChild(av); div.appendChild(b);
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingMsg');
+  if (t) t.remove();
+}
+
+// ── SEND ──────────────────────────────────────────────────────
+async function sendMessage(text) {
+  if (isLoading) return;
+  const input   = document.getElementById('userInput');
+  const content = text || input.value.trim();
+  if (!content && !attachedFile) return;
+
+  input.value = ''; input.style.height = 'auto';
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  // Construire le message utilisateur
+  let userContent = content;
+  let apiContent  = content;
+
+  if (attachedFile) {
+    userContent = `📎 ${attachedFile.name}\n\n${content || '(document joint)'}`;
+    apiContent  = `[Document joint : ${attachedFile.name}]\n\n${attachedFile.content}\n\n${content ? '---\nQuestion de l\'apprenant : ' + content : ''}`;
+    clearFile();
+  }
+
+  messages.push({ role:'user', content: apiContent });
+  renderMessage('user', userContent);
+  showTyping();
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: messages
+      })
+    });
+
+    const data  = await resp.json();
+    removeTyping();
+
+    const reply = data.content?.[0]?.text
+      || "Désolé, une erreur s'est produite. Réessaie dans un instant.";
+
+    messages.push({ role:'assistant', content: reply });
+    renderMessage('assistant', reply);
+    detectStage(reply);
+
+  } catch(e) {
+    removeTyping();
+    renderMessage('assistant', "Une erreur de connexion s'est produite. Vérifie ta connexion et réessaie.");
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('userInput').focus();
+}
+
+// ── DÉTECTION ÉTAPE ───────────────────────────────────────────
+function detectStage(text) {
+  const t = text.toLowerCase();
+  let stage = -1;
+  if (t.includes('grille') && t.includes('situation')) stage = 0;
+  else if (t.includes('livret')) stage = 1;
+  else if (t.includes('mémoire') || t.includes('memoire')) stage = 2;
+  else if (t.includes('diaporama') || t.includes('soutenance')) stage = 3;
+  if (stage > currentStage) setStage(stage);
+}
+
+function setStage(n) {
+  currentStage = n;
+  document.querySelectorAll('.stage-item').forEach((el, i) => {
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  });
+  document.querySelectorAll('.hp-step').forEach((el, i) => {
+    el.classList.remove('done','active');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  });
+}
+
+function jumpStage(n) {
+  const labels = ['grille des situations professionnelles', 'livret', 'mémoire écrit', 'diaporama de soutenance'];
+  sendMessage(`Je voudrais de l'aide pour le ${labels[n]}`);
+  setStage(n);
+}
+
+// ── UPLOAD ────────────────────────────────────────────────────
+function toggleUpload() {
+  const z = document.getElementById('uploadZone');
+  z.style.display = z.style.display === 'none' ? 'flex' : 'none';
+}
+
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    attachedFile = { name: file.name, content: e.target.result, type: file.type };
+    renderFileChip(file.name);
+    document.getElementById('uploadZone').style.display = 'none';
+  };
+  if (file.type === 'application/pdf') {
+    attachedFile = { name: file.name, content: '[Contenu PDF — analyse en cours]', type: file.type };
+    renderFileChip(file.name);
+    document.getElementById('uploadZone').style.display = 'none';
+  } else {
+    reader.readAsText(file);
+  }
+}
+
+function renderFileChip(name) {
+  const zone = document.getElementById('fileChipZone');
+  zone.innerHTML = `<div class="file-chip">📎 ${name} <span class="file-chip-x" onclick="clearFile()">✕</span></div>`;
+}
+
+function clearFile() {
+  attachedFile = null;
+  document.getElementById('fileChipZone').innerHTML = '';
+  document.getElementById('fileInput').value = '';
+}
+
+// ── STARTERS ──────────────────────────────────────────────────
+function sendDiplome(el) {
+  sendMessage(`Je prépare le diplôme : ${el.textContent.trim()}`);
+}
+
+// ── CLEAR ─────────────────────────────────────────────────────
+function clearChat() {
+  messages = []; currentStage = -1; attachedFile = null;
+  document.getElementById('fileChipZone').innerHTML = '';
+  document.querySelectorAll('.stage-item').forEach(el => el.classList.remove('active','done'));
+  document.querySelectorAll('.hp-step').forEach(el => el.classList.remove('done','active'));
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  const w = document.createElement('div');
+  w.className = 'welcome'; w.id = 'welcome';
+  w.innerHTML = `
+    <div class="welcome-icon">🎓</div>
+    <h2>Bonjour ! Je suis Prevent'Exam</h2>
+    <p>Ton assistant pour la rédaction de ton Mémoire Professionnel Preventys. Je suis là pour t'aider à construire un mémoire qui te ressemble et qui valorise vraiment ce que tu as fait en entreprise.</p>
+    <p style="font-size:13px;color:var(--acc-d);font-weight:500;">Pour commencer — quel diplôme prépares-tu ?</p>
+    <div class="diplome-grid">
+      <div class="diplome-btn" onclick="sendDiplome(this)">Coordonnateur QSE</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Préventeur SSE</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Technicien QSE</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Chargé de Ressources Humaines</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Green Belt Lean Six Sigma</div>
+      <div class="diplome-btn" onclick="sendDiplome(this)">Coordonnateur LEAN</div>
+    </div>`;
+  area.appendChild(w);
+}
+
+// ── INPUT ──────────────────────────────────────────────────────
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevent'Cards — Parcours CQPM 0195</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --prev:#009FC4; --prev-d:#007A99; --prev-dd:#0C3A5C; --prev-l:#E6F6FB;
+  --blue:#1D4ED8; --blue-l:#DBEAFE;
+  --teal:#0F766E; --teal-l:#CCFBF1;
+  --purple:#7C3AED; --purple-l:#EDE9FE;
+  --gold:#B45309; --gold-l:#FEF3C7;
+  --green:#15803D; --green-l:#DCFCE7;
+  --orange:#EA580C; --orange-l:#FFF7ED;
+  --red:#DC2626; --red-l:#FEE2E2;
+  --ink:#0C1A28; --muted:#64748B; --border:#E2E8F0;
+  --white:#FFFFFF; --cream:#F8F7F3; --gry:#F1F5F9;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;font-size:14px;}
+nav{position:sticky;top:0;z-index:200;background:var(--prev-dd);height:54px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(12px,3vw,40px);box-shadow:0 2px 12px rgba(12,58,92,.25);}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:white;letter-spacing:.04em;}
+.nav-logo span{color:#7DD3FA;font-weight:400;}
+.nav-tabs{display:flex;gap:4px;}
+.tab-btn{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.8);
+         font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;
+         border-radius:8px;cursor:pointer;transition:background .15s,color .15s;}
+.tab-btn.active,.tab-btn:hover{background:var(--prev);color:white;}
+.hero{background:linear-gradient(135deg,var(--prev-dd),var(--prev-d) 60%,var(--prev));
+      padding:clamp(28px,4vw,52px) clamp(12px,3vw,40px);color:white;}
+.hero-tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7DD3FA;margin-bottom:8px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(20px,4vw,32px);font-weight:800;line-height:1.1;margin-bottom:8px;}
+.hero p{font-size:13px;color:rgba(255,255,255,.72);max-width:640px;}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+.pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+      border-radius:99px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.9);}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(20px,3vw,40px) clamp(12px,3vw,40px);}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+.stat-box{background:white;border:1.5px solid var(--border);border-radius:12px;
+          padding:14px 18px;flex:1;min-width:110px;text-align:center;}
+.stat-num{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--prev-d);}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.note{background:var(--prev-l);border-left:4px solid var(--prev);border-radius:8px;
+      padding:12px 16px;font-size:13px;color:var(--prev-dd);margin:16px 0;line-height:1.5;}
+.note strong{font-weight:600;}
+/* MODULES */
+.bdc-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.bdc-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
+.bdc-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.search-wrap{position:relative;margin-bottom:16px;}
+.search-wrap input{width:100%;padding:10px 16px 10px 38px;border:1.5px solid var(--border);
+                   border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;
+                   background:white;outline:none;transition:border-color .15s;}
+.search-wrap input:focus{border-color:var(--prev);}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+.filter-lbl{font-size:12px;color:var(--muted);font-weight:500;}
+.filter-btn{background:white;border:1.5px solid var(--border);border-radius:8px;
+            padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;color:var(--muted);}
+.filter-btn.active{background:var(--prev-dd);border-color:var(--prev-dd);color:white;}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr));gap:14px;}
+.mod-card{background:white;border-radius:14px;border:1.5px solid var(--border);overflow:hidden;
+          transition:box-shadow .2s,transform .15s;}
+.mod-card:hover{box-shadow:0 8px 24px rgba(12,58,92,.1);transform:translateY(-2px);}
+.mod-head{padding:14px 16px 10px;display:flex;align-items:flex-start;gap:12px;}
+.mod-badge{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+           font-family:'Syne',sans-serif;font-size:13px;font-weight:800;flex-shrink:0;color:white;}
+.mod-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;line-height:1.3;}
+.mod-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.mod-divider{height:1px;background:var(--border);margin:0 16px;}
+.mod-body{padding:10px 16px 14px;}
+.mod-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
+.card-chip{display:inline-flex;border-radius:6px;padding:3px 8px;font-size:10px;
+           font-weight:600;cursor:pointer;transition:opacity .15s;font-family:'DM Mono',monospace;}
+.card-chip:hover{opacity:.7;}
+.mod-bdc{font-size:10px;color:var(--muted);}
+/* PERT */
+.pert-wrap{overflow-x:auto;}
+.critique-strip{background:var(--red-l);border:1.5px solid #FCA5A5;border-radius:12px;
+                padding:12px 16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;}
+.critique-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--red);margin-bottom:6px;}
+.critique-chain{display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+.cc-node{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+         background:var(--red);color:white;border-radius:6px;padding:3px 8px;}
+.cc-arrow{font-size:14px;color:#FCA5A5;}
+.pert-niveau{margin-bottom:18px;}
+.pert-niveau-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.niveau-badge{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+              font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:white;flex-shrink:0;}
+.niveau-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.niveau-sub{font-size:11px;color:var(--muted);}
+.niveau-count{margin-left:auto;background:var(--gry);border-radius:99px;padding:3px 10px;
+              font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
+.pert-row{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:white;
+          border-radius:12px;border:1.5px solid var(--border);}
+.pert-card{border-radius:10px;padding:8px 12px;min-width:170px;max-width:230px;
+           flex:1;border-left:3px solid transparent;cursor:pointer;
+           transition:box-shadow .15s,transform .1s;}
+.pert-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-1px);}
+.pert-card.crit{outline:2px solid var(--red);outline-offset:1px;}
+.pc-id{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;margin-bottom:3px;}
+.pc-titre{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;line-height:1.3;margin-bottom:3px;}
+.pc-module{font-size:10px;opacity:.65;}
+.pc-ant{margin-top:5px;display:flex;flex-wrap:wrap;gap:3px;}
+.ant-chip{font-family:'DM Mono',monospace;font-size:9px;background:rgba(0,0,0,.08);
+          border-radius:4px;padding:1px 5px;}
+/* PROFILS */
+.profils-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px;margin-top:16px;}
+.profil-card{background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;}
+.profil-head{padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.profil-icon{font-size:22px;}
+.profil-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.profil-sub{font-size:11px;color:var(--muted);}
+.profil-body{padding:0 16px 14px;}
+.profil-row{display:flex;justify-content:space-between;align-items:center;
+            padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.profil-row:last-child{border-bottom:none;}
+.ok{font-weight:600;color:var(--green);}
+.partial{font-weight:600;color:var(--gold);}
+.light{font-weight:600;color:var(--red);}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(12,26,40,.55);z-index:500;
+               display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:18px;max-width:540px;width:100%;
+       max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25);}
+.modal-head{padding:20px 22px 14px;border-bottom:1px solid var(--border);position:relative;}
+.modal-id{font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px;}
+.modal-titre{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;line-height:1.2;margin-bottom:3px;}
+.modal-mod{font-size:12px;color:var(--muted);}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--gry);border:none;
+             border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px;
+             display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.modal-body{padding:16px 22px;}
+.ms{margin-bottom:14px;}
+.ms-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.ms-txt{font-size:13px;line-height:1.6;}
+.ms-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.ms-tag{border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;}
+
+/* ── SUIVI QRAFT ── */
+.qraft-bar{background:var(--prev-dd);border-radius:14px;padding:18px 22px;margin-bottom:22px;color:white;}
+.qraft-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:.04em;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.qraft-title span{font-size:11px;font-weight:400;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;}
+.qraft-gauges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.qraft-gauge{flex:1;min-width:120px;background:rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;}
+.qg-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;}
+.qg-lbl{font-size:11px;margin-top:3px;opacity:.7;}
+.qg-bar{height:6px;border-radius:99px;margin-top:8px;background:rgba(255,255,255,.15);overflow:hidden;}
+.qg-fill{height:100%;border-radius:99px;transition:width .4s ease;}
+.qraft-progress{height:8px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-top:10px;}
+.qraft-progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#EF4444 0%,#F59E0B 50%,#22C55E 100%);transition:width .4s;}
+.share-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:20px;}
+.share-btn{background:var(--prev-dd);color:white;border:none;border-radius:9px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;}
+.share-btn:hover{background:var(--prev-d);}
+.share-btn.danger{background:white;color:var(--red);border:1.5px solid #FCA5A5;}
+.share-btn.danger:hover{background:#FEE2E2;}
+.share-input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Mono',monospace;font-size:11px;background:white;outline:none;color:var(--muted);min-width:0;}
+.copied-msg{font-size:11px;color:var(--green);font-weight:600;display:none;}
+.copied-msg.show{display:inline;}
+.suivi-note{background:#FEF9C3;border-left:4px solid #CA8A04;border-radius:8px;padding:10px 14px;font-size:12px;color:#713F12;margin-bottom:20px;}
+.suivi-module{margin-bottom:24px;}
+.suivi-mod-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--border);}
+.suivi-mod-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:white;flex-shrink:0;}
+.suivi-mod-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.suivi-mod-meta{font-size:11px;color:var(--muted);margin-left:auto;}
+.suivi-cards{display:flex;flex-wrap:wrap;gap:10px;}
+.suivi-card{border-radius:12px;padding:10px 13px;cursor:pointer;transition:transform .1s,box-shadow .15s;border:3px solid transparent;position:relative;min-width:155px;max-width:215px;flex:1;user-select:none;}
+.suivi-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.12);}
+.suivi-card:active{transform:scale(.97);}
+.sc-dot{position:absolute;top:9px;right:9px;width:12px;height:12px;border-radius:50%;}
+.sc-id{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;margin-bottom:4px;padding-right:18px;}
+.sc-titre{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;line-height:1.3;}
+.s-r{border-color:#EF4444 !important;background:#FEF2F2 !important;}
+.s-r .sc-dot{background:#EF4444;}
+.s-r .sc-id{color:#DC2626;}
+.s-j{border-color:#F59E0B !important;background:#FFFBEB !important;}
+.s-j .sc-dot{background:#F59E0B;}
+.s-j .sc-id{color:#D97706;}
+.s-v{border-color:#22C55E !important;background:#F0FDF4 !important;}
+.s-v .sc-dot{background:#22C55E;}
+.s-v .sc-id{color:#16A34A;}
+
+/* ── OUTILS ── */
+.outils-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.outils-search-wrap{position:relative;margin-bottom:14px;}
+.outils-search-wrap input{width:100%;padding:10px 16px 10px 38px;border:1.5px solid var(--border);
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;background:white;outline:none;transition:border-color .15s;}
+.outils-search-wrap input:focus{border-color:var(--prev);}
+.outils-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;}
+.outils-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+.outils-filter-lbl{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap;margin-right:2px;}
+.outils-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr));gap:12px;}
+.outil-card{background:white;border-radius:13px;border:1.5px solid var(--border);overflow:hidden;
+  transition:box-shadow .2s,transform .15s;display:flex;flex-direction:column;}
+.outil-card:hover{box-shadow:0 6px 20px rgba(12,58,92,.1);transform:translateY(-2px);}
+.outil-head{padding:12px 14px 8px;display:flex;align-items:flex-start;gap:10px;}
+.outil-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.outil-nom{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;line-height:1.2;}
+.outil-sigle{font-size:10px;color:var(--muted);font-weight:400;margin-top:1px;}
+.outil-divider{height:1px;background:var(--border);margin:0 14px;}
+.outil-body{padding:8px 14px 12px;flex:1;display:flex;flex-direction:column;gap:7px;}
+.outil-def{font-size:12px;line-height:1.55;color:var(--ink);}
+.outil-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px;}
+.outil-famille{font-size:10px;font-weight:700;border-radius:6px;padding:2px 8px;}
+.outil-cartes{display:flex;gap:4px;flex-wrap:wrap;}
+.outil-carte-chip{font-family:'DM Mono',monospace;font-size:9px;font-weight:600;border-radius:5px;
+  padding:2px 6px;cursor:pointer;transition:opacity .15s;}
+.outil-carte-chip:hover{opacity:.7;}
+.outil-cg{font-size:10px;color:var(--muted);font-style:italic;border:1px solid var(--border);
+  border-radius:6px;padding:2px 8px;background:var(--gry);}
+.outils-empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+</style>
+<style>
+/* ═══ PR-SIDEBAR UNIVERSELLE ═══ */
+body.has-pr-sidebar { margin-left: 72px; }
+#pr-sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 72px;
+  background: #0C3A5C;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 9999;
+  border-right: 1px solid rgba(255,255,255,.08);
+  font-family: 'Syne', 'DM Sans', sans-serif;
+}
+#pr-sidebar .pr-sb-logo {
+  width: 44px; height: 44px; background: #009FC4; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: white; line-height: 1.1;
+  text-align: center; margin-bottom: 8px; text-decoration: none;
+  flex-shrink: 0;
+}
+#pr-sidebar .pr-sb-sep {
+  width: 36px; height: 1px; background: rgba(255,255,255,.12); margin: 4px 0;
+}
+#pr-sidebar .pr-sb-btn {
+  width: 48px; height: 48px; border-radius: 12px; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; background: transparent; transition: background .15s;
+  position: relative; text-decoration: none;
+}
+#pr-sidebar .pr-sb-btn:hover { background: rgba(255,255,255,.1); }
+#pr-sidebar .pr-sb-btn.pr-active { background: #009FC4; }
+#pr-sidebar .pr-sb-btn .pr-icon { font-size: 18px; line-height: 1; }
+#pr-sidebar .pr-sb-btn .pr-lbl {
+  font-size: 8px; font-weight: 700; color: rgba(255,255,255,.45);
+  letter-spacing: .03em; line-height: 1;
+}
+#pr-sidebar .pr-sb-btn.pr-active .pr-lbl { color: rgba(255,255,255,.9); }
+#pr-sidebar .pr-sb-btn .pr-tip {
+  position: absolute; left: 66px; background: #1a2332; color: white;
+  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity .15s; z-index: 10000;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#pr-sidebar .pr-sb-btn:hover .pr-tip { opacity: 1; }
+</style>
+</head>
+<body class="has-pr-sidebar">
+
+<!-- ═══ PR-SIDEBAR UNIVERSELLE ═══ -->
+<nav id="pr-sidebar">
+  <a class="pr-sb-logo" href="prevent_road.html" title="Prevent'Road">P'<br>Road</a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_road.html">
+    <span class="pr-icon">🗓</span><span class="pr-lbl">Road</span>
+    <div class="pr-tip">Prevent'Road — Accueil</div>
+  </a>
+  <a class="pr-sb-btn" href="preventcards_parcours__2_.html" class="pr-sb-btn pr-active">
+    <span class="pr-icon">🃏</span><span class="pr-lbl">Cards</span>
+    <div class="pr-tip">Prevent'Cards — 84 cartes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_obeya_qraft_v2__2_.html">
+    <span class="pr-icon">📊</span><span class="pr-lbl">QRAFT</span>
+    <div class="pr-tip">QRAFT — Obeya promotion</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_andon.html">
+    <span class="pr-icon">🚨</span><span class="pr-lbl">Andon</span>
+    <div class="pr-tip">Prevent'Andon — Alertes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_dashboard.html">
+    <span class="pr-icon">📈</span><span class="pr-lbl">Board</span>
+    <div class="pr-tip">Dashboard Prevent'IS</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_assist.html">
+    <span class="pr-icon">🤖</span><span class="pr-lbl">Assist</span>
+    <div class="pr-tip">Prevent'Assist — IA pédagogique</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_exam.html">
+    <span class="pr-icon">📝</span><span class="pr-lbl">Exam</span>
+    <div class="pr-tip">Prevent'Exam — Mémoire CQPM</div>
+  </a>
+  <a class="pr-sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+    <span class="pr-icon">📚</span><span class="pr-lbl">Agil</span>
+    <div class="pr-tip">Prevent'Agil — Cours Digipad</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="FormAgil_Didacticiel1_Mere.html">
+    <span class="pr-icon">📐</span><span class="pr-lbl">Form</span>
+    <div class="pr-tip">Form'Agil — Didacticiel</div>
+  </a>
+</nav>
+
+<nav>
+  <div class="nav-logo">Prevent<span>'Cards</span> · CQPM 0195</div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('modules',this)">📦 Modules</button>
+    <button class="tab-btn" onclick="showTab('pert',this)">🔗 Parcours PERT</button>
+    <button class="tab-btn" onclick="showTab('profils',this)">👥 Profils</button>
+    <button class="tab-btn" onclick="showTab('suivi',this)">📊 Suivi QRAFT</button>
+    <button class="tab-btn" onclick="showTab('outils',this)">🛠 Outils</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Coordonnateur QSE · CQPM 0195 · Preventys 2025-2026</div>
+  <h1>Prevent'Cards — Parcours pédagogique</h1>
+  <p>84 cartes réparties sur 21 modules. Visualisation par module, ordonnancement PERT par antériorités et parcours différenciés par profil. Cliquez sur une carte pour voir ses détails.</p>
+  <div class="hero-pills">
+    <span class="pill">84 cartes</span>
+    <span class="pill">21 modules</span>
+    <span class="pill">14 niveaux PERT</span>
+    <span class="pill">ACO — Aircraft Challenge Organisation</span>
+    <span class="pill">5 profils</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- TAB MODULES -->
+<div class="tab-content active" id="tab-modules">
+  <div class="stats">
+    <div class="stat-box"><div class="stat-num">84</div><div class="stat-lbl">Cartes total</div></div>
+    <div class="stat-box"><div class="stat-num">21</div><div class="stat-lbl">Modules</div></div>
+    <div class="stat-box"><div class="stat-num">392h</div><div class="stat-lbl">Volume horaire</div></div>
+    <div class="stat-box"><div class="stat-num">11</div><div class="stat-lbl">Compétences CQPM</div></div>
+    <div class="stat-box"><div class="stat-num">4</div><div class="stat-lbl">BDC couverts</div></div>
+  </div>
+  <div class="bdc-legend">
+    <div class="bdc-item"><div class="bdc-dot" style="background:#0C3A5C"></div>BDC 1 — Contexte &amp; Veille</div>
+    <div class="bdc-item"><div class="bdc-dot" style="background:#1D4ED8"></div>BDC 2 — Planification &amp; Pilotage</div>
+    <div class="bdc-item"><div class="bdc-dot" style="background:#7C3AED"></div>BDC 3 — Surveillance &amp; Conformité</div>
+    <div class="bdc-item"><div class="bdc-dot" style="background:#0F766E"></div>BDC 4 — Accompagnement</div>
+    <div class="bdc-item"><div class="bdc-dot" style="background:#475569"></div>Transverse</div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Rechercher un module, une carte, un objectif…" oninput="filterModules()">
+  </div>
+  <div class="filter-bar">
+    <span class="filter-lbl">BDC :</span>
+    <button class="filter-btn active" onclick="filterBDC('all',this)">Tous</button>
+    <button class="filter-btn" onclick="filterBDC('BDC 1',this)">BDC 1</button>
+    <button class="filter-btn" onclick="filterBDC('BDC 2',this)">BDC 2</button>
+    <button class="filter-btn" onclick="filterBDC('BDC 3',this)">BDC 3</button>
+    <button class="filter-btn" onclick="filterBDC('BDC 4',this)">BDC 4</button>
+    <button class="filter-btn" onclick="filterBDC('Transverse',this)">Transverse</button>
+  </div>
+  <div class="modules-grid" id="modulesGrid"></div>
+</div>
+
+<!-- TAB PERT -->
+<div class="tab-content" id="tab-pert">
+  <div class="stats">
+    <div class="stat-box"><div class="stat-num">14</div><div class="stat-lbl">Niveaux PERT</div></div>
+    <div class="stat-box"><div class="stat-num">16</div><div class="stat-lbl">Cartes critiques</div></div>
+    <div class="stat-box"><div class="stat-num">C-01</div><div class="stat-lbl">Première carte</div></div>
+    <div class="stat-box"><div class="stat-num">C-36</div><div class="stat-lbl">Dernière carte</div></div>
+  </div>
+  <div class="critique-strip">
+    <div>
+      <div class="critique-label">🔴 CHEMIN CRITIQUE — séquence sans marge de liberté</div>
+      <div class="critique-chain" id="cheminCritique"></div>
+    </div>
+  </div>
+  <div class="note"><strong>Lecture :</strong> Les cartes <span style="color:var(--red);font-weight:700">encadrées en rouge</span> appartiennent au chemin critique. Les cartes d'un même niveau sont indépendantes — elles peuvent être enseignées dans l'ordre souhaité. Cliquez sur n'importe quelle carte pour voir ses détails complets.</div>
+  <div class="pert-wrap">
+    <div id="pertContainer"></div>
+  </div>
+</div>
+
+<!-- TAB PROFILS -->
+<div class="tab-content" id="tab-profils">
+  <div class="note"><strong>Principe :</strong> Tous les profils suivent la même formation ACO. Le tronc commun (Posture métier · Processus · Communication) est intégral pour tous. Les modules marqués "partiel" sont suivis à taux réduit selon le profil.</div>
+  <div class="profils-grid">
+    <div class="profil-card">
+      <div class="profil-head" style="background:var(--blue-l)"><div class="profil-icon">🎯</div>
+        <div><div class="profil-title">Coordonnateur QSE</div><div class="profil-sub">CQPM 0195 — parcours complet</div></div></div>
+      <div class="profil-body">
+        <div class="profil-row"><span>Tous les modules</span><span class="ok">84 cartes ✓</span></div>
+        <div class="profil-row"><span>Volume horaire</span><span class="ok">392h</span></div>
+        <div class="profil-row"><span>BDC couverts</span><span class="ok">1 · 2 · 3 · 4</span></div>
+        <div class="profil-row"><span>Certification</span><span class="ok">CQPM 0195</span></div>
+      </div>
+    </div>
+    <div class="profil-card">
+      <div class="profil-head" style="background:var(--teal-l)"><div class="profil-icon">🛡️</div>
+        <div><div class="profil-title">Technicien QSE</div><div class="profil-sub">CQPM — parcours technique</div></div></div>
+      <div class="profil-body">
+        <div class="profil-row"><span>Tronc commun</span><span class="ok">✓ intégral</span></div>
+        <div class="profil-row"><span>Audit · MSP · Conformité</span><span class="ok">✓ complet</span></div>
+        <div class="profil-row"><span>Communication · QVCT</span><span class="ok">✓ complet</span></div>
+        <div class="profil-row"><span>Gestion de projet</span><span class="ok">✓ complet</span></div>
+      </div>
+    </div>
+    <div class="profil-card">
+      <div class="profil-head" style="background:var(--purple-l)"><div class="profil-icon">🦺</div>
+        <div><div class="profil-title">Préventeur</div><div class="profil-sub">Sécurité &amp; prévention des risques</div></div></div>
+      <div class="profil-body">
+        <div class="profil-row"><span>Tronc commun</span><span class="ok">✓ intégral</span></div>
+        <div class="profil-row"><span>Ergonomie · QVCT · Intégration</span><span class="ok">✓ complet</span></div>
+        <div class="profil-row"><span>Audit · AMDEC · 8D</span><span class="ok">✓ complet</span></div>
+        <div class="profil-row"><span>Hygiène alimentaire</span><span class="ok">✓ complet</span></div>
+      </div>
+    </div>
+    <div class="profil-card">
+      <div class="profil-head" style="background:var(--gold-l)"><div class="profil-icon">👥</div>
+        <div><div class="profil-title">RH Qualité</div><div class="profil-sub">50% de la formation</div></div></div>
+      <div class="profil-body">
+        <div class="profil-row"><span>Tronc commun</span><span class="ok">✓ intégral</span></div>
+        <div class="profil-row"><span>QVCT · Accueil · Enquêtes</span><span class="ok">✓ complet</span></div>
+        <div class="profil-row"><span>Budget · TdB · Projet</span><span class="partial">≈ 50%</span></div>
+        <div class="profil-row"><span>Métrologie · MSP · Déchets</span><span class="light">allégé</span></div>
+      </div>
+    </div>
+    <div class="profil-card">
+      <div class="profil-head" style="background:var(--orange-l)"><div class="profil-icon">⚙️</div>
+        <div><div class="profil-title">Lean Manager</div><div class="profil-sub">Amélioration continue — 75%</div></div></div>
+      <div class="profil-body">
+        <div class="profil-row"><span>Tronc commun</span><span class="ok">✓ intégral</span></div>
+        <div class="profil-row"><span>Lean · MSP · AMDEC · Audit</span><span class="ok">✓ complet</span></div>
+        <div class="profil-row"><span>Tableaux de bord · Projet</span><span class="ok">✓ complet</span></div>
+        <div class="profil-row"><span>QVCT · Ergonomie · Alim.</span><span class="partial">≈ 75%</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:24px">
+    <div class="note"><strong>Tronc commun intégral (tous profils) :</strong> Posture métier (C-01→C-04) · Processus + AMDEC (C-09→C-12, C-84) · Communication &amp; Conflits (C-19→C-23) · Veille réglementaire (C-72→C-74) · Informatique de base (C-75)</div>
+  </div>
+</div>
+
+
+<!-- TAB SUIVI -->
+<div class="tab-content" id="tab-suivi">
+  <div class="qraft-bar">
+    <div class="qraft-title">📊 Indicateur QRAFT <span>Avancement des Prevent'Cards · Promotion en cours</span></div>
+    <div class="qraft-gauges">
+      <div class="qraft-gauge">
+        <div class="qg-val" id="pctRouge" style="color:#FCA5A5">—</div>
+        <div class="qg-lbl">🔴 Non démarrées</div>
+        <div class="qg-bar"><div class="qg-fill" id="barRouge" style="background:#EF4444;width:0%"></div></div>
+      </div>
+      <div class="qraft-gauge">
+        <div class="qg-val" id="pctJaune" style="color:#FDE68A">—</div>
+        <div class="qg-lbl">🟡 En cours</div>
+        <div class="qg-bar"><div class="qg-fill" id="barJaune" style="background:#F59E0B;width:0%"></div></div>
+      </div>
+      <div class="qraft-gauge">
+        <div class="qg-val" id="pctVert" style="color:#86EFAC">—</div>
+        <div class="qg-lbl">🟢 Validées</div>
+        <div class="qg-bar"><div class="qg-fill" id="barVert" style="background:#22C55E;width:0%"></div></div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">Progression globale</div>
+    <div class="qraft-progress"><div class="qraft-progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="suivi-note">⚠️ <strong>Formateurs uniquement.</strong> Cliquez sur une carte pour faire évoluer son état : 🔴 Non démarrée → 🟡 En cours → 🟢 Validée → 🔴. Partagez le lien après chaque mise à jour.</div>
+
+  <div class="share-bar">
+    <button class="share-btn" onclick="genererLien()">🔗 Générer le lien de partage</button>
+    <input class="share-input" id="shareUrl" placeholder="Le lien apparaîtra ici…" readonly onclick="this.select()">
+    <button class="share-btn" onclick="copierLien()">📋 Copier</button>
+    <span class="copied-msg" id="copiedMsg">✓ Copié !</span>
+    <button class="share-btn danger" onclick="resetEtats()">🔄 Tout réinitialiser</button>
+  </div>
+
+  <div id="suiviGrid"></div>
+</div>
+
+
+<!-- TAB OUTILS -->
+<div class="tab-content" id="tab-outils">
+
+  <div class="stats" id="outilsStats">
+    <div class="stat-box"><div class="stat-num" id="oNbTotal">67</div><div class="stat-lbl">Outils référencés</div></div>
+    <div class="stat-box"><div class="stat-num">9</div><div class="stat-lbl">Familles</div></div>
+    <div class="stat-box"><div class="stat-num">21</div><div class="stat-lbl">Modules couverts</div></div>
+    <div class="stat-box"><div class="stat-num" id="oNbAffiches">67</div><div class="stat-lbl">Affichés</div></div>
+  </div>
+
+  <div class="outils-search-wrap">
+    <span class="outils-search-icon">🔍</span>
+    <input type="text" id="outilsSearch" placeholder="Rechercher un outil, une définition, un sigle…" oninput="filterOutils()">
+  </div>
+
+  <div class="outils-filter-bar">
+    <span class="outils-filter-lbl">Famille :</span>
+    <button class="filter-btn active" onclick="filterFamille('all',this)">Toutes</button>
+    <button class="filter-btn" onclick="filterFamille('analyse',this)">🔍 Analyse</button>
+    <button class="filter-btn" onclick="filterFamille('lean',this)">⚙️ Lean</button>
+    <button class="filter-btn" onclick="filterFamille('pilotage',this)">📊 Pilotage</button>
+    <button class="filter-btn" onclick="filterFamille('projet',this)">🗂 Projet</button>
+    <button class="filter-btn" onclick="filterFamille('systemes',this)">🏗 Systèmes</button>
+    <button class="filter-btn" onclick="filterFamille('qualite',this)">📋 Qualité</button>
+    <button class="filter-btn" onclick="filterFamille('rse',this)">🌱 RSE</button>
+    <button class="filter-btn" onclick="filterFamille('humain',this)">👥 Humain</button>
+    <button class="filter-btn" onclick="filterFamille('finance',this)">💰 Finance</button>
+  </div>
+
+  <div class="outils-grid" id="outilsGrid"></div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-id" id="mId"></div>
+      <div class="modal-titre" id="mTitre"></div>
+      <div class="modal-mod" id="mMod"></div>
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ms"><div class="ms-lbl">🎯 Objectif — Je suis capable de…</div><div class="ms-txt" id="mObj"></div></div>
+      <div class="ms"><div class="ms-lbl">📋 Compétences CQPM</div><div class="ms-tags" id="mComps"></div></div>
+      <div class="ms"><div class="ms-lbl">✈ Livrable attendu</div><div class="ms-txt" id="mLiv"></div></div>
+      <div class="ms"><div class="ms-lbl">🏁 Seuil de validation</div><div class="ms-txt" id="mSeuil" style="font-weight:600"></div></div>
+      <div class="ms" id="mAntSec"><div class="ms-lbl">🔗 Antériorités requises (PERT)</div><div class="ms-tags" id="mAnt"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MODULES=[{id:'M01',titre:'Posture métier',h:'14h',bdc:'BDC 1',col:'#0C3A5C',colL:'#E6F6FB',cartes:[{id:'C-01',t:'Histoire du métier QSE',o:"retracer l'évolution historique du coordonnateur QSE des origines hygiénistes aux enjeux RSE contemporains.",c:['C1'],l:"Contribution plaquette — frise ou récit de l'évolution du métier, grand public.",s:"Plaquette + présentation orale 5+5 min",a:[]},{id:'C-02',t:"Analyser les offres d'emploi QSE",o:"identifier et analyser des offres d'emploi réelles pour comprendre les attentes du marché.",c:['C1'],l:"Contribution plaquette — portrait du métier (secteurs, missions, perspectives).",s:"5 offres sourcées + plaquette + oral",a:[]},{id:'C-03',t:'Rédiger sa fiche de fonction',o:"rédiger une fiche de fonction personnalisée ancrée dans mon contexte d'entreprise.",c:['C1','C11'],l:"Plaquette + fiche de fonction visée par le tuteur entreprise.",s:"Plaquette + fiche individuelle visée tuteur",a:['C-01','C-02']},{id:'C-04',t:'Se positionner dans le référentiel CQPM 0195',o:"lire et m'approprier le référentiel CQPM 0195 (4 BDC, 11 compétences) et réaliser une auto-évaluation honnête.",c:['C1→C11'],l:"Tableau d'auto-évaluation — 11 compétences notées 1-4, plan d'action personnel.",s:"Auto-évaluation + entretien individuel 15 min",a:['C-01','C-02']}]},{id:'M02',titre:'Normes & SMI',h:'21h',bdc:'BDC 1',col:'#0C3A5C',colL:'#E6F6FB',cartes:[{id:'C-05',t:'Décoder la structure HLS',o:"identifier la structure HLS partagée par ISO 9001, 14001 et 45001.",c:['C1'],l:"Tableau de correspondance HLS — 10 chapitres, exigences communes surlignées.",s:"Score Prevent'Score ≥ 70%",a:['C-04']},{id:'C-06',t:'Comprendre le SMI et la certification',o:"expliquer ce qu'est un SMI, distinguer conformité et certification.",c:['C1'],l:"Fiche synthèse personnelle — définition SMI, différence conformité/certification.",s:"Fiche rendue + validation formateur",a:['C-05']},{id:'C-07',t:'Appliquer les exigences ISO à ACO',o:"associer chaque exigence ISO à un élément concret de l'organisation ACO.",c:['C1','C2'],l:"Tableau de correspondance exigences ISO ↔ éléments ACO — min. 15 correspondances.",s:"Tableau individuel + min. 15 correspondances",a:['C-06','C-03']},{id:'C-08',t:"Construire l'amorce du SMI ACO",o:"rédiger en binôme les premiers éléments structurants du SMI d'ACO.",c:['C1','C7'],l:"Document SMI ACO v0 — domaine d'application, enjeux, ébauche politique QSE.",s:"Document SMI ACO v0 rendu + validation formateur",a:['C-07']}]},{id:'M03',titre:'Processus & Procédures + AMDEC',h:'21h',bdc:'BDC 3',col:'#7C3AED',colL:'#EDE9FE',cartes:[{id:'C-09',t:'Distinguer les 3 types de processus',o:"identifier et distinguer les processus de management, de réalisation et de support.",c:['C7'],l:"Fiche de classification — 3 types définis, min. 3 exemples ACO par type.",s:"Score Prevent'Score ≥ 70%",a:['C-08']},{id:'C-10',t:'Réaliser la cartographie des processus ACO',o:"construire la cartographie complète des processus d'ACO — 3 niveaux, interactions, pilotes.",c:['C7','C1'],l:"Cartographie processus ACO intégrée au SMI ACO.",s:"Cartographie complète + validation formateur",a:['C-09']},{id:'C-11',t:'Documenter un processus complet',o:"rédiger la fiche d'identité complète d'un processus ACO.",c:['C7','C5'],l:"Fiche processus ACO — finalité, entrées/sorties, activités, pilote, KPI.",s:"Fiche processus rendue + validation formateur",a:['C-09']},{id:'C-12',t:'Construire un logigramme complet',o:"modéliser un processus ACO sous forme de logigramme normalisé avec swimlanes.",c:['C7','C8'],l:"Logigramme d'un processus ACO — acteurs, décisions, documents.",s:"Logigramme rendu + validation formateur",a:['C-11']},{id:'C-84',t:'Réaliser une AMDEC processus ACO',o:"conduire une AMDEC sur un processus ACO — modes de défaillance, criticité G×O×D, actions préventives.",c:['C2','C9'],l:"AMDEC processus ACO — min. 8 modes de défaillance, IPR calculés.",s:"AMDEC complète + IPR calculés + validation formateur",a:['C-12','C-11']}]},{id:'M04',titre:'Gestion de projet',h:'21h',bdc:'BDC 2',col:'#1D4ED8',colL:'#DBEAFE',cartes:[{id:'C-13',t:'Identifier les parties prenantes du projet ACO',o:"recenser et analyser toutes les parties prenantes d'un événement ACO.",c:['C5','C11'],l:"Matrice des parties prenantes ACO — influence/intérêt, attentes, stratégie.",s:"Matrice + min. 10 PP + validation formateur",a:['C-10','C-08']},{id:'C-14',t:'Formaliser fonctionnalités et contraintes',o:"rédiger le cahier des charges d'un événement ACO.",c:['C5','C4'],l:"Cahier des charges événement ACO — fonctionnalités, contraintes, critères de succès.",s:"Cahier des charges + min. 5 fonctionnalités + validation",a:['C-13']},{id:'C-15',t:'Décomposer les livrables en tâches (WBS)',o:"construire la structure de décomposition du travail d'un événement ACO.",c:['C5','C6'],l:"WBS événement ACO — 3 niveaux, durées estimées, responsables.",s:"WBS complet + min. 3 niveaux + validation formateur",a:['C-14']},{id:'C-16',t:'Ordonnancer les tâches avec le PERT',o:"construire le réseau PERT d'un événement ACO — dépendances, marges, chemin critique.",c:['C5','C6'],l:"Réseau PERT — dates au plus tôt/tard, marges, chemin critique.",s:"PERT complet + chemin critique justifié + validation",a:['C-15']},{id:'C-17',t:"Planifier l'événement ACO avec le GANTT",o:"traduire le PERT en diagramme de GANTT opérationnel.",c:['C5','C6'],l:"GANTT événement ACO — tâches, jalons, ressources, chemin critique.",s:"GANTT opérationnel + cohérence PERT + validation",a:['C-16']},{id:'C-18',t:'Piloter le projet ACO avec les indicateurs QCD',o:"définir et suivre les indicateurs QCD d'un événement ACO.",c:['C4','C6'],l:"Tableau de bord QCD — min. 2 indicateurs par axe, seuils d'alerte.",s:"TdB QCD rendu + présentation devant le groupe",a:['C-17','C-28']}]},{id:'M05',titre:'Communication, réunions & conflits',h:'21h',bdc:'BDC 4',col:'#0F766E',colL:'#CCFBF1',cartes:[{id:'C-19',t:'Comprendre son profil DISC',o:"identifier son profil DISC dominant, ses forces et angles morts.",c:['C11'],l:"Fiche de profil personnelle DISC — auto-positionnement dans l'organigramme ACO.",s:"Fiche rendue + restitution orale en groupe",a:['C-03']},{id:'C-20',t:'Adapter sa communication aux profils DISC',o:"adapter son style de communication selon le profil DISC de l'interlocuteur.",c:['C11'],l:"Simulation ACO — même message délivré à 4 profils différents.",s:"Mise en situation observée + grille feedback groupe",a:['C-19']},{id:'C-21',t:"Gérer un conflit dans l'équipe ACO",o:"analyser un conflit interpersonnel et conduire une médiation orientée solution.",c:['C11','C10'],l:"Jeu de rôle ACO — gestion conflit entre profils DISC antagonistes.",s:"Jeu de rôle + debriefing collectif + grille formateur",a:['C-20']},{id:'C-22',t:'Accompagner le changement chez ACO',o:"identifier les résistances au changement selon les profils DISC et accompagner l'adoption.",c:['C11','C10'],l:"Simulation déploiement nouvelle procédure QSE ACO.",s:"Simulation observée + plan de communication + validation",a:['C-21']},{id:'C-23',t:'Animer une réunion QSE efficace',o:"préparer et animer une réunion QSE en tenant compte des profils DISC.",c:['C11','C6'],l:"Animation réunion ACO simulée 15 min — ordre du jour, compte-rendu en séance.",s:"Animation observée + compte-rendu + grille formateur",a:['C-22']}]},{id:'M06',titre:'Tableaux de bord',h:'7h',bdc:'BDC 2',col:'#1D4ED8',colL:'#DBEAFE',cartes:[{id:'C-24',t:'Distinguer indicateur et tableau de bord',o:"distinguer un indicateur d'un tableau de bord et caractériser un bon indicateur SMART.",c:['C4'],l:"Fiche cadrage — définition, critères d'un bon indicateur, 3 exemples corrigés.",s:"Score Prevent'Score ≥ 70%",a:['C-08']},{id:'C-25',t:"Identifier les types d'indicateurs QHSE/RH/Lean",o:"classifier les principaux indicateurs QHSE, RH et Lean adaptés à ACO.",c:['C4','C7'],l:"Catalogue d'indicateurs ACO — min. 3 indicateurs par domaine.",s:"Catalogue + min. 9 indicateurs documentés + validation",a:['C-24']},{id:'C-26',t:'Choisir et collecter les données pertinentes',o:"sélectionner les données pertinentes et définir les fréquences de collecte.",c:['C4','C7'],l:"Plan de collecte ACO — source, fréquence, responsable, format.",s:"Plan de collecte complet + validation formateur",a:['C-25']},{id:'C-27',t:'Mettre en forme un tableau de bord lisible',o:"concevoir la mise en forme visuelle d'un tableau de bord — code RAG, lisibilité.",c:['C4','C6'],l:"Tableau de bord ACO — graphiques adaptés, code RAG, test lisibilité 30 secondes.",s:"TdB rendu + test 30 secondes devant le groupe",a:['C-26']},{id:'C-28',t:'Diffuser et animer un tableau de bord',o:"définir les modalités de diffusion et animer une revue de résultats.",c:['C6','C11'],l:"Plan de diffusion + revue résultats simulée 10 min.",s:"Plan rendu + revue simulée + grille formateur",a:['C-27','C-23']}]},{id:'M07',titre:'Audit',h:'21h',bdc:'BDC 3',col:'#7C3AED',colL:'#EDE9FE',cartes:[{id:'C-29',t:'Maîtriser la triade critère/constat/preuve',o:"distinguer et articuler critère, constat et preuve — éviter opinion et jugement.",c:['C8'],l:"Exercice de qualification ACO — 10 énoncés à trier.",s:"Score ≥ 70% + justifications validées formateur",a:['C-12','C-11']},{id:'C-30',t:"Établir un plan d'audit ACO",o:"construire un plan d'audit complet d'un processus ACO.",c:['C8','C5'],l:"Plan d'audit ACO — processus, référentiel, programme, interlocuteurs.",s:"Plan d'audit complet + validation formateur",a:['C-29','C-13']},{id:'C-31',t:'Recueillir les preuves sur le terrain ACO',o:"conduire la phase d'investigation avec les 3 modes de recueil de preuves.",c:['C8','C11'],l:"Dossier de preuves ACO — entretien, observation, documents.",s:"Dossier preuves + min. 3 preuves par mode + validation",a:['C-30']},{id:'C-32',t:"Rédiger le rapport d'audit ACO",o:"rédiger un rapport d'audit complet, factuel et exploitable.",c:['C8','C9'],l:"Rapport d'audit ACO — constats, écarts, points forts, recommandations.",s:"Rapport rendu + réunion clôture simulée 10 min + grille",a:['C-31','C-34']}]},{id:'M08',titre:'Méthodes & Amélioration continue',h:'14h',bdc:'BDC 4',col:'#0F766E',colL:'#CCFBF1',cartes:[{id:'C-33',t:"Conduire une enquête 8D sur un incident ACO",o:"structurer une enquête 8D à partir d'un incident ACO réel.",c:['C9','C10'],l:"Dossier 8D ACO complet — D1 à D8.",s:"Dossier 8D complet + validation formateur",a:['C-29','C-09']},{id:'C-34',t:'Analyser les causes avec le diagramme Ishikawa',o:"construire un diagramme Ishikawa (5M ou 6M) pour identifier les causes potentielles.",c:['C9','C10'],l:"Diagramme Ishikawa ACO — 5 familles, causes racines candidates surlignées.",s:"Ishikawa + min. 3 causes par famille + intégration 8D",a:['C-33']},{id:'C-35',t:'Creuser les causes racines avec les 5 Pourquoi',o:"appliquer les 5 Pourquoi sur les causes candidates pour remonter à la cause racine.",c:['C9','C10'],l:"Arbre 5 Pourquoi ACO — au moins 2 causes explorées jusqu'à la racine.",s:"Arbre 5P complet + causes racines justifiées + validation",a:['C-34']},{id:'C-36',t:'Définir et prioriser les actions correctives ACO',o:"formuler des actions correctives ciblant les causes racines, plan SMART.",c:['C9','C10'],l:"Plan d'actions correctives ACO — SMART, priorisation, restitution 10 min.",s:"Plan SMART rendu + restitution 10 min devant le groupe",a:['C-35','C-50']}]},{id:'M09',titre:'Ergonomie & Santé au travail',h:'14h',bdc:'BDC 4',col:'#0F766E',colL:'#CCFBF1',cartes:[{id:'C-37',t:"Se positionner comme prescripteur d'ergonomie",o:"définir le rôle et les limites du coordonnateur QSE en ergonomie.",c:['C10','C2'],l:"Fiche de positionnement — rôle prescripteur vs ergonome.",s:"Fiche rendue + discussion collective validée formateur",a:['C-08','C-22']},{id:'C-38',t:'Analyser un poste de travail ACO — pénibilité',o:"conduire une analyse de poste avec une grille d'observation structurée.",c:['C2','C10'],l:"Grille d'analyse de poste ACO — postures, pénibilité, facteurs C3P.",s:"Grille rendue + observation simulée + validation",a:['C-37']},{id:'C-39',t:'Identifier les risques ergonomiques spécifiques',o:"identifier et qualifier les principaux risques ergonomiques présents sur les postes ACO.",c:['C2','C9'],l:"Cartographie risques ergonomiques ACO — TMS, RPS, ambiances physiques.",s:"Cartographie + min. 6 risques cotés + validation",a:['C-38']},{id:'C-40',t:"Formuler des pistes d'amélioration ergonomique",o:"formuler des pistes d'amélioration ergonomique réalistes et hiérarchisées.",c:['C10','C9'],l:"Plan de prescriptions ergonomiques ACO — présentation orale 10 min.",s:"Plan rendu + présentation 10 min + grille formateur",a:['C-39']}]},{id:'M10',titre:'QVCT',h:'14h',bdc:'BDC 4',col:'#0F766E',colL:'#CCFBF1',cartes:[{id:'C-41',t:'Maîtriser la terminologie et la réglementation QVCT',o:"définir les notions clés QVCT et identifier le cadre réglementaire applicable.",c:['C3','C10'],l:"Glossaire QVCT — 10 notions clés, cadre ANI/ordonnances/loi 2021.",s:"Glossaire rendu + Score Prevent'Score ≥ 70%",a:['C-08','C-22']},{id:'C-42',t:"Identifier et utiliser les outils de la QVCT",o:"identifier les principaux outils QVCT adaptés au contexte ACO.",c:['C10','C4'],l:"Diagnostic QVCT ACO — tensions des 7 lettres d'orientation analysées.",s:"Diagnostic + min. 5 tensions analysées + validation",a:['C-41']},{id:'C-43',t:"Construire l'amorce d'une démarche QVCT chez ACO",o:"concevoir les premières étapes d'une démarche QVCT structurée chez ACO.",c:['C10','C11'],l:"Amorce démarche QVCT ACO — plan d'actions, présentation 10 min.",s:"Démarche rendue + présentation 10 min + grille formateur",a:['C-42','C-08']}]},{id:'M11',titre:'Enquêtes de satisfaction',h:'7h',bdc:'BDC 2',col:'#1D4ED8',colL:'#DBEAFE',cartes:[{id:'C-44',t:"Cartographier l'expérience et les points de contact ACO",o:"identifier les moments clés de l'expérience client/collaborateur chez ACO.",c:['C1','C11'],l:"Carte d'expérience ACO — parcours équipe, points de contact, moments de vérité.",s:"Carte + min. 6 points de contact + validation",a:['C-08','C-23']},{id:'C-45',t:'Construire un questionnaire de satisfaction ACO',o:"concevoir un questionnaire ancré sur la perception avec questions ouvertes.",c:['C4','C7'],l:"Questionnaire satisfaction ACO — min. 10 questions dont 3 ouvertes.",s:"Questionnaire finalisé + test groupe + validation",a:['C-44']},{id:'C-46',t:"Traiter et restituer les résultats de l'enquête ACO",o:"analyser les réponses, identifier tendances et verbatims, formuler recommandations.",c:['C7','C6'],l:"Rapport de synthèse enquête ACO — restitution orale 10 min.",s:"Rapport rendu + restitution 10 min + grille formateur",a:['C-45','C-27']}]},{id:'M12',titre:'Élaboration et suivi budgétaire',h:'7h',bdc:'BDC 2',col:'#1D4ED8',colL:'#DBEAFE',cartes:[{id:'C-47',t:'Distinguer charges fixes et variables chez ACO',o:"identifier et classer les charges d'un événement ACO en fixes et variables.",c:['C5'],l:"Tableau de classification des charges ACO + seuil de rentabilité.",s:"Tableau + seuil justifié + Score ≥ 70%",a:['C-07']},{id:'C-48',t:"Calculer les marges brute et nette d'un événement ACO",o:"calculer la marge brute et nette à partir d'un compte de résultat simplifié.",c:['C5','C6'],l:"Compte de résultat simplifié ACO — marges calculées, analyse des écarts.",s:"Compte de résultat + analyse écarts + validation",a:['C-47']},{id:'C-49',t:'Identifier et chiffrer les coûts de non-qualité ACO',o:"identifier les coûts de non-qualité et les chiffrer selon le modèle PAQ.",c:['C9','C4'],l:"Tableau PAQ ACO — 4 familles de coûts, total CNQ chiffré.",s:"Tableau PAQ + min. 8 postes chiffrés + validation",a:['C-48','C-09']},{id:'C-50',t:"Calculer le ROI d'un projet QSE ACO",o:"calculer le retour sur investissement d'une action QSE chez ACO.",c:['C4','C6'],l:"Fiche ROI projet QSE ACO — gains sur 1 an, présentation 5 min.",s:"Fiche ROI + présentation 5 min + validation",a:['C-49']}]},{id:'M13',titre:'Accueil & Intégration',h:'7h',bdc:'BDC 4',col:'#0F766E',colL:'#CCFBF1',cartes:[{id:'C-51',t:"Comprendre les mécanismes de l'accueil et de l'intégration",o:"identifier les mécanismes sociaux et comportementaux lors de l'accueil d'un nouveau collaborateur.",c:['C10','C11'],l:"Fiche d'analyse — courbe d'intégration appliquée à ACO.",s:"Fiche rendue + restitution orale en groupe",a:['C-19','C-03']},{id:'C-52',t:"Structurer le processus d'intégration QHSE chez ACO",o:"concevoir un processus d'intégration rigoureux en matière QHSE.",c:['C10','C7'],l:"Logigramme processus intégration ACO — J-7, J1, J+7, J+30.",s:"Logigramme complet + jalons QHSE + validation",a:['C-51','C-09']},{id:'C-53',t:"Produire les livrables d'intégration QHSE ACO",o:"produire les documents opérationnels du processus d'intégration QHSE.",c:['C10','C11'],l:"Pack intégration ACO — livret accueil, fiche poste sécurisée, feuille de route.",s:"Pack rendu + présentation 10 min + grille formateur",a:['C-52','C-12']}]},{id:'M14',titre:'Conformité produits & équipements',h:'14h',bdc:'BDC 3',col:'#7C3AED',colL:'#EDE9FE',cartes:[{id:'C-54',t:'Maîtriser la métrologie et les normes de laboratoire',o:"définir les concepts clés de la métrologie, identifier le rôle du COFRAC.",c:['C7','C3'],l:"Fiche métrologie ACO — plan d'étalonnage fictif, raccordement COFRAC.",s:"Fiche rendue + Score ≥ 70%",a:['C-06','C-74']},{id:'C-55',t:"Appliquer l'échantillonnage ISO 2859 chez ACO",o:"appliquer la norme ISO 2859 pour définir un plan de contrôle par échantillonnage.",c:['C7','C9'],l:"Plan de contrôle ACO — NQA choisi, niveau de contrôle justifié.",s:"Plan complet + NQA justifié + validation",a:['C-54']},{id:'C-56',t:'Identifier et gérer les équipements de mesure ACO',o:"constituer l'inventaire des EME et définir leur plan de surveillance.",c:['C7','C5'],l:"Registre des EME ACO — min. 6 équipements documentés.",s:"Registre complet + validation formateur",a:['C-55']},{id:'C-57',t:'Maintenir la conformité des installations — VGP',o:"identifier les contrôles réglementaires obligatoires (VGP, électrique, incendie).",c:['C3','C2'],l:"Plan de contrôle réglementaire ACO — min. 5 équipements réglementés.",s:"Plan complet + validation formateur",a:['C-56','C-74']}]},{id:'M15',titre:'Hygiène & Sécurité alimentaire',h:'14h',bdc:'BDC 1',col:'#0C3A5C',colL:'#E6F6FB',cartes:[{id:'C-58',t:'Maîtriser le paquet hygiène et le cadre réglementaire',o:"identifier les textes fondateurs du paquet hygiène européen.",c:['C3','C2'],l:"Fiche réglementaire ACO — textes applicables aux stands événementiels.",s:"Fiche rendue + Score ≥ 70%",a:['C-06','C-74']},{id:'C-59',t:"Construire le plan de maîtrise sanitaire HACCP d'ACO",o:"construire un PMS complet en appliquant les 7 principes HACCP.",c:['C2','C7'],l:"PMS ACO — diagramme fabrication stand, CCP, limites critiques, enregistrements.",s:"PMS HACCP complet + CCP justifiés + validation",a:['C-58']},{id:'C-60',t:'Identifier les risques de food fraud chez ACO',o:"définir la fraude alimentaire et identifier les typologies applicables à ACO.",c:['C2','C3'],l:"Analyse de vulnérabilité food fraud ACO — min. 4 produits analysés.",s:"Analyse rendue + validation formateur",a:['C-59']},{id:'C-61',t:'Mettre en place la food defense chez ACO',o:"distinguer food fraud et food defense, construire un plan de food defense.",c:['C2','C9'],l:"Plan food defense ACO — zones vulnérables, menaces, protocole d'alerte.",s:"Plan rendu + intégration PMS + validation",a:['C-60']}]},{id:'M16',titre:'Maîtrise statistique',h:'14h',bdc:'BDC 3',col:'#7C3AED',colL:'#EDE9FE',cartes:[{id:'C-62',t:"Calculer la capabilité d'un processus ACO",o:"calculer les indices Cp et Cpk et identifier les actions d'amélioration.",c:['C7','C4'],l:"Étude de capabilité ACO — Cp/Cpk calculés, plan d'action si Cpk < 1,33.",s:"Étude complète + Cp/Cpk justifiés + validation",a:['C-09','C-25']},{id:'C-63',t:"Construire et interpréter une carte de contrôle X̄/R",o:"construire une carte X̄/R pour surveiller un processus ACO en sous-groupes.",c:['C7','C9'],l:"Carte X̄/R ACO — UCL/LCL calculées, signaux de Nelson analysés.",s:"Carte construite + signal analysé + validation",a:['C-62']},{id:'C-64',t:'Utiliser la carte de contrôle glissante (I/MR)',o:"construire et interpréter une carte I/MR pour mesures individuelles.",c:['C7','C4'],l:"Carte I/MR ACO — limites calculées, comparaison avec X̄/R argumentée.",s:"Carte construite + comparaison argumentée + validation",a:['C-63']},{id:'C-65',t:"Calculer le DPMO et le niveau sigma d'ACO",o:"calculer le DPMO et déterminer le niveau sigma du processus ACO.",c:['C7','C10'],l:"Calcul DPMO ACO — niveau sigma, objectif d'amélioration fixé.",s:"DPMO calculé + niveau sigma justifié + validation",a:['C-64','C-62']}]},{id:'M17',titre:'Gestion des déchets',h:'7h',bdc:'BDC 1',col:'#0C3A5C',colL:'#E6F6FB',cartes:[{id:'C-66',t:'Identifier et classer les types de déchets ACO',o:"identifier et classer les déchets générés par ACO selon leurs catégories réglementaires.",c:['C2','C3'],l:"Cartographie déchets ACO — min. 8 déchets classifiés.",s:"Cartographie + min. 8 déchets + validation",a:['C-06','C-74']},{id:'C-67',t:'Maîtriser la nomenclature des déchets',o:"utiliser la nomenclature européenne (code 6 chiffres) pour chaque déchet ACO.",c:['C3','C7'],l:"Registre de nomenclature ACO — codes corrects, déchets dangereux identifiés.",s:"Registre + codes corrects + Score ≥ 70%",a:['C-66']},{id:'C-68',t:'Déclarer les déchets conformément à la réglementation',o:"identifier les obligations déclaratives et produire les documents de suivi.",c:['C3','C5'],l:"Dossier déclaratif ACO — registre, BSD complété, plan GEREP.",s:"Dossier rendu + BSD complété + présentation 10 min",a:['C-67']}]},{id:'M18',titre:'Initiation à la RSE',h:'7h',bdc:'BDC 1',col:'#15803D',colL:'#DCFCE7',cartes:[{id:'C-69',t:'Comprendre les 3 dimensions de la RSE',o:"définir la RSE et ses 3 piliers, identifier les enjeux RSE d'ACO.",c:['C1','C3'],l:"Matrice RSE ACO — 3 piliers, enjeux spécifiques ACO.",s:"Matrice rendue + présentation orale groupe",a:['C-05']},{id:'C-70',t:'Identifier les labels et évaluations RSE',o:"distinguer les principaux labels RSE selon périmètre et exigences.",c:['C1','C3'],l:"Tableau comparatif labels RSE + recommandation argumentée pour ACO.",s:"Tableau + recommandation justifiée + Score ≥ 70%",a:['C-69']},{id:'C-71',t:'Appliquer le référentiel Lucie / ISO 26000 à ACO',o:"appliquer les 7 engagements Lucie au contexte d'ACO pour un premier diagnostic RSE.",c:['C1','C10'],l:"Diagnostic RSE ACO Lucie/ISO 26000 — 7 engagements évalués.",s:"Diagnostic + 7 engagements évalués + restitution 10 min",a:['C-70','C-08']}]},{id:'M19',titre:'Veille réglementaire',h:'14h',bdc:'BDC 1',col:'#0C3A5C',colL:'#E6F6FB',cartes:[{id:'C-72',t:'Identifier les sources réglementaires et normatives fiables',o:"identifier et distinguer les sources officielles de référence (Légifrance, INRS, AFNOR…).",c:['C3'],l:"Cartographie des sources ACO — min. 10 sources documentées.",s:"Cartographie + min. 10 sources + Score ≥ 70%",a:['C-01']},{id:'C-73',t:'Conduire une recherche normative ou réglementaire',o:"conduire une recherche réglementaire structurée sur un sujet QSE.",c:['C3','C2'],l:"Dossier de recherche ACO — min. 5 textes hiérarchisés.",s:"Dossier rendu + 5 textes hiérarchisés + validation",a:['C-72']},{id:'C-74',t:'Tenir un tableau de veille réglementaire structuré',o:"construire et alimenter un tableau de veille réglementaire pour ACO.",c:['C3','C5'],l:"Tableau de veille ACO — min. 12 textes suivis, présentation 10 min.",s:"Tableau + 12 textes + présentation 10 min",a:['C-73']}]},{id:'M20',titre:'Informatique',h:'84h',bdc:'Transverse',col:'#475569',colL:'#E2E8F0',cartes:[{id:'C-75',t:"Maîtriser son poste et son système d'exploitation",o:"utiliser son poste de travail avec autonomie — gestion fichiers, outils collaboratifs.",c:['C11'],l:"Arborescence de travail organisée — Drive synchronisé, messagerie paramétrée.",s:"Poste opérationnel vérifié + validation formateur",a:[]},{id:'C-76',t:'Rédiger son mémoire CQPM avec Word',o:"produire un document long et structuré avec Word — styles, TdM, pagination.",c:['C11','C7'],l:"Mémoire CQPM structuré — styles Titre, TdM automatique, pagination.",s:"Mémoire structuré + TdM automatique + validation",a:['C-75','C-04']},{id:'C-77',t:'Exploiter les données ACO avec Excel',o:"utiliser Excel pour traiter et visualiser des données QSE — formules, TCD.",c:['C4','C7'],l:"Classeur Excel ACO — formules, graphiques, tableau croisé dynamique.",s:"Classeur rendu + TCD opérationnel + validation",a:['C-26','C-75']},{id:'C-78',t:'Concevoir sa présentation de soutenance avec PowerPoint',o:"concevoir une présentation PowerPoint professionnelle pour la soutenance CQPM.",c:['C11','C6'],l:"Diaporama soutenance CQPM — 12-15 diapositives, notes orateur.",s:"Diaporama rendu + notes orateur + répétition validée",a:['C-77','C-04']}]},{id:'M21',titre:'Lean Management',h:'21h',bdc:'BDC 4',col:'#EA580C',colL:'#FFF7ED',cartes:[{id:'C-79',t:'Distinguer activités VA et NVA chez ACO',o:"identifier et classifier les activités d'ACO selon VA, NVAi et NVA.",c:['C10','C7'],l:"Cartographie VA/NVA ACO — min. 10 activités classifiées.",s:"Cartographie + min. 10 activités + validation",a:['C-09','C-08']},{id:'C-80',t:'Déployer le 5S chez ACO — impact SQHSE',o:"conduire un chantier 5S en démontrant l'impact direct sur S, Q, H, CT.",c:['C10','C2'],l:"Rapport chantier 5S ACO — photos avant/après, indicateurs SQHSE.",s:"Rapport 5S + photos + indicateurs SQHSE + validation",a:['C-79']},{id:'C-81',t:'Analyser les flux avec le diagramme spaghetti',o:"construire un diagramme spaghetti pour visualiser les déplacements inutiles.",c:['C7','C2'],l:"Diagramme spaghetti ACO — distances, NVA flux, implantation optimisée.",s:"Diagramme + implantation + gain estimé + validation",a:['C-80','C-12']},{id:'C-82',t:'Animer une AIC et un tableau SQCDP',o:"animer une AIC à partir d'un tableau SQCDP ACO en moins de 7 minutes.",c:['C6','C4'],l:"Tableau SQCDP ACO + simulation AIC 7 min devant le groupe.",s:"Tableau SQCDP + AIC simulée + grille formateur",a:['C-81','C-27']},{id:'C-83',t:'Conduire un Gemba Walk ACO',o:"préparer et conduire un Gemba Walk terrain ACO — observer sans juger.",c:['C10','C8'],l:"Fiche Gemba Walk ACO — constats factuels, opportunités d'amélioration.",s:"Fiche + restitution 10 min + validation formateur",a:['C-82','C-29']}]}];
+
+const NPERT=[{n:0,l:'FONDATIONS IDENTITAIRES',s:'Aucune antériorité — ouvrent la formation',col:'#0C3A5C',ids:['C-01','C-02','C-75']},{n:1,l:'IDENTITÉ PROFESSIONNELLE',s:'Première mise en contexte métier',col:'#1D4ED8',ids:['C-03','C-04','C-72']},{n:2,l:'FONDATIONS SYSTÈMES ET OUTILS',s:'Architecture du SMI et premiers outils',col:'#0F766E',ids:['C-05','C-76','C-19','C-73']},{n:3,l:'SYSTÈME DE MANAGEMENT ET POSTURE',s:'SMI, RSE, communication interpersonnelle',col:'#7C3AED',ids:['C-06','C-69','C-20','C-51','C-74']},{n:4,l:'CONTEXTE ACO ET RISQUES RÉGLEMENTAIRES',s:"Entrée dans l'univers ACO — premiers ancrages terrain",col:'#B45309',ids:['C-07','C-70','C-21','C-54','C-58','C-66']},{n:5,l:'STRUCTURATION DU SMI ACO',s:'Le SMI prend forme — processus, contrôle, management',col:'#15803D',ids:['C-08','C-22','C-47','C-55','C-59','C-67']},{n:6,l:'DÉPLOIEMENT OPÉRATIONNEL',s:"10 cartes — le SMI s'opérationnalise sur tous les domaines",col:'#EA580C',ids:['C-71','C-09','C-23','C-48','C-24','C-56','C-60','C-68','C-37','C-41']},{n:7,l:'CARTOGRAPHIE ET MESURE',s:'11 cartes — les processus se cartographient, les données se mesurent',col:'#0369A1',ids:['C-10','C-11','C-49','C-52','C-79','C-25','C-57','C-61','C-38','C-42','C-44']},{n:8,l:'ANALYSE ET PLANIFICATION',s:'9 cartes — analyse approfondie, pilotage et collecte',col:'#6D28D9',ids:['C-13','C-12','C-50','C-80','C-62','C-26','C-39','C-43','C-45']},{n:9,l:'MODÉLISATION ET INVESTIGATION',s:'9 cartes — logigrammes, AMDEC, audit, statistiques',col:'#065F46',ids:['C-14','C-53','C-84','C-81','C-63','C-29','C-27','C-77','C-40']},{n:10,l:'ORDONNANCEMENT ET PILOTAGE TERRAIN',s:'8 cartes — PERT, audit terrain, Lean, cartes de contrôle',col:'#92400E',ids:['C-15','C-82','C-64','C-30','C-33','C-28','C-46','C-78']},{n:11,l:'INTÉGRATION ET SYNTHÈSE',s:'5 cartes — Gemba Walk, sigma, preuves, causes racines',col:'#1E3A5F',ids:['C-16','C-83','C-65','C-31','C-34']},{n:12,l:'CONVERGENCE VERS LA CERTIFICATION',s:"3 cartes — GANTT, rapport d'audit, 5 Pourquoi",col:'#831843',ids:['C-17','C-32','C-35']},{n:13,l:'LIVRABLES DE CERTIFICATION',s:'2 cartes finales — QCD et actions correctives SMART',col:'#DC2626',ids:['C-18','C-36']}];
+
+const CRITIQUE=['C-01','C-02','C-04','C-05','C-06','C-07','C-08','C-09','C-11','C-12','C-29','C-30','C-31','C-34','C-35','C-36'];
+
+// Index cartes
+const IDX={};
+MODULES.forEach(m=>m.cartes.forEach(c=>{IDX[c.id]={...c,mod:m.titre,col:m.col,colL:m.colL,bdc:m.bdc};}));
+
+let curBDC='all';
+
+function renderModules(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const g=document.getElementById('modulesGrid');
+  g.innerHTML='';
+  MODULES.forEach(m=>{
+    if(curBDC!=='all'&&m.bdc!==curBDC)return;
+    if(q&&!m.titre.toLowerCase().includes(q)&&!m.cartes.some(c=>c.t.toLowerCase().includes(q)||c.o.toLowerCase().includes(q)))return;
+    const chips=m.cartes.map(c=>`<span class="card-chip" style="background:${m.colL};color:${m.col}" onclick="openModal('${c.id}')">${c.id}</span>`).join('');
+    const d=document.createElement('div');
+    d.className='mod-card';
+    d.innerHTML=`<div class="mod-head"><div class="mod-badge" style="background:${m.col}">${m.id.replace('M','')}</div><div><div class="mod-title">${m.titre}</div><div class="mod-meta">${m.h} · ${m.bdc} · ${m.cartes.length} carte${m.cartes.length>1?'s':''}</div></div></div><div class="mod-divider"></div><div class="mod-body"><div class="mod-chips">${chips}</div><div class="mod-bdc">${m.bdc}</div></div>`;
+    g.appendChild(d);
+  });
+}
+
+function filterBDC(bdc,btn){
+  curBDC=bdc;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderModules();
+}
+function filterModules(){renderModules();}
+
+function renderPERT(){
+  // Chemin critique
+  const cc=document.getElementById('cheminCritique');
+  CRITIQUE.forEach((id,i)=>{
+    cc.innerHTML+=`<span class="cc-node">${id}</span>`;
+    if(i<CRITIQUE.length-1)cc.innerHTML+='<span class="cc-arrow">→</span>';
+  });
+  const cont=document.getElementById('pertContainer');
+  NPERT.forEach(niv=>{
+    const cards=niv.ids.map(id=>{
+      const c=IDX[id];if(!c)return'';
+      const isc=CRITIQUE.includes(id);
+      const ants=c.a.length?`<div class="pc-ant">${c.a.map(a=>`<span class="ant-chip">${a}</span>`).join('')}</div>`:'';
+      return`<div class="pert-card ${isc?'crit':''}" style="background:${c.colL};border-left-color:${c.col}" onclick="openModal('${id}')"><div class="pc-id" style="color:${c.col}">${id}${isc?' 🔴':''}</div><div class="pc-titre">${c.t}</div><div class="pc-module" style="color:${c.col}">${c.mod}</div>${ants}</div>`;
+    }).join('');
+    const d=document.createElement('div');
+    d.className='pert-niveau';
+    d.innerHTML=`<div class="pert-niveau-head"><div class="niveau-badge" style="background:${niv.col}">N${niv.n}</div><div><div class="niveau-label">${niv.l}</div><div class="niveau-sub">${niv.s}</div></div><div class="niveau-count">${niv.ids.length} carte${niv.ids.length>1?'s':''}</div></div><div class="pert-row">${cards}</div>`;
+    cont.appendChild(d);
+  });
+}
+
+function openModal(id){
+  const c=IDX[id];if(!c)return;
+  document.getElementById('mId').textContent=id;
+  document.getElementById('mId').style.color=c.col;
+  document.getElementById('mTitre').textContent=c.t;
+  document.getElementById('mMod').textContent=c.mod+' · '+c.bdc;
+  document.getElementById('mObj').textContent='Je suis capable de '+c.o;
+  document.getElementById('mLiv').textContent=c.l;
+  document.getElementById('mSeuil').textContent=c.s;
+  document.getElementById('mComps').innerHTML=c.c.map(x=>`<span class="ms-tag" style="background:${c.colL};color:${c.col}">${x}</span>`).join('');
+  const as=document.getElementById('mAntSec');
+  const ant=document.getElementById('mAnt');
+  if(c.a.length){ant.innerHTML=c.a.map(a=>`<span class="ms-tag" style="background:#FEE2E2;color:#DC2626">${a}</span>`).join('');as.style.display='block';}
+  else as.style.display='none';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(e){if(e.target===document.getElementById('modalOverlay'))closeModalBtn();}
+function closeModalBtn(){document.getElementById('modalOverlay').classList.remove('open');}
+
+function showTab(name,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+
+// ════════ SUIVI QRAFT ════════
+const CYCLE = ['r','j','v'];
+let ETATS = {};
+
+function initEtats(){
+  // Charger depuis URL si présent
+  const params = new URLSearchParams(window.location.search);
+  const encoded = params.get('s');
+  if(encoded){
+    try{
+      const decoded = atob(encoded);
+      ETATS = JSON.parse(decoded);
+    }catch(e){ ETATS={}; }
+  }
+  // Compléter les manquants
+  MODULES.forEach(m=>m.cartes.forEach(c=>{ if(!ETATS[c.id]) ETATS[c.id]='r'; }));
+}
+
+function renderSuivi(){
+  const g = document.getElementById('suiviGrid');
+  g.innerHTML='';
+  MODULES.forEach(m=>{
+    const div = document.createElement('div');
+    div.className='suivi-module';
+    const cards = m.cartes.map(c=>{
+      const st = ETATS[c.id]||'r';
+      return `<div class="suivi-card s-${st}" onclick="toggleEtat('${c.id}')" title="Cliquer pour changer l'état">
+        <div class="sc-dot"></div>
+        <div class="sc-id">${c.id}</div>
+        <div class="sc-titre">${c.t}</div>
+      </div>`;
+    }).join('');
+    const nv = m.cartes.filter(c=>ETATS[c.id]==='v').length;
+    const nj = m.cartes.filter(c=>ETATS[c.id]==='j').length;
+    div.innerHTML=`<div class="suivi-mod-head">
+      <div class="suivi-mod-badge" style="background:${m.col}">${m.id.replace('M','')}</div>
+      <div class="suivi-mod-title">${m.titre}</div>
+      <div class="suivi-mod-meta">${m.h} · <span style="color:#22C55E;font-weight:700">${nv}✓</span> <span style="color:#F59E0B;font-weight:700">${nj}⏳</span> / ${m.cartes.length}</div>
+    </div><div class="suivi-cards">${cards}</div>`;
+    g.appendChild(div);
+  });
+  updateQRAFT();
+}
+
+function toggleEtat(id){
+  const cur = ETATS[id]||'r';
+  const idx = CYCLE.indexOf(cur);
+  ETATS[id] = CYCLE[(idx+1)%3];
+  // Mise à jour visuelle sans re-render complet
+  const el = document.querySelector(`.suivi-card[onclick="toggleEtat('${id}')"]`);
+  if(el){
+    el.classList.remove('s-r','s-j','s-v');
+    el.classList.add('s-'+ETATS[id]);
+  }
+  // Mettre à jour compteur module
+  updateQRAFT();
+  updateModuleCounts();
+}
+
+function updateModuleCounts(){
+  MODULES.forEach(m=>{
+    const nv = m.cartes.filter(c=>ETATS[c.id]==='v').length;
+    const nj = m.cartes.filter(c=>ETATS[c.id]==='j').length;
+    const metas = document.querySelectorAll('.suivi-mod-meta');
+    metas.forEach(meta=>{
+      // trouver le bon module via le badge adjacent
+      const head = meta.closest('.suivi-mod-head');
+      if(!head) return;
+      const badge = head.querySelector('.suivi-mod-badge');
+      if(badge && badge.textContent === m.id.replace('M',''))
+        meta.innerHTML=`${m.h} · <span style="color:#22C55E;font-weight:700">${nv}✓</span> <span style="color:#F59E0B;font-weight:700">${nj}⏳</span> / ${m.cartes.length}`;
+    });
+  });
+}
+
+function updateQRAFT(){
+  const all = Object.values(ETATS);
+  const total = all.length;
+  if(!total) return;
+  const nr = all.filter(v=>v==='r').length;
+  const nj = all.filter(v=>v==='j').length;
+  const nv = all.filter(v=>v==='v').length;
+  const pr = Math.round(nr/total*100);
+  const pj = Math.round(nj/total*100);
+  const pv = Math.round(nv/total*100);
+  document.getElementById('pctRouge').textContent = pr+'%';
+  document.getElementById('pctJaune').textContent = pj+'%';
+  document.getElementById('pctVert').textContent  = pv+'%';
+  document.getElementById('barRouge').style.width = pr+'%';
+  document.getElementById('barJaune').style.width = pj+'%';
+  document.getElementById('barVert').style.width  = pv+'%';
+  // Progress = jaune 50% + vert 100%
+  const prog = Math.round((nj*0.5 + nv) / total * 100);
+  document.getElementById('progressFill').style.width = prog+'%';
+}
+
+function genererLien(){
+  const encoded = btoa(JSON.stringify(ETATS));
+  const url = window.location.origin + window.location.pathname + '?s=' + encoded;
+  document.getElementById('shareUrl').value = url;
+}
+
+function copierLien(){
+  const input = document.getElementById('shareUrl');
+  if(!input.value) genererLien();
+  input.select();
+  navigator.clipboard.writeText(input.value).then(()=>{
+    const msg = document.getElementById('copiedMsg');
+    msg.classList.add('show');
+    setTimeout(()=>msg.classList.remove('show'),2000);
+  });
+}
+
+function resetEtats(){
+  if(!confirm('Réinitialiser toutes les cartes en rouge ?')) return;
+  MODULES.forEach(m=>m.cartes.forEach(c=>{ ETATS[c.id]='r'; }));
+  renderSuivi();
+  document.getElementById('shareUrl').value='';
+}
+
+
+// ════════ OUTILS ════════
+const FAMILLES = {
+  analyse:  {label:'Analyse & résolution',  icon:'🔍', col:'#DC2626', colL:'#FEE2E2'},
+  lean:     {label:'Lean & flux',           icon:'⚙️', col:'#EA580C', colL:'#FFF7ED'},
+  pilotage: {label:'Pilotage & mesure',      icon:'📊', col:'#1D4ED8', colL:'#DBEAFE'},
+  projet:   {label:'Gestion de projet',      icon:'🗂',  col:'#7C3AED', colL:'#EDE9FE'},
+  systemes: {label:'Systèmes de management', icon:'🏗',  col:'#0C3A5C', colL:'#E6F6FB'},
+  qualite:  {label:'Qualité & conformité',   icon:'📋', col:'#0F766E', colL:'#CCFBF1'},
+  rse:      {label:'RSE & Environnement',    icon:'🌱', col:'#15803D', colL:'#DCFCE7'},
+  humain:   {label:'Humain & management',    icon:'👥', col:'#B45309', colL:'#FEF3C7'},
+  finance:  {label:'Finance & stratégie',    icon:'💰', col:'#475569', colL:'#E2E8F0'},
+};
+
+const OUTILS = [
+  // ── ANALYSE ──
+  {nom:'Ishikawa / 5M-6M', sigle:'Diagramme causes-effets', fam:'analyse',
+   def:"Représente les causes d'un problème en 5 familles (5M : Main-d'œuvre, Milieu, Matière, Matériel, Méthodes) + Mesure en 6M. Appelé aussi diagramme en arêtes de poisson.",
+   cartes:['C-34'], cg:false},
+  {nom:'5 Pourquoi', sigle:'5P — Root Cause Analysis', fam:'analyse',
+   def:"Technique consistant à se poser la question « Pourquoi ? » 5 fois de suite pour remonter à la cause racine d'un problème, au-delà des symptômes apparents.",
+   cartes:['C-35'], cg:false},
+  {nom:'8D', sigle:'Eight Disciplines', fam:'analyse',
+   def:"Méthode de résolution de problème en 8 étapes (D1 à D8) intégrant le QQOQCCP, le 5M, les 5P et un plan d'action. Support structurant pour les enquêtes qualité.",
+   cartes:['C-33'], cg:false},
+  {nom:'A3', sigle:'Rapport A3', fam:'analyse',
+   def:"Méthode de résolution de problème en 7 étapes tenant sur une feuille A3 : description, situation actuelle, objectif visé, analyse des causes, proposition d'amélioration, plan d'action, suivi.",
+   cartes:['C-33'], cg:false},
+  {nom:'QQOQCCP', sigle:'Qui · Quoi · Où · Quand · Comment · Combien · Pourquoi', fam:'analyse',
+   def:"Outil de questionnement systématique permettant de poser et cadrer un problème de façon exhaustive. Socle de toute démarche d'enquête ou d'investigation.",
+   cartes:['C-33'], cg:false},
+  {nom:'Pareto / 80-20', sigle:'Loi de Pareto — Courbe ABC', fam:'analyse',
+   def:"20 % des causes génèrent 80 % des effets. La courbe ABC découpe en zones A (0-80%), B (80-95%), C (95-100%) pour prioriser les actions sur les causes les plus impactantes.",
+   cartes:['C-36'], cg:false},
+  {nom:'Brainstorming', sigle:'Remue-méninges', fam:'analyse',
+   def:"Technique de créativité collective visant à produire le maximum d'idées sans jugement dans un premier temps, pour en extraire ensuite les meilleures.",
+   cartes:['C-36'], cg:false},
+  {nom:'Diagramme des affinités', sigle:'Diagramme KJ', fam:'analyse',
+   def:"Technique créative permettant de rassembler et regrouper les idées d'une équipe par affinités pour parvenir à un accord ou une solution commune. Efficace sur les problèmes à dominante humaine.",
+   cartes:['C-36'], cg:false},
+  {nom:'Matrice impact-effort', sigle:'Priorisation des actions', fam:'analyse',
+   def:"Matrice 2×2 classant les actions selon leur impact attendu (fort/faible) et l'effort requis (faible/fort). Permet de prioriser les « quick wins » (fort impact, faible effort).",
+   cartes:['C-36'], cg:false},
+  {nom:'DELPHI', sigle:'Méthode Delphi', fam:'analyse',
+   def:"Méthode de consultation itérative d'experts permettant d'obtenir un consensus sur des questions complexes. Utilisée en veille prospective, évaluation des risques et définition des priorités.",
+   cartes:[], cg:false},
+
+  // ── LEAN ──
+  {nom:'5S', sigle:'Seiri · Seiton · Seiso · Seiketsu · Shitsuke', fam:'lean',
+   def:"Démarche japonaise d'amélioration continue visant à rendre l'espace de travail évident : Supprimer l'inutile, Situer les choses, Scintiller (nettoyer), Standardiser, Suivre. Impact direct sur SQHSE.",
+   cartes:['C-80'], cg:false},
+  {nom:'VA / NVA', sigle:'Valeur Ajoutée / Non Valeur Ajoutée', fam:'lean',
+   def:"Distinction fondamentale du Lean : activité VA (transforme le produit selon les attentes client), NVA inévitable (nécessaire sans valeur), NVA pure (gaspillage pur à éliminer).",
+   cartes:['C-79'], cg:false},
+  {nom:'Diagramme spaghetti', sigle:'Analyse des flux de déplacements', fam:'lean',
+   def:"Représentation cartographique des déplacements réels d'un opérateur ou d'un produit sur un plan coté. Permet de visualiser et réduire les déplacements inutiles (NVA flux).",
+   cartes:['C-81'], cg:false},
+  {nom:'Gemba Walk', sigle:'Aller voir sur le terrain', fam:'lean',
+   def:"Démarche d'observation terrain structurée : « aller là où se passe la réalité » pour observer les faits sans jugement, poser des questions aux opérateurs et identifier les gaspillages et opportunités.",
+   cartes:['C-83'], cg:false},
+  {nom:'Kaizen', sigle:'Amélioration continue — petit pas', fam:'lean',
+   def:"Philosophie japonaise d'amélioration continue par petits pas, avec peu d'investissement et l'implication de tous. Opposé au Kaikaku (changement radical). Socle culturel du Lean.",
+   cartes:['C-79','C-80','C-83'], cg:false},
+  {nom:'PDCA', sigle:'Roue de Deming — Plan·Do·Check·Act', fam:'lean',
+   def:"Cycle d'amélioration continue en 4 étapes : Planifier, Déployer, Contrôler, Assurer. Premier outil de l'amélioration continue, utilisé dans tous les systèmes de management.",
+   cartes:['C-36'], cg:false},
+  {nom:'7 Gaspillages (Muda)', sigle:'Muda · Mura · Muri', fam:'lean',
+   def:"Les 7 gaspillages Toyota : surproduction, attente, transport inutile, opérations inutiles, stocks, mouvements inutiles, défauts. Auxquels s'ajoutent Muri (surcharge) et Mura (irrégularité).",
+   cartes:['C-79'], cg:false},
+  {nom:'Management visuel', sigle:'Visualisation des performances', fam:'lean',
+   def:"Système de communication visuelle (couleurs, pictogrammes, affichages) permettant à tous de connaître l'état du processus en un coup d'œil. Complémentaire au 5S et à la standardisation.",
+   cartes:['C-82'], cg:false},
+  {nom:'Andon', sigle:'Système d\'alerte visuelle et sonore', fam:'lean',
+   def:"Dispositif d'alerte (lumineux et/ou sonore) signalant en temps réel une anomalie : problème qualité, dérive, arrêt, retard. Déclenche une réaction immédiate de l'équipe.",
+   cartes:['C-82'], cg:false},
+  {nom:'VSM', sigle:'Value Stream Mapping', fam:'lean',
+   def:"Cartographie des flux de valeur permettant de visualiser l'ensemble du processus (matières et informations), d'identifier les gaspillages et de construire une vision cible améliorée.",
+   cartes:['C-79'], cg:true},
+  {nom:'Kanban', sigle:'Système à flux tiré par étiquettes', fam:'lean',
+   def:"Méthode de pilotage en flux tiré : rien n'est produit sans signal de consommation aval. L'étiquette Kanban déclenche la production ou l'approvisionnement. Réduit les stocks et les encours.",
+   cartes:[], cg:true},
+
+  // ── PILOTAGE ──
+  {nom:'SQCDP', sigle:'Sécurité · Qualité · Coûts · Délais · Personnel', fam:'pilotage',
+   def:"Tableau de bord opérationnel de terrain animé lors de l'AIC quotidienne. 5 axes de performance visualisés avec code RAG (Rouge/Ambré/Vert). Standard du management visuel Lean.",
+   cartes:['C-82'], cg:false},
+  {nom:'AIC', sigle:'Animation à Intervalles Courts', fam:'pilotage',
+   def:"Réunion debout de 7 minutes maximum, quotidienne, animée par un pilote tournant. Basée sur le tableau SQCDP pour identifier et traiter rapidement les dérives et signaux faibles.",
+   cartes:['C-82'], cg:false},
+  {nom:'Tableaux de bord', sigle:'Pilotage par indicateurs', fam:'pilotage',
+   def:"Outil de pilotage de l'activité dans le temps, constitué d'indicateurs de performance. Un bon tableau de bord passe le « test des 30 secondes » : lisible sans explication.",
+   cartes:['C-24','C-25','C-26','C-27','C-28'], cg:false},
+  {nom:'Indicateurs SMART', sigle:'Spécifique · Mesurable · Acceptable · Réaliste · Temporel', fam:'pilotage',
+   def:"Critères de définition d'un indicateur ou d'un objectif de qualité. Un indicateur SMART est opérationnel, mesurable sur le terrain et porteur d'une décision d'action.",
+   cartes:['C-24'], cg:false},
+  {nom:'QCD', sigle:'Qualité · Coûts · Délais', fam:'pilotage',
+   def:"Triptyque fondamental du pilotage de la performance : Qualité (conformité aux exigences), Coûts (maîtrise des ressources), Délais (respect des engagements de livraison).",
+   cartes:['C-18'], cg:false},
+  {nom:'Capabilité Cp / Cpk', sigle:'Indices de capabilité processus', fam:'pilotage',
+   def:"Indices statistiques mesurant la capacité d'un processus à produire dans les tolérances spécifiées. Cp mesure le potentiel, Cpk tient compte du centrage. Objectif : Cpk ≥ 1,33.",
+   cartes:['C-62'], cg:false},
+  {nom:'Cartes de contrôle X̄/R et I/MR', sigle:'MSP — Maîtrise Statistique des Processus', fam:'pilotage',
+   def:"Outils graphiques de surveillance en temps réel d'un processus. X̄/R pour les mesures en sous-groupes, I/MR pour les mesures individuelles. Détectent les dérives avant apparition des défauts.",
+   cartes:['C-63','C-64'], cg:false},
+  {nom:'DPMO / Niveau sigma', sigle:'Défauts Par Million d\'Opportunités', fam:'pilotage',
+   def:"Mesure de la performance qualité : nombre de défauts pour un million d'opportunités. Le niveau sigma traduit ce taux en niveau de maturité (6σ = 3,4 DPMO = excellence).",
+   cartes:['C-65'], cg:false},
+  {nom:'MSP / SPC', sigle:'Maîtrise Statistique des Processus', fam:'pilotage',
+   def:"Ensemble de méthodes statistiques permettant de surveiller, contrôler et améliorer un processus en temps réel. Inclut les cartes de contrôle, la capabilité et l'analyse des signaux de Nelson.",
+   cartes:['C-62','C-63','C-64','C-65'], cg:false},
+
+  // ── PROJET ──
+  {nom:'WBS', sigle:'Work Breakdown Structure — Organigramme des tâches', fam:'projet',
+   def:"Décomposition hiérarchique du projet en livrables puis en tâches élémentaires sur 3 niveaux minimum. Base indispensable avant toute planification PERT ou GANTT.",
+   cartes:['C-15'], cg:false},
+  {nom:'PERT', sigle:'Program Evaluation and Review Technique', fam:'projet',
+   def:"Réseau de tâches ordonné représentant les dépendances, les dates au plus tôt/tard, les marges libres et totales, et le chemin critique. Outil de planification et d'optimisation de projet.",
+   cartes:['C-16'], cg:false},
+  {nom:'GANTT', sigle:'Diagramme de GANTT', fam:'projet',
+   def:"Représentation graphique du planning de projet sous forme de barres horizontales. Traduit le réseau PERT en calendrier opérationnel avec jalons, ressources et chemin critique.",
+   cartes:['C-17'], cg:false},
+  {nom:'Matrice pouvoir-intérêt', sigle:'Cartographie des parties prenantes', fam:'projet',
+   def:"Outil de positionnement des parties prenantes selon leur niveau de pouvoir et d'intérêt. Détermine la stratégie de communication et d'engagement adaptée à chaque acteur.",
+   cartes:['C-13'], cg:false},
+  {nom:'Cahier des charges fonctionnel', sigle:'CdCF — Analyse fonctionnelle', fam:'projet',
+   def:"Document formalisant les fonctionnalités attendues et les contraintes d'un projet. Centre sur l'usage (ce que ça doit faire) plutôt que la solution technique (comment c'est fait).",
+   cartes:['C-14'], cg:false},
+  {nom:'Plan d\'action SMART', sigle:'Planification des actions correctives', fam:'projet',
+   def:"Formalisation des actions correctives ou préventives selon les critères SMART. Chaque action précise : quoi, qui, quand, avec quelle ressource et quel indicateur de succès.",
+   cartes:['C-36'], cg:false},
+  {nom:'Matrice KISS', sigle:'Keep It Simple and Stupid', fam:'projet',
+   def:"Principe de simplicité appliqué à la conception de solutions et de processus : favoriser les solutions simples, robustes et compréhensibles par tous plutôt que les solutions complexes et fragiles.",
+   cartes:['C-14','C-15'], cg:false},
+  {nom:'4L', sigle:'Liked · Learned · Lacked · Longed for', fam:'projet',
+   def:"Outil de rétrospective et de retour d'expérience en 4 quadrants : Ce qui a bien marché, Ce qu'on a appris, Ce qui a manqué, Ce qu'on souhaiterait pour la suite. Simple et efficace en bilan de projet.",
+   cartes:['C-16','C-18'], cg:false},
+
+  // ── SYSTÈMES ──
+  {nom:'Structure HLS', sigle:'High Level Structure — ISO Annex SL', fam:'systemes',
+   def:"Architecture commune aux normes ISO de systèmes de management (10 chapitres identiques). Facilite l'intégration des référentiels 9001, 14001 et 45001 dans un SMI unique.",
+   cartes:['C-05'], cg:false},
+  {nom:'Cartographie des processus', sigle:'Macro-cartographie', fam:'systemes',
+   def:"Représentation graphique des processus d'une organisation en 3 niveaux : management, réalisation, support. Montre les interactions, les pilotes et les flux entre processus.",
+   cartes:['C-10'], cg:false},
+  {nom:'Fiche processus', sigle:'Fiche d\'identité processus', fam:'systemes',
+   def:"Document décrivant un processus : finalité, entrées, sorties, activités, ressources, pilote, indicateurs de performance et interfaces. Base de la maîtrise documentaire du SMI.",
+   cartes:['C-11'], cg:false},
+  {nom:'Logigramme', sigle:'Flowchart — Swimlanes', fam:'systemes',
+   def:"Modélisation graphique d'un processus avec représentation des acteurs en couloirs (swimlanes), des activités, des décisions et des documents associés. Norme BPMN ou ISO.",
+   cartes:['C-12'], cg:false},
+  {nom:'SIPOC', sigle:'Suppliers · Inputs · Process · Outputs · Customers', fam:'systemes',
+   def:"Outil de cadrage d'un processus en 5 colonnes : Fournisseurs, Entrées, Processus, Sorties, Clients. Donne une vision macro avant toute analyse détaillée.",
+   cartes:['C-09','C-10'], cg:false},
+  {nom:'AMDEC', sigle:'Analyse des Modes de Défaillance, de leurs Effets et Criticité', fam:'systemes',
+   def:"Outil d'analyse préventive des risques d'un processus. Pour chaque mode de défaillance : identification des effets, des causes, cotation G×O×D = IPR, puis plan d'actions préventives.",
+   cartes:['C-84'], cg:false},
+  {nom:'Audit', sigle:'Audit interne processus', fam:'systemes',
+   def:"Examen systématique et indépendant basé sur la triade critère/constat/preuve. Permet de vérifier la conformité, d'identifier les écarts et les bonnes pratiques, sans jugement ni opinion.",
+   cartes:['C-29','C-30','C-31','C-32'], cg:false},
+  {nom:'Plan de contrôle', sigle:'Surveillance des caractéristiques', fam:'systemes',
+   def:"Document listant les caractéristiques à contrôler, les méthodes de mesure, les fréquences, les responsables et les réactions en cas de dérive. Lien direct avec le plan de surveillance.",
+   cartes:['C-55','C-56'], cg:false},
+  {nom:'Check-list', sigle:'Liste de vérification', fam:'systemes',
+   def:"Liste prédéfinie de points à vérifier dans un ordre précis. Outil simple et robuste de prévention des oublis et des erreurs, applicable en audit, en production ou en sécurité.",
+   cartes:['C-29','C-31'], cg:false},
+  {nom:'DMAIC', sigle:'Define · Measure · Analyze · Improve · Control', fam:'systemes',
+   def:"Démarche structurée de résolution de problème issue du Six Sigma. Séquence les phases d'un projet d'amélioration de façon rigoureuse. Fil conducteur du Green Belt.",
+   cartes:['C-33','C-34','C-35','C-36'], cg:false},
+  {nom:'VOC', sigle:'Voice Of Customer', fam:'systemes',
+   def:"Recueil systématique de la voix du client (attentes, besoins, insatisfactions) pour traduire ses exigences en caractéristiques mesurables (CTQ — Critical To Quality).",
+   cartes:['C-44','C-45'], cg:false},
+  {nom:'Poka-Yoke', sigle:'Détrompeur', fam:'systemes',
+   def:"Dispositif simple et peu coûteux empêchant physiquement une erreur humaine ou la détectant avant qu'elle produise un défaut. Principe du zéro défaut par conception.",
+   cartes:[], cg:true},
+
+  // ── QUALITÉ ──
+  {nom:'ISO 9001 / 14001 / 45001', sigle:'Normes de systèmes de management', fam:'qualite',
+   def:"Référentiels internationaux pour les systèmes de management Qualité (9001), Environnement (14001) et Santé-Sécurité (45001). Partagent la même structure HLS depuis 2015.",
+   cartes:['C-05','C-06','C-07','C-08'], cg:false},
+  {nom:'HACCP / PMS', sigle:'Hazard Analysis Critical Control Points', fam:'qualite',
+   def:"Méthode d'analyse et de maîtrise des dangers alimentaires en 7 principes. Le Plan de Maîtrise Sanitaire (PMS) intègre les BPH, le HACCP et les procédures de traçabilité.",
+   cartes:['C-59'], cg:false},
+  {nom:'Food fraud & Food defense', sigle:'Vulnérabilité et défense alimentaire', fam:'qualite',
+   def:"Food fraud : fraude intentionnelle sur les aliments (substitution, adultération). Food defense : protection contre les actes malveillants. Deux volets complémentaires de la sécurité alimentaire.",
+   cartes:['C-60','C-61'], cg:false},
+  {nom:'Métrologie / Étalonnage', sigle:'Maîtrise des équipements de mesure', fam:'qualite',
+   def:"Science de la mesure : raccordement COFRAC, étalonnage des EME, incertitude de mesure, fidélité et justesse. Garantit la fiabilité des données de contrôle et de surveillance.",
+   cartes:['C-54'], cg:false},
+  {nom:'ISO 2859 / Échantillonnage', sigle:'Contrôle par attributs — NQA', fam:'qualite',
+   def:"Norme définissant les plans de contrôle par échantillonnage. Le NQA (Niveau de Qualité Acceptable) fixe le seuil de qualité tolérable. Permet de décider accepter/rejeter un lot.",
+   cartes:['C-55'], cg:false},
+  {nom:'VGP / Conformité réglementaire', sigle:'Vérifications Générales Périodiques', fam:'qualite',
+   def:"Contrôles obligatoires des équipements de travail (électrique, incendie, levage, pression…). Définis par la réglementation, réalisés par des organismes agréés, consignés dans un registre.",
+   cartes:['C-57'], cg:false},
+  {nom:'Matrice KANO', sigle:'Satisfaction client — Modèle de Kano', fam:'qualite',
+   def:"Modèle classifiant les caractéristiques produit/service en 3 catégories : basiques (attendues), performantes (plus = mieux) et attractives (enchantent le client). Guide la priorisation des améliorations.",
+   cartes:['C-44','C-45'], cg:false},
+  {nom:'MASE', sigle:'Manuel d\'Amélioration Sécurité des Entreprises', fam:'qualite',
+   def:"Référentiel de certification pour les entreprises intervenantes (sous-traitants) visant à améliorer les performances SSE. Très présent dans les secteurs chimique, pétrolier et de l'énergie.",
+   cartes:[], cg:true},
+  {nom:'HAZOP', sigle:'HAZard and OPerability study', fam:'qualite',
+   def:"Méthode d'analyse des risques sur les installations industrielles par déviation des paramètres de fonctionnement. Utilisée en chimie, énergie et industrie de process. Variante de l'AMDEC.",
+   cartes:[], cg:true},
+
+  // ── RSE ──
+  {nom:'ISO 26000 / Lucie', sigle:'Responsabilité sociétale des organisations', fam:'rse',
+   def:"Norme de référence en RSE (non certifiable) structurée en 7 questions centrales. Le label Lucie traduit ISO 26000 en référentiel certifiable pour les PME françaises.",
+   cartes:['C-71'], cg:false},
+  {nom:'Labels RSE', sigle:'Ecovadis · PME+ · B-Corp · Lucie', fam:'rse',
+   def:"Évaluations et certifications RSE : Ecovadis (notation chaîne d'approvisionnement), PME+ (label français PME), B-Corp (mission sociale et environnementale), Lucie (ISO 26000 certifiable).",
+   cartes:['C-70'], cg:false},
+  {nom:'Matrice RSE 3 piliers', sigle:'Économique · Social · Environnemental', fam:'rse',
+   def:"Grille d'analyse RSE croisant les 3 piliers du développement durable (économique, social, environnemental) avec les parties prenantes et les enjeux spécifiques de l'organisation.",
+   cartes:['C-69'], cg:false},
+  {nom:'AES', sigle:'Aspects Environnementaux Significatifs', fam:'rse',
+   def:"Élément central de l'ISO 14001 : identification et évaluation des interactions entre les activités de l'organisation et l'environnement (eau, air, sol, déchets, énergie, bruit). Les AES significatifs font l'objet d'objectifs de maîtrise.",
+   cartes:['C-07','C-66','C-68'], cg:false},
+  {nom:'Bilan carbone', sigle:'Empreinte GES — Scopes 1/2/3', fam:'rse',
+   def:"Méthode de quantification des émissions de gaz à effet de serre en équivalents CO₂. Trois périmètres : Scope 1 (émissions directes), Scope 2 (énergie achetée), Scope 3 (chaîne de valeur amont/aval).",
+   cartes:['C-69','C-71'], cg:false},
+  {nom:'Nomenclature des déchets / BSD', sigle:'Bordereau de Suivi des Déchets', fam:'rse',
+   def:"La nomenclature européenne code chaque déchet sur 6 chiffres (dangereux = astérisque). Le BSD est le document obligatoire de traçabilité pour tout déchet dangereux, de sa production à son élimination.",
+   cartes:['C-66','C-67','C-68'], cg:false},
+  {nom:'Veille réglementaire', sigle:'Tableau de veille structuré', fam:'rse',
+   def:"Dispositif organisé de surveillance des évolutions législatives, réglementaires et normatives applicables à l'organisation. Inclut les sources (Légifrance, INRS, AFNOR…), les fréquences et les responsables.",
+   cartes:['C-72','C-73','C-74'], cg:false},
+
+  // ── HUMAIN ──
+  {nom:'DISC', sigle:'Dominant · Influent · Stable · Consciencieux', fam:'humain',
+   def:"Modèle comportemental en 4 profils identifiant les styles de communication, les motivations et les zones de tension. Outil puissant pour adapter sa communication et gérer les conflits.",
+   cartes:['C-19','C-20','C-21','C-22'], cg:false},
+  {nom:'Courbe d\'intégration', sigle:'Onboarding — Cycle d\'intégration', fam:'humain',
+   def:"Représentation des phases d'intégration d'un nouveau collaborateur (enthousiasme, doute, apprentissage, performance). Permet de personnaliser l'accompagnement selon la phase.",
+   cartes:['C-51','C-52'], cg:false},
+  {nom:'QVCT', sigle:'Qualité de Vie et Conditions de Travail', fam:'humain',
+   def:"Démarche globale d'amélioration des conditions de travail en 7 dimensions (ANI 2013, loi 2021). Va au-delà de la prévention des risques pour inclure l'engagement, l'autonomie et le sens au travail.",
+   cartes:['C-41','C-42','C-43'], cg:false},
+  {nom:'Ergonomie / C3P', sigle:'Facteurs de pénibilité', fam:'humain',
+   def:"L'ergonomie adapte le travail à l'homme. Les C3P (Contraintes Physiques, Psychiques, Post de travail Pénible) sont les facteurs de pénibilité réglementaires permettant l'ouverture d'un compte prévention.",
+   cartes:['C-37','C-38','C-39','C-40'], cg:false},
+  {nom:'Pyramide de Maslow', sigle:'Hiérarchie des besoins', fam:'humain',
+   def:"Modèle hiérarchisant les besoins humains en 5 niveaux : physiologiques, sécurité, appartenance, estime, accomplissement. Grille de lecture des motivations individuelles et collectives.",
+   cartes:['C-41','C-51'], cg:false},
+  {nom:'Conduite du changement', sigle:'Accompagnement des transformations', fam:'humain',
+   def:"Ensemble de méthodes pour accompagner les individus et les organisations dans les transitions. Analyse des résistances (DISC), plan de communication, formation et mobilisation des acteurs clés.",
+   cartes:['C-22'], cg:false},
+  {nom:'Animation de réunions', sigle:'Réunions efficaces — Facilitation', fam:'humain',
+   def:"Techniques de préparation, d'animation et de compte-rendu de réunions productives. Inclut la gestion du temps, des profils DISC, des décisions et du suivi des actions.",
+   cartes:['C-23'], cg:false},
+
+  // ── FINANCE ──
+  {nom:'PAQ / Coûts de non-qualité', sigle:'Plan d\'Assurance Qualité — CNQ', fam:'finance',
+   def:"Le modèle PAQ classe les coûts qualité en 4 familles : prévention, évaluation, défaillances internes, défaillances externes. Le CNQ (total) révèle le gisement de gains pour les projets d'amélioration.",
+   cartes:['C-49'], cg:false},
+  {nom:'ROI projet QSE', sigle:'Retour sur Investissement', fam:'finance',
+   def:"Calcul du ratio gains générés / coûts engagés pour un projet QSE. Permet de justifier économiquement une action de prévention ou d'amélioration auprès de la direction.",
+   cartes:['C-50'], cg:false},
+  {nom:'Charges fixes / variables', sigle:'Analyse des coûts — Seuil de rentabilité', fam:'finance',
+   def:"Distinction fondamentale entre charges fixes (indépendantes du volume) et variables (proportionnelles). Le seuil de rentabilité est le volume à partir duquel l'activité devient bénéficiaire.",
+   cartes:['C-47','C-48'], cg:false},
+  {nom:'SWOT', sigle:'Strengths · Weaknesses · Opportunities · Threats', fam:'finance',
+   def:"Outil de diagnostic stratégique en 4 quadrants : Forces et Faiblesses (internes), Opportunités et Menaces (externes). Base de toute réflexion stratégique et de la politique QSE.",
+   cartes:['C-07','C-08'], cg:false},
+  {nom:'Enquêtes de satisfaction', sigle:'Customer journey — NPS', fam:'finance',
+   def:"Dispositif de mesure de la satisfaction client/collaborateur : questionnaire structuré, questions ouvertes, analyse des verbatims, NPS (Net Promoter Score). Ancré sur la perception réelle.",
+   cartes:['C-44','C-45','C-46'], cg:false},
+  {nom:'Customer journey map', sigle:'Carte d\'expérience client', fam:'finance',
+   def:"Cartographie du parcours client ou collaborateur : moments clés, points de contact, émotions ressenties, moments de vérité. Permet d'identifier les leviers d'amélioration de l'expérience.",
+   cartes:['C-44'], cg:false},
+];
+
+let curFamille = 'all';
+
+function renderOutils(){
+  const q = document.getElementById('outilsSearch').value.toLowerCase();
+  const grid = document.getElementById('outilsGrid');
+  grid.innerHTML = '';
+  let count = 0;
+  OUTILS.forEach(o => {
+    if(curFamille !== 'all' && o.fam !== curFamille) return;
+    if(q && !o.nom.toLowerCase().includes(q) && !o.sigle.toLowerCase().includes(q) && !o.def.toLowerCase().includes(q)) return;
+    const fam = FAMILLES[o.fam];
+    const chips = o.cartes.map(id => {
+      const c = IDX[id];
+      return `<span class="outil-carte-chip" style="background:${c?c.colL:'#f1f5f9'};color:${c?c.col:'#475569'}" onclick="openModal('${id}')" title="${c?c.t:id}">${id}</span>`;
+    }).join('');
+    const cgBadge = o.cg ? `<span class="outil-cg">culture générale</span>` : '';
+    const card = document.createElement('div');
+    card.className = 'outil-card';
+    card.innerHTML = `
+      <div class="outil-head">
+        <div class="outil-icon">${fam.icon}</div>
+        <div>
+          <div class="outil-nom">${o.nom}</div>
+          <div class="outil-sigle">${o.sigle}</div>
+        </div>
+      </div>
+      <div class="outil-divider"></div>
+      <div class="outil-body">
+        <div class="outil-def">${o.def}</div>
+        <div class="outil-meta">
+          <span class="outil-famille" style="background:${fam.colL};color:${fam.col}">${fam.icon} ${fam.label}</span>
+          ${cgBadge}
+        </div>
+        ${chips ? `<div class="outil-cartes">${chips}</div>` : ''}
+      </div>`;
+    grid.appendChild(card);
+    count++;
+  });
+  document.getElementById('oNbAffiches').textContent = count;
+  if(count === 0) grid.innerHTML = '<div class="outils-empty">Aucun outil ne correspond à cette recherche.</div>';
+}
+
+function filterFamille(fam, btn){
+  curFamille = fam;
+  document.querySelectorAll('.outils-filter-bar .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOutils();
+}
+
+function filterOutils(){ renderOutils(); }
+
+document.addEventListener('DOMContentLoaded',()=>{initEtats();renderModules();renderPERT();renderSuivi();renderOutils();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModalBtn();});
+</script>
+</body>
+</html>

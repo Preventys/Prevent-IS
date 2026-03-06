@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevent'IS — Tableau de bord</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --prev: #009FC4;
+    --prev-d: #007A99;
+    --prev-dd: #0C3A5C;
+    --prev-l: #E6F6FB;
+    --prev-ll: #F0FAFD;
+    --ink: #0C1A28;
+    --muted: #64748B;
+    --border: #E2E8F0;
+    --white: #FFFFFF;
+    --cream: #F8F7F3;
+
+    /* couleurs outils */
+    --road:   #009FC4; --road-l:   #E6F6FB;
+    --agil:   #15803D; --agil-l:   #DCFCE7;
+    --cards:  #7C3AED; --cards-l:  #EDE9FE;
+    --plane:  #EA580C; --plane-l:  #FFF7ED;
+    --assist: #0F766E; --assist-l: #CCFBF1;
+    --exam:   #B45309; --exam-l:   #FFFBEB;
+    --score:  #BE185D; --score-l:  #FCE7F3;
+    --trip:   #475569; --trip-l:   #E2E8F0;
+    --voice:  #6D28D9; --voice-l:  #F5F3FF;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────── */
+  header {
+    background: var(--prev-dd);
+    padding: 0 clamp(16px, 4vw, 40px);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(12,58,92,0.18);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--prev);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(16px, 2.5vw, 20px);
+    color: white;
+    letter-spacing: 0.04em;
+  }
+
+  .logo-text span {
+    color: #7DD3FA;
+    font-weight: 400;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .date-badge {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: #BAE6FD;
+    font-family: 'DM Sans', sans-serif;
+    display: none;
+  }
+
+  @media (min-width: 480px) { .date-badge { display: block; } }
+
+  .avatar {
+    width: 36px; height: 36px;
+    background: var(--prev);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.2);
+    transition: border-color 0.2s;
+  }
+  .avatar:hover { border-color: rgba(255,255,255,0.6); }
+
+  /* ── HERO BAND ───────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, var(--prev-dd) 0%, var(--prev-d) 60%, var(--prev) 100%);
+    padding: clamp(24px, 4vw, 40px) clamp(16px, 4vw, 40px);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: 60px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 900px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7DD3FA;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+
+  .hero-sub {
+    font-size: clamp(13px, 2vw, 15px);
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+  }
+
+  /* ── PROGRESS BAR ───────────────────────────────────────── */
+  .progress-section {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 14px clamp(16px, 4vw, 40px);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .progress-label {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    min-width: 120px;
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    width: 34%;
+    background: linear-gradient(90deg, var(--prev), var(--prev-d));
+    border-radius: 99px;
+    transition: width 1s ease;
+  }
+
+  .progress-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--prev-d);
+    white-space: nowrap;
+  }
+
+  .cards-count {
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--prev-ll);
+    border-radius: 99px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+
+  /* ── MAIN GRID ───────────────────────────────────────────── */
+  main {
+    padding: clamp(16px, 3vw, 32px) clamp(16px, 4vw, 40px);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 14px;
+    margin-top: 28px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* ── OUTIL CARDS ─────────────────────────────────────────── */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: 12px;
+  }
+
+  .tool-card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px 16px 16px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--tool-color);
+    border-radius: 16px 16px 0 0;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+    transform-origin: left;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border-color: var(--tool-color);
+  }
+
+  .tool-card:hover::before { transform: scaleX(1); }
+
+  .tool-card:active { transform: translateY(-1px); }
+
+  .tool-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tool-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: var(--tool-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .tool-arrow {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--tool-bg);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--tool-color);
+    font-size: 13px;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.18s, transform 0.18s;
+    flex-shrink: 0;
+  }
+
+  .tool-card:hover .tool-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .tool-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .tool-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .tool-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--tool-bg);
+    color: var(--tool-color);
+    border-radius: 99px;
+    padding: 2px 8px;
+    width: fit-content;
+  }
+
+  /* ── TOOL CARD VARIANTS ──────────────────────────────────── */
+  .tool-road   { --tool-color: var(--road);   --tool-bg: var(--road-l); }
+  .tool-agil   { --tool-color: var(--agil);   --tool-bg: var(--agil-l); }
+  .tool-cards  { --tool-color: var(--cards);  --tool-bg: var(--cards-l); }
+  .tool-plane  { --tool-color: var(--plane);  --tool-bg: var(--plane-l); }
+  .tool-assist { --tool-color: var(--assist); --tool-bg: var(--assist-l); }
+  .tool-exam   { --tool-color: var(--exam);   --tool-bg: var(--exam-l); }
+  .tool-score  { --tool-color: var(--score);  --tool-bg: var(--score-l); }
+  .tool-trip   { --tool-color: var(--trip);   --tool-bg: var(--trip-l); }
+  .tool-voice  { --tool-color: var(--voice);  --tool-bg: var(--voice-l); }
+
+  /* ── HIGHLIGHT CARD (Prevent'Road — accès rapide jour J) ── */
+  .tool-card.highlight {
+    grid-column: span 2;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--prev-dd) 0%, var(--prev-d) 100%);
+    border-color: transparent;
+    color: white;
+  }
+
+  @media (max-width: 480px) {
+    .tool-card.highlight { grid-column: span 1; flex-direction: column; align-items: flex-start; }
+  }
+
+  .tool-card.highlight .tool-name { color: white; font-size: 16px; }
+  .tool-card.highlight .tool-sub  { color: rgba(255,255,255,0.7); }
+  .tool-card.highlight .tool-icon { background: rgba(255,255,255,0.15); font-size: 28px; width: 52px; height: 52px; border-radius: 14px; }
+  .tool-card.highlight .tool-badge { background: rgba(255,255,255,0.15); color: #7DD3FA; }
+  .tool-card.highlight .tool-arrow { background: rgba(255,255,255,0.15); color: white; opacity: 1; transform: none; }
+  .tool-card.highlight::before { display: none; }
+  .tool-card.highlight:hover { border-color: transparent; box-shadow: 0 8px 28px rgba(12,58,92,0.3); }
+
+  .highlight-body { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+  /* ── ANDON STRIP ─────────────────────────────────────────── */
+  .andon {
+    background: #FFF7ED;
+    border: 1.5px solid #FED7AA;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13.5px;
+    color: #92400E;
+    margin-bottom: 4px;
+  }
+
+  .andon-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #F97316;
+    flex-shrink: 0;
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  .andon strong { font-weight: 600; }
+
+  /* ── VOICE BANNER ────────────────────────────────────────── */
+  .voice-banner {
+    background: var(--voice-l);
+    border: 1.5px solid #DDD6FE;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: box-shadow 0.18s;
+  }
+
+  .voice-banner:hover { box-shadow: 0 4px 16px rgba(109,40,217,0.12); }
+
+  .voice-play {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--voice);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(109,40,217,0.3);
+  }
+
+  .voice-meta { flex: 1; }
+  .voice-meta strong { display: block; font-size: 14px; color: var(--voice); font-family: 'Syne', sans-serif; font-weight: 700; }
+  .voice-meta span { font-size: 12px; color: #7C3AED; opacity: 0.75; }
+
+  .voice-duration {
+    font-size: 12px;
+    color: var(--voice);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    background: white;
+    border-radius: 99px;
+    padding: 3px 10px;
+  }
+
+  /* ── BOTTOM NAV (mobile) ─────────────────────────────────── */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    z-index: 100;
+  }
+
+  @media (max-width: 640px) { .bottom-nav { display: flex; } }
+
+  .bottom-nav-items {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .bn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.15s;
+  }
+
+  .bn-item:active { background: var(--prev-ll); }
+
+  .bn-icon { font-size: 20px; }
+  .bn-label { font-size: 10px; color: var(--muted); font-weight: 500; }
+  .bn-item.active .bn-label { color: var(--prev); }
+  .bn-item.active .bn-icon { filter: none; }
+
+  /* padding bas pour mobile nav */
+  @media (max-width: 640px) { main { padding-bottom: 80px; } }
+
+  /* ── ANIMATIONS ──────────────────────────────────────────── */
+  .tool-card {
+    animation: card-in 0.4s ease both;
+  }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .tool-card:nth-child(1)  { animation-delay: 0.04s; }
+  .tool-card:nth-child(2)  { animation-delay: 0.08s; }
+  .tool-card:nth-child(3)  { animation-delay: 0.12s; }
+  .tool-card:nth-child(4)  { animation-delay: 0.16s; }
+  .tool-card:nth-child(5)  { animation-delay: 0.20s; }
+  .tool-card:nth-child(6)  { animation-delay: 0.24s; }
+  .tool-card:nth-child(7)  { animation-delay: 0.28s; }
+  .tool-card:nth-child(8)  { animation-delay: 0.32s; }
+  .tool-card:nth-child(9)  { animation-delay: 0.36s; }
+  .tool-card:nth-child(10) { animation-delay: 0.40s; }
+
+  /* ── MODAL ───────────────────────────────────────────────── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(12,26,40,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  @media (min-width: 640px) {
+    .modal-overlay { align-items: center; }
+  }
+
+  .modal {
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 32px;
+    width: 100%;
+    max-width: 480px;
+    animation: slide-up 0.3s ease;
+  }
+
+  @media (min-width: 640px) {
+    .modal { border-radius: 20px; }
+  }
+
+  @keyframes slide-up {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .modal-drag { width: 40px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 20px; }
+
+  .modal-icon { font-size: 36px; margin-bottom: 12px; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .modal-sub { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+
+  .modal-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: opacity 0.15s;
+  }
+  .modal-btn:hover { opacity: 0.88; }
+  .modal-btn.primary { color: white; }
+  .modal-btn.secondary { background: var(--border); color: var(--ink); }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .modal-overlay { position: fixed; }
+  .modal { position: relative; }
+</style>
+<style>
+/* ═══ PR-SIDEBAR UNIVERSELLE ═══ */
+body.has-pr-sidebar { margin-left: 72px; }
+#pr-sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 72px;
+  background: #0C3A5C;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 9999;
+  border-right: 1px solid rgba(255,255,255,.08);
+  font-family: 'Syne', 'DM Sans', sans-serif;
+}
+#pr-sidebar .pr-sb-logo {
+  width: 44px; height: 44px; background: #009FC4; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: white; line-height: 1.1;
+  text-align: center; margin-bottom: 8px; text-decoration: none;
+  flex-shrink: 0;
+}
+#pr-sidebar .pr-sb-sep {
+  width: 36px; height: 1px; background: rgba(255,255,255,.12); margin: 4px 0;
+}
+#pr-sidebar .pr-sb-btn {
+  width: 48px; height: 48px; border-radius: 12px; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; background: transparent; transition: background .15s;
+  position: relative; text-decoration: none;
+}
+#pr-sidebar .pr-sb-btn:hover { background: rgba(255,255,255,.1); }
+#pr-sidebar .pr-sb-btn.pr-active { background: #009FC4; }
+#pr-sidebar .pr-sb-btn .pr-icon { font-size: 18px; line-height: 1; }
+#pr-sidebar .pr-sb-btn .pr-lbl {
+  font-size: 8px; font-weight: 700; color: rgba(255,255,255,.45);
+  letter-spacing: .03em; line-height: 1;
+}
+#pr-sidebar .pr-sb-btn.pr-active .pr-lbl { color: rgba(255,255,255,.9); }
+#pr-sidebar .pr-sb-btn .pr-tip {
+  position: absolute; left: 66px; background: #1a2332; color: white;
+  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity .15s; z-index: 10000;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#pr-sidebar .pr-sb-btn:hover .pr-tip { opacity: 1; }
+</style>
+</head>
+<body class="has-pr-sidebar">
+
+<!-- ═══ PR-SIDEBAR UNIVERSELLE ═══ -->
+<nav id="pr-sidebar">
+  <a class="pr-sb-logo" href="prevent_road.html" title="Prevent'Road">P'<br>Road</a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_road.html">
+    <span class="pr-icon">🗓</span><span class="pr-lbl">Road</span>
+    <div class="pr-tip">Prevent'Road — Accueil</div>
+  </a>
+  <a class="pr-sb-btn" href="preventcards_parcours__2_.html">
+    <span class="pr-icon">🃏</span><span class="pr-lbl">Cards</span>
+    <div class="pr-tip">Prevent'Cards — 84 cartes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_obeya_qraft_v2__2_.html">
+    <span class="pr-icon">📊</span><span class="pr-lbl">QRAFT</span>
+    <div class="pr-tip">QRAFT — Obeya promotion</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_andon.html">
+    <span class="pr-icon">🚨</span><span class="pr-lbl">Andon</span>
+    <div class="pr-tip">Prevent'Andon — Alertes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_dashboard.html" class="pr-sb-btn pr-active">
+    <span class="pr-icon">📈</span><span class="pr-lbl">Board</span>
+    <div class="pr-tip">Dashboard Prevent'IS</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_assist.html">
+    <span class="pr-icon">🤖</span><span class="pr-lbl">Assist</span>
+    <div class="pr-tip">Prevent'Assist — IA pédagogique</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_exam.html">
+    <span class="pr-icon">📝</span><span class="pr-lbl">Exam</span>
+    <div class="pr-tip">Prevent'Exam — Mémoire CQPM</div>
+  </a>
+  <a class="pr-sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+    <span class="pr-icon">📚</span><span class="pr-lbl">Agil</span>
+    <div class="pr-tip">Prevent'Agil — Cours Digipad</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="FormAgil_Didacticiel1_Mere.html">
+    <span class="pr-icon">📐</span><span class="pr-lbl">Form</span>
+    <div class="pr-tip">Form'Agil — Didacticiel</div>
+  </a>
+</nav>
+
+
+<!-- ── HEADER ──────────────────────────────────────────────── -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">✈</div>
+    <div class="logo-text">Prevent<span>'IS</span></div>
+  </div>
+  <div class="header-right">
+    <div class="date-badge" id="dateBadge">—</div>
+    <div class="avatar" title="Mon profil">M</div>
+  </div>
+</header>
+
+<!-- ── HERO ────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Bonjour, Malia 👋</div>
+    <div class="hero-title">Votre tableau de bord</div>
+    <div class="hero-sub">« Volez de vos propres ailes »</div>
+  </div>
+</div>
+
+<!-- ── BARRE DE PROGRESSION ────────────────────────────────── -->
+<div class="progress-section">
+  <div class="progress-label">Progression certification</div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-pct">34%</div>
+  <div class="cards-count">🃏 12 / 36 cartes</div>
+</div>
+
+<!-- ── MAIN ─────────────────────────────────────────────────── -->
+<main>
+
+  <!-- Andon actif -->
+  <div class="andon">
+    <div class="andon-dot"></div>
+    <div><strong>Andon actif</strong> — Module 06 · Audit : score 58% · Revoir les notions de preuves objectives</div>
+  </div>
+
+  <!-- Podcast du jour -->
+  <div class="section-title">Podcast du jour</div>
+  <div class="voice-banner" onclick="openModal('voice')">
+    <div class="voice-play">🎙</div>
+    <div class="voice-meta">
+      <strong>Résumé · Module 06 — Audit interne</strong>
+      <span>Généré ce soir par Denis · NotebookLM</span>
+    </div>
+    <div class="voice-duration">8 min</div>
+  </div>
+
+  <!-- Outils — accès rapide -->
+  <div class="section-title">Mes outils</div>
+  <div class="tools-grid">
+
+    <!-- Prevent'Road — highlight -->
+    <div class="tool-card highlight tool-road" onclick="openModal('road')">
+      <div class="tool-icon">🗺</div>
+      <div class="highlight-body">
+        <div class="tool-name">Prevent'Road</div>
+        <div class="tool-sub">Module du jour · Audit interne ISO 19011</div>
+        <div class="tool-badge">En cours</div>
+      </div>
+      <div class="tool-arrow">→</div>
+    </div>
+
+    <div class="tool-card tool-cards" onclick="openModal('cards')">
+      <div class="tool-header">
+        <div class="tool-icon">🃏</div>
+        <div class="tool-arrow">→</div>
+      </div>
+      <div class="tool-name">Prevent'Cards</div>
+      <div class="tool-sub">Pilotage compétences</div>
+      <div class="tool-badge">12 débloquées</div>
+    </div>
+
+    <div class="tool-card tool-score" onclick="openModal('score')">
+      <div class="tool-header">
+        <div class="tool-icon">📊</div>
+        <div class="tool-arrow">→</div>
+      </div>
+      <div class="tool-name">Prevent'Score</div>
+      <div class="tool-sub">Évaluations & AFPAQ</div>
+      <div class="tool-badge">QCM disponible</div>
+    </div>
+
+    <div class="tool-card tool-agil" onclick="openModal('agil')">
+      <div class="tool-header">
+        <div class="tool-icon">📚</div>
+        <div class="tool-arrow">→</div>
+      </div>
+      <div class="tool-name">Prevent'Agil</div>
+      <div class="tool-sub">Bibliothèque de cours</div>
+      <div class="tool-badge">Supports</div>
+    </div>
+
+    <div class="tool-card tool-plane" onclick="openModal('plane')">
+      <div class="tool-header">
+        <div class="tool-icon">✈</div>
+        <div class="tool-arrow">→</div>
+      </div>
+      <div class="tool-name">Prevent'Plane</div>
+      <div class="tool-sub">Aircraft Challenge — ACO</div>
+      <div class="tool-badge">Mission active</div>
+    </div>
+
+    <div class="tool-card tool-assist" onclick="openModal('assist')">
+      <div class="tool-header">
+        <div class="tool-icon">🤖</div>
+        <div class="tool-arrow">→</div>
+      </div>
+      <div class="tool-name">Prevent'Assist</div>
+      <div class="tool-sub">Tuteur IA 24h/24</div>
+      <div class="tool-badge">Disponible</div>
+    </div>
+
+    <div class="tool-card tool-exam" onclick="openModal('exam')">
+      <div class="tool-header">
+        <div class="tool-icon">🎓</div>
+        <div class="tool-arrow">→</div>
+      </div>
+      <div class="tool-name">Prevent'Exam</div>
+      <div class="tool-sub">Coach mémoire & soutenance</div>
+      <div class="tool-badge">Mémoire J-45</div>
+    </div>
+
+    <div class="tool-card tool-trip" onclick="openModal('trip')">
+      <div class="tool-header">
+        <div class="tool-icon">📍</div>
+        <div class="tool-arrow">→</div>
+      </div>
+      <div class="tool-name">Prevent'Trip</div>
+      <div class="tool-sub">Portfolio vivant</div>
+      <div class="tool-badge">12 étapes</div>
+    </div>
+
+    <div class="tool-card tool-voice" onclick="openModal('voice')">
+      <div class="tool-header">
+        <div class="tool-icon">🎙</div>
+        <div class="tool-arrow">→</div>
+      </div>
+      <div class="tool-name">Prevent'Voice</div>
+      <div class="tool-sub">Mémoire sonore</div>
+      <div class="tool-badge">6 podcasts</div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ── BOTTOM NAV (mobile) ──────────────────────────────────── -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-items">
+    <div class="bn-item active" onclick="scrollTop()">
+      <div class="bn-icon">🏠</div>
+      <div class="bn-label">Accueil</div>
+    </div>
+    <div class="bn-item" onclick="openModal('cards')">
+      <div class="bn-icon">🃏</div>
+      <div class="bn-label">Cards</div>
+    </div>
+    <div class="bn-item" onclick="openModal('assist')">
+      <div class="bn-icon">🤖</div>
+      <div class="bn-label">Assist</div>
+    </div>
+    <div class="bn-item" onclick="openModal('trip')">
+      <div class="bn-icon">📍</div>
+      <div class="bn-label">Trip</div>
+    </div>
+    <div class="bn-item" onclick="openModal('voice')">
+      <div class="bn-icon">🎙</div>
+      <div class="bn-label">Voice</div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MODAL ─────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-drag"></div>
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div class="modal-icon" id="mIcon"></div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-sub"  id="mSub"></div>
+    <a  class="modal-btn primary" id="mBtn1" href="#" target="_blank"></a>
+    <button class="modal-btn secondary" onclick="closeModalDirect()">Fermer</button>
+  </div>
+</div>
+
+<script>
+// Date
+const now = new Date();
+document.getElementById('dateBadge').textContent =
+  now.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+
+// Modal data
+const tools = {
+  road:   { icon:'🗺', name:"Prevent'Road", sub:"Le diaporama du jour vous attend. Module 06 — Audit interne ISO 19011. Capsules NotebookLM disponibles.", btn:"Ouvrir Prevent'Road", url:"#", color:"#009FC4" },
+  agil:   { icon:'📚', name:"Prevent'Agil", sub:"Accédez aux supports de cours, ressources PDF et documents techniques classés par module.", btn:"Ouvrir Prevent'Agil", url:"#", color:"#15803D" },
+  cards:  { icon:'🃏', name:"Prevent'Cards", sub:"Vous avez 12 cartes débloquées sur 36. Un QCM réussi à 70% débloque automatiquement la prochaine.", btn:"Voir mes cartes", url:"#", color:"#7C3AED" },
+  plane:  { icon:'✈', name:"Prevent'Plane — ACO", sub:"Mission active de Denis : rétro-planning du prochain Challenge Précision. Délai : vendredi 17h.", btn:"Accéder à ACO", url:"#", color:"#EA580C" },
+  assist: { icon:'🤖', name:"Prevent'Assist", sub:"Votre tuteur IA est disponible maintenant. Posez vos questions sur le module Audit, les normes ISO ou la préparation au QCM.", btn:"Ouvrir Prevent'Assist", url:"https://claude.ai", color:"#0F766E" },
+  exam:   { icon:'🎓', name:"Prevent'Exam", sub:"Coach mémoire & soutenance. J-45 avant le dépôt. Votre fil rouge : refonte du système de traçabilité EPI.", btn:"Ouvrir Prevent'Exam", url:"https://claude.ai", color:"#B45309" },
+  score:  { icon:'📊', name:"Prevent'Score", sub:"QCM Module 06 disponible — 20 questions. Score requis : 70%. Votre dernier score sur ce module : 58%.", btn:"Passer le QCM", url:"#", color:"#BE185D" },
+  trip:   { icon:'📍', name:"Prevent'Trip", sub:"Votre voyage compte 12 étapes. La dernière : Module 05 · Tableaux de bord. Ajoutez votre prochaine étape sur Polarsteps.", btn:"Ouvrir Polarsteps", url:"https://www.polarsteps.com", color:"#475569" },
+  voice:  { icon:'🎙', name:"Prevent'Voice", sub:"Podcast du jour disponible — 8 min. Résumé Module 06 Audit par Denis. Idéal ce soir avant de dormir.", btn:"Écouter le podcast", url:"#", color:"#6D28D9" },
+};
+
+function openModal(key) {
+  const t = tools[key];
+  if (!t) return;
+  document.getElementById('mIcon').textContent  = t.icon;
+  document.getElementById('mTitle').textContent = t.name;
+  document.getElementById('mSub').textContent   = t.sub;
+  const btn = document.getElementById('mBtn1');
+  btn.textContent = t.btn;
+  btn.style.background = t.color;
+  btn.href = t.url;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function scrollTop() { window.scrollTo({top:0,behavior:'smooth'}); }
+
+// Fermer modal avec Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+</script>
+</body>
+</html>

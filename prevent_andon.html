@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Prevent'Andon — Signal de dysfonctionnement</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:#DC2626; --red-d:#991B1B; --red-vd:#7F1D1D;
+  --red-l:rgba(220,38,38,.10); --red-xl:rgba(220,38,38,.04);
+  --black:#0A0A0A; --dark:#111827; --card:#1A1A1A;
+  --ink:#F9FAFB; --muted:#9CA3AF; --faint:#4B5563;
+  --border:#2A2A2A; --border-r:rgba(220,38,38,.22);
+  --green:#16A34A; --green-l:rgba(22,163,74,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;scroll-behavior:smooth;}
+body{
+  font-family:'Barlow',sans-serif;background:var(--black);color:var(--ink);
+  min-height:100vh;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';pointer-events:none;position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+header{
+  position:relative;z-index:10;background:var(--red-d);padding:13px 18px;
+  display:flex;align-items:center;gap:12px;border-bottom:3px solid var(--red);
+}
+.h-signal{
+  width:38px;height:38px;border-radius:50%;background:var(--red);
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+  animation:pulse-r 1.8s ease-in-out infinite;
+}
+@keyframes pulse-r{0%{box-shadow:0 0 0 0 rgba(220,38,38,.7);}70%{box-shadow:0 0 0 13px rgba(220,38,38,0);}100%{box-shadow:0 0 0 0 rgba(220,38,38,0);}}
+.h-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:21px;letter-spacing:.07em;color:white;text-transform:uppercase;line-height:1;}
+.h-sub{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.08em;margin-top:2px;}
+
+/* SETUP */
+.setup-screen{position:relative;z-index:5;max-width:480px;margin:0 auto;padding:24px 16px 40px;}
+.setup-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;}
+.setup-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:white;margin-bottom:6px;}
+.setup-desc{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5;}
+.input-row{background:var(--dark);border:1.5px solid var(--border);border-radius:10px;padding:0 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;transition:border-color .15s;}
+.input-row:focus-within{border-color:var(--red);}
+.ir-icon{font-size:15px;opacity:.5;flex-shrink:0;}
+.input-row input,.input-row select{flex:1;background:transparent;border:none;outline:none;font-family:'Barlow',sans-serif;font-size:14px;color:white;padding:12px 0;}
+.input-row input::placeholder{color:var(--faint);}
+.input-row select option{background:#1A1A1A;color:white;}
+.btn-launch{width:100%;background:var(--red);border:none;border-radius:12px;padding:14px;margin-top:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:.08em;color:white;text-transform:uppercase;cursor:pointer;transition:all .18s;box-shadow:0 4px 16px rgba(220,38,38,.3);}
+.btn-launch:hover{background:#B91C1C;transform:translateY(-1px);}
+
+/* MAIN */
+main{display:none;position:relative;z-index:5;max-width:480px;margin:0 auto;padding:20px 16px 40px;}
+
+/* TRACKER */
+.steps-track{display:flex;align-items:center;margin-bottom:20px;}
+.step-dot{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;border:2px solid var(--faint);color:var(--faint);transition:all .2s;}
+.step-dot.active{border-color:var(--red);color:white;background:var(--red);}
+.step-dot.done{border-color:var(--red);color:var(--red);background:transparent;}
+.step-line{flex:1;height:2px;background:var(--faint);transition:background .2s;}
+.step-line.done{background:var(--red);}
+
+/* CARDS */
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;animation:fade-up .28s ease both;}
+@keyframes fade-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.sc-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+.sc-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:19px;color:white;margin-bottom:4px;line-height:1.2;}
+.sc-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* FAMILLES */
+.families-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;}
+.family-btn{background:var(--dark);border:1.5px solid var(--border);border-radius:11px;padding:11px 8px;text-align:center;cursor:pointer;transition:all .15s;}
+.family-btn.span2{grid-column:span 2;}
+.family-btn:hover,.family-btn.sel{border-color:var(--red);background:var(--red-l);}
+.family-btn.sel{box-shadow:0 0 0 2px rgba(220,38,38,.25);}
+.fb-icon{font-size:20px;margin-bottom:3px;}
+.fb-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:white;}
+.fb-sub{font-size:9px;color:var(--muted);margin-top:1px;line-height:1.3;}
+
+/* TICKETS */
+.tickets-list{display:flex;flex-direction:column;gap:5px;margin-top:10px;}
+.ticket-btn{background:var(--dark);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all .14s;}
+.ticket-btn:hover,.ticket-btn.sel{border-color:var(--red);background:var(--red-xl);}
+.ticket-btn.sel{box-shadow:0 0 0 2px rgba(220,38,38,.2);}
+.tk-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:var(--red);flex-shrink:0;width:20px;}
+.tk-label{font-size:13px;color:white;font-weight:500;line-height:1.3;}
+.tk-chk{margin-left:auto;font-size:14px;opacity:0;transition:opacity .14s;flex-shrink:0;}
+.ticket-btn.sel .tk-chk{opacity:1;}
+
+/* QRAFT */
+.qraft-grid{display:flex;gap:5px;margin-top:10px;}
+.qraft-btn{flex:1;background:var(--dark);border:1.5px solid var(--border);border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;transition:all .14s;}
+.qraft-btn:hover,.qraft-btn.sel{border-color:var(--red);background:var(--red-l);}
+.qraft-btn.sel{box-shadow:0 0 0 2px rgba(220,38,38,.2);}
+.qb-l{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;color:var(--red);line-height:1;}
+.qb-w{font-size:8px;color:var(--muted);margin-top:2px;}
+
+/* DESTINATIONS */
+.dest-list{display:flex;flex-direction:column;gap:7px;margin-top:12px;}
+.dest-btn{background:var(--dark);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;}
+.dest-btn:hover{border-color:var(--faint);}
+.dest-btn.sel{border-color:var(--red);background:var(--red-l);box-shadow:0 0 0 2px rgba(220,38,38,.2);}
+.dest-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--faint);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .14s;}
+.dest-btn.sel .dest-check{background:var(--red);border-color:var(--red);color:white;}
+.dest-icon{font-size:20px;flex-shrink:0;}
+.dest-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:white;}
+.dest-mail{font-size:11px;color:var(--muted);margin-top:1px;}
+.dest-pending{font-size:10px;color:#F87171;margin-top:2px;font-style:italic;}
+
+/* INPUTS */
+.obs-wrap{background:var(--dark);border:1.5px solid var(--border);border-radius:11px;padding:11px 13px;margin-top:10px;transition:border-color .15s;}
+.obs-wrap:focus-within{border-color:var(--red);}
+textarea{width:100%;background:transparent;border:none;outline:none;font-family:'Barlow',sans-serif;font-size:14px;color:white;resize:none;min-height:75px;line-height:1.5;}
+textarea::placeholder{color:var(--faint);}
+.prenom-row{background:var(--dark);border:1.5px solid var(--border);border-radius:11px;padding:0 13px;display:flex;align-items:center;gap:9px;margin-top:8px;transition:border-color .15s;}
+.prenom-row:focus-within{border-color:var(--red);}
+.pr-icon{font-size:14px;opacity:.4;flex-shrink:0;}
+.prenom-row input{flex:1;background:transparent;border:none;outline:none;font-family:'Barlow',sans-serif;font-size:14px;color:white;padding:12px 0;}
+.prenom-row input::placeholder{color:var(--faint);}
+
+/* NAV */
+.nav-row{display:flex;gap:9px;margin-top:16px;}
+.btn-back{background:transparent;border:1.5px solid var(--border);border-radius:11px;padding:12px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.05em;color:var(--muted);cursor:pointer;transition:all .14s;}
+.btn-back:hover{border-color:var(--faint);color:white;}
+.btn-next{flex:1;background:var(--red);border:none;border-radius:11px;padding:13px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.07em;color:white;text-transform:uppercase;cursor:pointer;transition:all .17s;box-shadow:0 4px 14px rgba(220,38,38,.28);}
+.btn-next:hover{background:#B91C1C;transform:translateY(-1px);box-shadow:0 6px 18px rgba(220,38,38,.38);}
+.btn-next:disabled{background:var(--faint);box-shadow:none;cursor:not-allowed;transform:none;}
+
+/* RÉCAP */
+.recap-rows{display:flex;flex-direction:column;gap:0;}
+.recap-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.recap-row:last-child{border-bottom:none;}
+.rr-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;flex-shrink:0;padding-top:2px;}
+.rr-val{font-size:13px;color:white;font-weight:500;text-align:right;line-height:1.4;}
+.dest-tags{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;}
+.dest-tag{background:var(--red-l);border:1px solid var(--border-r);border-radius:6px;padding:2px 8px;font-size:11px;color:#FCA5A5;font-weight:600;}
+
+/* CONFIRM */
+.confirm-screen{display:none;flex-direction:column;align-items:center;text-align:center;padding:28px 20px;gap:14px;position:relative;z-index:5;max-width:480px;margin:0 auto;animation:fade-up .4s ease both;}
+.cf-icon{width:68px;height:68px;border-radius:50%;background:var(--green-l);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:34px;animation:cf-pop .5s ease both;}
+@keyframes cf-pop{0%{transform:scale(.6);opacity:0}65%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.cf-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:white;letter-spacing:.04em;}
+.cf-num{background:var(--red-l);border:1px solid var(--border-r);border-radius:9px;padding:9px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;color:var(--red);letter-spacing:.1em;}
+.cf-desc{font-size:12px;color:var(--muted);max-width:300px;line-height:1.6;}
+.cf-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;width:100%;}
+.btn-new{width:100%;background:transparent;border:1.5px solid var(--border);border-radius:11px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.06em;color:var(--muted);cursor:pointer;transition:all .14s;}
+.btn-new:hover{border-color:var(--red);color:white;}
+
+/* NOTICE */
+.notice{background:rgba(220,38,38,.04);border-left:3px solid var(--red);border-radius:0 9px 9px 0;padding:11px 13px;margin-bottom:18px;}
+.notice p{font-size:12px;color:var(--muted);line-height:1.6;}
+.notice strong{color:#FCA5A5;font-weight:600;}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+</style>
+<style>
+/* ═══ PR-SIDEBAR UNIVERSELLE ═══ */
+body.has-pr-sidebar { margin-left: 72px; }
+#pr-sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 72px;
+  background: #0C3A5C;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 9999;
+  border-right: 1px solid rgba(255,255,255,.08);
+  font-family: 'Syne', 'DM Sans', sans-serif;
+}
+#pr-sidebar .pr-sb-logo {
+  width: 44px; height: 44px; background: #009FC4; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: white; line-height: 1.1;
+  text-align: center; margin-bottom: 8px; text-decoration: none;
+  flex-shrink: 0;
+}
+#pr-sidebar .pr-sb-sep {
+  width: 36px; height: 1px; background: rgba(255,255,255,.12); margin: 4px 0;
+}
+#pr-sidebar .pr-sb-btn {
+  width: 48px; height: 48px; border-radius: 12px; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; background: transparent; transition: background .15s;
+  position: relative; text-decoration: none;
+}
+#pr-sidebar .pr-sb-btn:hover { background: rgba(255,255,255,.1); }
+#pr-sidebar .pr-sb-btn.pr-active { background: #009FC4; }
+#pr-sidebar .pr-sb-btn .pr-icon { font-size: 18px; line-height: 1; }
+#pr-sidebar .pr-sb-btn .pr-lbl {
+  font-size: 8px; font-weight: 700; color: rgba(255,255,255,.45);
+  letter-spacing: .03em; line-height: 1;
+}
+#pr-sidebar .pr-sb-btn.pr-active .pr-lbl { color: rgba(255,255,255,.9); }
+#pr-sidebar .pr-sb-btn .pr-tip {
+  position: absolute; left: 66px; background: #1a2332; color: white;
+  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity .15s; z-index: 10000;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#pr-sidebar .pr-sb-btn:hover .pr-tip { opacity: 1; }
+</style>
+</head>
+<body class="has-pr-sidebar">
+
+<!-- ═══ PR-SIDEBAR UNIVERSELLE ═══ -->
+<nav id="pr-sidebar">
+  <a class="pr-sb-logo" href="prevent_road.html" title="Prevent'Road">P'<br>Road</a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_road.html">
+    <span class="pr-icon">🗓</span><span class="pr-lbl">Road</span>
+    <div class="pr-tip">Prevent'Road — Accueil</div>
+  </a>
+  <a class="pr-sb-btn" href="preventcards_parcours__2_.html">
+    <span class="pr-icon">🃏</span><span class="pr-lbl">Cards</span>
+    <div class="pr-tip">Prevent'Cards — 84 cartes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_obeya_qraft_v2__2_.html">
+    <span class="pr-icon">📊</span><span class="pr-lbl">QRAFT</span>
+    <div class="pr-tip">QRAFT — Obeya promotion</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_andon.html" class="pr-sb-btn pr-active">
+    <span class="pr-icon">🚨</span><span class="pr-lbl">Andon</span>
+    <div class="pr-tip">Prevent'Andon — Alertes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_dashboard.html">
+    <span class="pr-icon">📈</span><span class="pr-lbl">Board</span>
+    <div class="pr-tip">Dashboard Prevent'IS</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_assist.html">
+    <span class="pr-icon">🤖</span><span class="pr-lbl">Assist</span>
+    <div class="pr-tip">Prevent'Assist — IA pédagogique</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_exam.html">
+    <span class="pr-icon">📝</span><span class="pr-lbl">Exam</span>
+    <div class="pr-tip">Prevent'Exam — Mémoire CQPM</div>
+  </a>
+  <a class="pr-sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+    <span class="pr-icon">📚</span><span class="pr-lbl">Agil</span>
+    <div class="pr-tip">Prevent'Agil — Cours Digipad</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="FormAgil_Didacticiel1_Mere.html">
+    <span class="pr-icon">📐</span><span class="pr-lbl">Form</span>
+    <div class="pr-tip">Form'Agil — Didacticiel</div>
+  </a>
+</nav>
+
+
+<header>
+  <div class="h-signal">🔴</div>
+  <div>
+    <div class="h-name">Prevent'Andon</div>
+    <div class="h-sub">Ticket rouge · Prevent'IS · Preventys</div>
+  </div>
+</header>
+
+<!-- ══ SETUP ══ -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-title">Configuration de la session</div>
+    <div class="setup-desc">À renseigner en début de journée par le formateur ou le Pilote QRAFT de la semaine. Ces informations permettent de router les Andons vers les bonnes personnes.</div>
+
+    <div class="input-row">
+      <div class="ir-icon">👤</div>
+      <input type="text" id="formateur-nom" placeholder="Prénom du formateur du jour (ex : Denis)" maxlength="50">
+    </div>
+    <div class="input-row">
+      <div class="ir-icon">✉️</div>
+      <input type="email" id="formateur-mail" placeholder="Email formateur (ex : denis.errera31@gmail.com)" maxlength="100">
+    </div>
+    <div class="input-row">
+      <div class="ir-icon">📅</div>
+      <input type="text" id="session-module" placeholder="Module du jour (ex : Audit ISO 9001)" maxlength="80">
+    </div>
+
+    <button class="btn-launch" onclick="launchSession()">Ouvrir la session Andon →</button>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<main id="mainArea">
+
+  <div class="notice">
+    <p><strong>Démarche non punitive.</strong> L'Andon n'est pas une plainte — c'est un signal d'amélioration continue dans l'esprit Form'Agil. Ton signal sera traité lors du prochain AIC ou en fin de sprint.</p>
+  </div>
+
+  <div class="steps-track" id="stepsTrack">
+    <div class="step-dot active" id="dot-0">1</div>
+    <div class="step-line" id="line-0"></div>
+    <div class="step-dot" id="dot-1">2</div>
+    <div class="step-line" id="line-1"></div>
+    <div class="step-dot" id="dot-2">3</div>
+    <div class="step-line" id="line-2"></div>
+    <div class="step-dot" id="dot-3">4</div>
+    <div class="step-line" id="line-3"></div>
+    <div class="step-dot" id="dot-4">5</div>
+  </div>
+
+  <!-- ÉTAPE 1 : 5M -->
+  <div id="step-0">
+    <div class="section-card">
+      <div class="sc-label">Étape 1 · 5</div>
+      <div class="sc-title">Quelle famille de dysfonctionnement ?</div>
+      <div class="sc-desc">Les 5M de l'amélioration continue.</div>
+      <div class="families-grid">
+        <div class="family-btn" onclick="selectFamily(0,'Main d\'œuvre','👥','Formateur · Groupe · Collègue · Entreprise de stage · Gestionnaire admin')" id="fam-0">
+          <div class="fb-icon">👥</div>
+          <div class="fb-label">Main d'œuvre</div>
+          <div class="fb-sub">Formateur · Groupe · Collègue<br>Entreprise · Gestionnaire</div>
+        </div>
+        <div class="family-btn" onclick="selectFamily(1,'Matière','📖','Contenu de formation · Travail à réaliser')" id="fam-1">
+          <div class="fb-icon">📖</div>
+          <div class="fb-label">Matière</div>
+          <div class="fb-sub">Contenu · Travail à réaliser</div>
+        </div>
+        <div class="family-btn" onclick="selectFamily(2,'Matériel','🖥️','Équipements informatiques · Logiciels · Supports · Ressources')" id="fam-2">
+          <div class="fb-icon">🖥️</div>
+          <div class="fb-label">Matériel</div>
+          <div class="fb-sub">Équipements · Logiciels<br>Supports · Ressources</div>
+        </div>
+        <div class="family-btn" onclick="selectFamily(3,'Méthode','⚙️','Animation des cours · Consignes · Soutien · Entraide')" id="fam-3">
+          <div class="fb-icon">⚙️</div>
+          <div class="fb-label">Méthode</div>
+          <div class="fb-sub">Animation · Consignes<br>Soutien · Entraide</div>
+        </div>
+        <div class="family-btn span2" onclick="selectFamily(4,'Milieu','🏛️','Salles · Bruit · Chaleur · Froid · Discipline')" id="fam-4">
+          <div class="fb-icon">🏛️</div>
+          <div class="fb-label">Milieu</div>
+          <div class="fb-sub">Salles · Bruit · Chaleur · Froid · Discipline</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-next" id="btn-next-0" onclick="goStep(1)" disabled>Choisir le ticket →</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 2 : TICKET -->
+  <div id="step-1" style="display:none;">
+    <div class="section-card">
+      <div class="sc-label">Étape 2 · 5</div>
+      <div class="sc-title">Quel dysfonctionnement précis ?</div>
+      <div class="sc-desc" id="tickets-family-label"></div>
+      <div class="tickets-list" id="ticketsList"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="goStep(0)">← Retour</button>
+      <button class="btn-next" id="btn-next-1" onclick="goStep(2)" disabled>Dimension QRAFT →</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 3 : QRAFT + OBS + PRÉNOM -->
+  <div id="step-2" style="display:none;">
+    <div class="section-card">
+      <div class="sc-label">Étape 3 · 5 — Optionnel</div>
+      <div class="sc-title">Dimension QRAFT touchée ?</div>
+      <div class="sc-desc">Aide à orienter l'AIC du lendemain.</div>
+      <div class="qraft-grid">
+        <div class="qraft-btn" onclick="toggleQraft('Q','Qualité')" id="qb-Q"><div class="qb-l">Q</div><div class="qb-w">Qualité</div></div>
+        <div class="qraft-btn" onclick="toggleQraft('R','Résultats')" id="qb-R"><div class="qb-l">R</div><div class="qb-w">Résultats</div></div>
+        <div class="qraft-btn" onclick="toggleQraft('A','Avancement')" id="qb-A"><div class="qb-l">A</div><div class="qb-w">Avancement</div></div>
+        <div class="qraft-btn" onclick="toggleQraft('F','Feedback')" id="qb-F"><div class="qb-l">F</div><div class="qb-w">Feedback</div></div>
+        <div class="qraft-btn" onclick="toggleQraft('T','Tempo')" id="qb-T"><div class="qb-l">T</div><div class="qb-w">Tempo</div></div>
+      </div>
+    </div>
+    <div class="section-card" style="animation-delay:.05s">
+      <div class="sc-label">Observation — optionnel</div>
+      <div class="sc-title" style="font-size:16px;margin-bottom:6px;">Décris en quelques mots</div>
+      <div class="obs-wrap">
+        <textarea id="observation" placeholder="Ce que tu as observé, ressenti, ou ce qui bloque…" maxlength="400"></textarea>
+      </div>
+      <div class="prenom-row">
+        <div class="pr-icon">👤</div>
+        <input type="text" id="prenom" placeholder="Ton prénom (anonyme par défaut)" maxlength="40">
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="goStep(1)">← Retour</button>
+      <button class="btn-next" onclick="goStep(3)">Destinations →</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 4 : DESTINATIONS -->
+  <div id="step-3" style="display:none;">
+    <div class="section-card">
+      <div class="sc-label">Étape 4 · 5</div>
+      <div class="sc-title">À qui envoyer ce signal ?</div>
+      <div class="sc-desc">Coche une ou plusieurs destinations — au moins une est requise.</div>
+      <div class="dest-list">
+
+        <div class="dest-btn" onclick="toggleDest('aic')" id="dest-aic">
+          <div class="dest-check" id="chk-aic"></div>
+          <div class="dest-icon">📊</div>
+          <div class="dest-info">
+            <div class="dest-label">Tableau AIC</div>
+            <div class="dest-pending">⏳ Branchement Drive preventysis à venir</div>
+          </div>
+        </div>
+
+        <div class="dest-btn" onclick="toggleDest('formateur')" id="dest-formateur">
+          <div class="dest-check" id="chk-formateur"></div>
+          <div class="dest-icon">🧑‍🏫</div>
+          <div class="dest-info">
+            <div class="dest-label" id="dest-form-label">Formateur du jour</div>
+            <div class="dest-mail" id="dest-form-mail" style="color:var(--muted);font-size:11px;">—</div>
+          </div>
+        </div>
+
+        <div class="dest-btn" onclick="toggleDest('responsable')" id="dest-responsable">
+          <div class="dest-check" id="chk-responsable"></div>
+          <div class="dest-icon">🎓</div>
+          <div class="dest-info">
+            <div class="dest-label">Responsable de formation</div>
+            <div class="dest-mail" style="font-size:11px;color:var(--muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9dddbcbccf9c9cbdccfdcd7cdc0ca97dad6d4">[email&#160;protected]</a></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="goStep(2)">← Retour</button>
+      <button class="btn-next" id="btn-next-3" onclick="goStep(4)" disabled>Récapitulatif →</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 5 : RÉCAP -->
+  <div id="step-4" style="display:none;">
+    <div class="section-card">
+      <div class="sc-label">Étape 5 · 5 — Vérification</div>
+      <div class="sc-title">Ton signal Andon</div>
+      <div class="sc-desc" style="margin-bottom:12px;">Vérifie avant d'envoyer.</div>
+      <div class="recap-rows" id="recapContent"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="goStep(3)">← Modifier</button>
+      <button class="btn-next" onclick="submitAndon()">🔴 Envoyer l'Andon</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ CONFIRMATION ══ -->
+<div class="confirm-screen" id="confirmScreen">
+  <div class="cf-icon">✅</div>
+  <div class="cf-title">Andon envoyé</div>
+  <div class="cf-num" id="cfNum">AN-0001</div>
+  <div class="cf-desc">Ton signal a été enregistré et transmis. Il sera traité lors du prochain AIC ou en fin de sprint par le Pilote QRAFT.</div>
+  <div class="cf-card">
+    <div class="recap-rows" id="cfRecap"></div>
+  </div>
+  <button class="btn-new" onclick="resetForm()">↺ Signaler un autre dysfonctionnement</button>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const TICKETS = {
+  'Main d\'œuvre':[
+    {n:4,  l:'Retard ou absence du formateur'},
+    {n:5,  l:'Communication inefficace formateur / apprenants'},
+    {n:8,  l:'Manque de collaboration entre apprenants'},
+    {n:9,  l:'Baisse de motivation affectant l\'engagement'},
+    {n:14, l:'Problème de santé impactant la formation'},
+  ],
+  'Matière':[
+    {n:2,  l:'Ressources pédagogiques manquantes'},
+    {n:3,  l:'Informations essentielles non disponibles ou incomplètes'},
+    {n:7,  l:'Temps alloué aux activités insuffisant'},
+  ],
+  'Matériel':[
+    {n:1,  l:'Dysfonctionnement d\'un équipement nécessaire'},
+    {n:10, l:'Qualité insuffisante des supports de formation'},
+  ],
+  'Méthode':[
+    {n:6,  l:'Difficulté à comprendre les concepts enseignés'},
+    {n:11, l:'Difficulté à réviser les contenus'},
+    {n:12, l:'Feedback des formateurs insuffisant ou absent'},
+    {n:13, l:'Méthodologie d\'enseignement inadaptée'},
+  ],
+  'Milieu':[
+    {n:15, l:'Problème logistique (salle, ambiance, équipements)'},
+  ]
+};
+
+const MAIL_RESP = 'dbru@preventys.com';
+
+let S = {
+  step:0, famIdx:null, family:null, familyIcon:'', familyDesc:'',
+  ticketNum:null, ticket:null, qraft:null, qraftWord:null,
+  observation:'', prenom:'', destinations:new Set(),
+  formateurNom:'', formateurMail:'', sessionModule:''
+};
+
+function launchSession() {
+  S.formateurNom  = document.getElementById('formateur-nom').value.trim();
+  S.formateurMail = document.getElementById('formateur-mail').value.trim();
+  S.sessionModule = document.getElementById('session-module').value.trim();
+  document.getElementById('dest-form-label').textContent =
+    'Formateur du jour' + (S.formateurNom ? ' — ' + S.formateurNom : '');
+  document.getElementById('dest-form-mail').textContent = S.formateurMail || 'Email non renseigné';
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('mainArea').style.display = 'block';
+}
+
+function goStep(n) {
+  if (n === 1) renderTickets();
+  if (n === 4) buildRecap();
+  const cur = document.getElementById('step-' + S.step);
+  if (cur) cur.style.display = 'none';
+  S.step = n;
+  const el = document.getElementById('step-' + n);
+  if (el) { el.style.display = 'block'; }
+  for (let i = 0; i < 5; i++) {
+    const d = document.getElementById('dot-' + i);
+    d.classList.remove('active','done');
+    if (i < n) d.classList.add('done');
+    else if (i === n) d.classList.add('active');
+  }
+  for (let i = 0; i < 4; i++)
+    document.getElementById('line-' + i).classList.toggle('done', i < n);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function selectFamily(idx, name, icon, desc) {
+  S.famIdx = idx; S.family = name; S.familyIcon = icon; S.familyDesc = desc;
+  S.ticket = null; S.ticketNum = null;
+  for (let i = 0; i < 5; i++) document.getElementById('fam-'+i).classList.remove('sel');
+  document.getElementById('fam-'+idx).classList.add('sel');
+  document.getElementById('btn-next-0').disabled = false;
+}
+
+function renderTickets() {
+  const list = document.getElementById('ticketsList');
+  const tickets = TICKETS[S.family] || [];
+  document.getElementById('tickets-family-label').textContent =
+    S.familyIcon + '  ' + S.family + ' — ' + S.familyDesc;
+  list.innerHTML = tickets.map(t =>
+    `<div class="ticket-btn${S.ticketNum===t.n?' sel':''}" onclick="selectTicket(${t.n},\`${t.l.replace(/`/g,"'")}\`,this)">
+      <div class="tk-num">${String(t.n).padStart(2,'0')}</div>
+      <div class="tk-label">${t.l}</div>
+      <div class="tk-chk">✓</div>
+    </div>`).join('');
+  document.getElementById('btn-next-1').disabled = !S.ticketNum;
+}
+
+function selectTicket(num, label, el) {
+  S.ticketNum = num; S.ticket = label;
+  document.querySelectorAll('.ticket-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('btn-next-1').disabled = false;
+}
+
+function toggleQraft(l, w) {
+  if (S.qraft === l) {
+    S.qraft = null; S.qraftWord = null;
+    document.getElementById('qb-'+l).classList.remove('sel');
+  } else {
+    S.qraft = l; S.qraftWord = w;
+    document.querySelectorAll('.qraft-btn').forEach(b => b.classList.remove('sel'));
+    document.getElementById('qb-'+l).classList.add('sel');
+  }
+}
+
+function toggleDest(id) {
+  const btn = document.getElementById('dest-'+id);
+  const chk = document.getElementById('chk-'+id);
+  if (S.destinations.has(id)) {
+    S.destinations.delete(id);
+    btn.classList.remove('sel');
+    chk.textContent = '';
+  } else {
+    S.destinations.add(id);
+    btn.classList.add('sel');
+    chk.textContent = '✓';
+  }
+  document.getElementById('btn-next-3').disabled = S.destinations.size === 0;
+}
+
+function buildRecap() {
+  S.observation = document.getElementById('observation').value.trim();
+  S.prenom = document.getElementById('prenom').value.trim();
+  const dl = {aic:'Tableau AIC', formateur:S.formateurNom||'Formateur', responsable:'Responsable'};
+  const tags = [...S.destinations].map(d=>`<span class="dest-tag">${dl[d]}</span>`).join('');
+  document.getElementById('recapContent').innerHTML = rows([
+    ['Ticket', `N°${String(S.ticketNum).padStart(2,'0')} — ${S.ticket}`],
+    ['Famille', S.familyIcon+' '+S.family],
+    ['Module', S.sessionModule||'—'],
+    ['QRAFT', S.qraft ? S.qraft+' · '+S.qraftWord : '—'],
+    ['Observation', S.observation||'—'],
+    ['Signalé par', S.prenom||'Anonyme'],
+    ['Destinations', `<div class="dest-tags">${tags}</div>`],
+  ]);
+}
+
+function rows(data) {
+  return data.map(([l,v])=>
+    `<div class="recap-row"><div class="rr-label">${l}</div><div class="rr-val">${v}</div></div>`
+  ).join('');
+}
+
+function submitAndon() {
+  const num = 'AN-' + String((JSON.parse(localStorage.getItem('prev_andons')||'[]').length)+1).padStart(4,'0');
+  const andons = JSON.parse(localStorage.getItem('prev_andons')||'[]');
+  andons.push({num, date:new Date().toISOString(), family:S.family, ticket:S.ticket,
+    ticketNum:S.ticketNum, qraft:S.qraft, qraftWord:S.qraftWord,
+    observation:S.observation, prenom:S.prenom, destinations:[...S.destinations],
+    formateur:S.formateurNom, module:S.sessionModule});
+  localStorage.setItem('prev_andons', JSON.stringify(andons));
+
+  const subject = encodeURIComponent(`🔴 Andon ${num} — Ticket N°${String(S.ticketNum).padStart(2,'0')} : ${S.ticket}`);
+  const body = encodeURIComponent(
+    `ANDON PREVENT'IS — ${num}\n`+
+    `Date : ${new Date().toLocaleString('fr-FR')}\n`+
+    `Module : ${S.sessionModule||'Non renseigné'}\n\n`+
+    `Ticket N°${String(S.ticketNum).padStart(2,'0')} : ${S.ticket}\n`+
+    `Famille : ${S.familyIcon} ${S.family}\n`+
+    `Dimension QRAFT : ${S.qraft ? S.qraft+' · '+S.qraftWord : 'Non renseignée'}\n`+
+    `Observation : ${S.observation||'Non renseignée'}\n`+
+    `Signalé par : ${S.prenom||'Anonyme'}\n\n`+
+    `Destinations : ${[...S.destinations].join(', ')}\n\n`+
+    `À traiter lors du prochain AIC ou en fin de sprint.`
+  );
+
+  const mails = [];
+  if (S.destinations.has('formateur') && S.formateurMail) mails.push(S.formateurMail);
+  if (S.destinations.has('responsable')) mails.push(MAIL_RESP);
+  if (mails.length > 0)
+    window.location.href = `mailto:${mails.join(',')}?subject=${subject}&body=${body}`;
+
+  // Afficher confirmation
+  document.getElementById('mainArea').style.display = 'none';
+  document.getElementById('confirmScreen').style.display = 'flex';
+  document.getElementById('cfNum').textContent = num;
+  const dl = {aic:'Tableau AIC', formateur:S.formateurNom||'Formateur', responsable:'Responsable'};
+  const tags = [...S.destinations].map(d=>`<span class="dest-tag">${dl[d]}</span>`).join('');
+  document.getElementById('cfRecap').innerHTML = rows([
+    ['Ticket', `N°${String(S.ticketNum).padStart(2,'0')} — ${S.ticket}`],
+    ['Famille', S.familyIcon+' '+S.family],
+    ['QRAFT', S.qraft ? S.qraft+' · '+S.qraftWord : '—'],
+    ['Signalé par', S.prenom||'Anonyme'],
+    ['Destinations', `<div class="dest-tags">${tags}</div>`],
+  ]);
+}
+
+function resetForm() {
+  S = {...S, step:0, famIdx:null, family:null, familyIcon:'', familyDesc:'',
+    ticket:null, ticketNum:null, qraft:null, qraftWord:null,
+    observation:'', prenom:'', destinations:new Set()};
+  document.getElementById('confirmScreen').style.display = 'none';
+  document.getElementById('mainArea').style.display = 'block';
+  document.getElementById('observation').value = '';
+  document.getElementById('prenom').value = '';
+  document.querySelectorAll('.family-btn,.ticket-btn,.qraft-btn,.dest-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.dest-check').forEach(c=>c.textContent='');
+  ['btn-next-0','btn-next-1','btn-next-3'].forEach(id=>document.getElementById(id).disabled=true);
+  for (let i=0;i<5;i++){const d=document.getElementById('dot-'+i);d.classList.remove('active','done');if(i===0)d.classList.add('active');}
+  for (let i=0;i<4;i++) document.getElementById('lin

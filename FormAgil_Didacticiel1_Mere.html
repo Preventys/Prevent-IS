@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form'Agil · Didacticiel 1 — Diaporama Mère · Preventys</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08111A;--s1:#0E1C28;--s2:#162434;--bd:#1E3040;--tx:#E0EAF4;--mu:#506070;
+--tc:#1DD4C0;--tc2:#0FA89A;--tdim:rgba(29,212,192,.11);--am:#F4A535;--ro:#F04060;
+--gr:#28C87A;--vi:#9B6FE8;--sk:#38B4F0;--r:10px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+::placeholder{color:var(--mu);opacity:.6}
+
+.shell{display:grid;grid-template-columns:252px 1fr;grid-template-rows:56px 1fr;height:100vh;overflow:hidden}
+.topbar{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:50}
+.gem{width:30px;height:30px;background:linear-gradient(135deg,var(--tc),var(--tc2));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.brand{font-family:'Syne',sans-serif;font-weight:800;font-size:15px}
+.tdiv{width:1px;height:22px;background:var(--bd)}
+.tsub{color:var(--mu);font-size:12px}
+.tpill{margin-left:auto;background:var(--tdim);border:1px solid var(--tc2);color:var(--tc);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.tpill2{background:rgba(244,165,53,.1);border:1px solid rgba(244,165,53,.35);color:var(--am);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-left:6px}
+
+.sidebar{background:var(--s1);border-right:1px solid var(--bd);overflow-y:auto;display:flex;flex-direction:column;padding:12px 10px}
+.slbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mu);padding:10px 8px 5px}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s;margin-bottom:2px}
+.ni:hover{background:var(--s2)}.ni.act{background:var(--tdim);border:1px solid rgba(29,212,192,.2)}
+.ni.done .nn{background:var(--gr);color:#08111A}.nn{width:20px;height:20px;border-radius:50%;background:var(--bd);color:var(--mu);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.ni.act .nn{background:var(--tc);color:#08111A}
+.ninfo{flex:1}.nt{font-size:12px;font-weight:600}.ns{font-size:11px;color:var(--mu)}
+.nck{font-size:10px;color:var(--gr);opacity:0;transition:.2s}.ni.done .nck{opacity:1}
+.sbotm{margin-top:auto;padding:10px 8px;border-top:1px solid var(--bd)}
+.sprow{display:flex;justify-content:space-between;font-size:11px;color:var(--mu);margin-bottom:5px}
+.spt{height:3px;background:var(--bd);border-radius:2px;overflow:hidden}
+.spf{height:100%;background:linear-gradient(90deg,var(--tc),var(--gr));border-radius:2px;transition:width .4s;width:20%}
+.schema{margin:8px 0;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px;font-size:11px;color:var(--mu);line-height:1.9}
+.schema b{color:var(--tx);font-weight:500}
+
+.main{overflow-y:auto}
+.panel{display:none;padding:28px 30px;max-width:820px;margin:0 auto}
+.panel.act{display:block}
+.eye{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tc);margin-bottom:6px}
+.ph1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;line-height:1.25}
+.pdsc{color:var(--mu);font-size:13px;line-height:1.6;max-width:600px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--bd)}
+
+.co{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:var(--r);margin-bottom:16px;font-size:12px;line-height:1.55}
+.co-i{background:rgba(56,180,240,.08);border:1px solid rgba(56,180,240,.22);color:#BAE0F8}
+.co-t{background:rgba(244,165,53,.08);border:1px solid rgba(244,165,53,.25);color:#FCDFA0}
+.coi{font-size:15px;flex-shrink:0;margin-top:1px}
+
+.fsec{margin-bottom:24px}
+.fst{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:11px;padding-bottom:6px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:6px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.fg1{display:grid;grid-template-columns:1fr;gap:13px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+.fg{display:flex;flex-direction:column;gap:5px}.fg.sp{grid-column:1/-1}
+label{font-size:11px;font-weight:600;color:var(--tx);letter-spacing:.3px}
+.req{color:var(--ro)}.hint{font-size:10px;color:var(--mu);margin-top:2px}
+input,textarea,select{width:100%;background:var(--s1);border:1px solid var(--bd);border-radius:7px;padding:8px 12px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--tx);outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--tc);box-shadow:0 0 0 3px rgba(29,212,192,.1)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+select option{background:var(--s2)}
+
+.crow{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
+.csw{width:28px;height:28px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.csw.on{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.18);transform:scale(1.1)}
+
+/* formateurs */
+.fmtl{display:flex;flex-direction:column;gap:10px}
+.fmtc{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.fmth{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer}
+.fmtav{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#08111A;flex-shrink:0}
+.fmtni{background:transparent;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--tx);flex:1;outline:none;padding:0}
+.fmtni:focus{color:var(--tc)}
+.fmtri{background:transparent;border:none;font-size:11px;color:var(--mu);flex:1;outline:none;padding:0;margin-top:2px}
+.ftog{color:var(--mu);font-size:13px;transition:transform .2s;flex-shrink:0}
+.fmtc.open .ftog{transform:rotate(180deg);color:var(--tc)}
+.fmtb{display:none;padding:0 14px 14px;border-top:1px solid var(--bd)}
+.fmtc.open .fmtb{display:block;padding-top:12px}
+
+/* modules */
+.modl{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.modc{background:var(--s2);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.modh{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer}
+.modn{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#08111A;flex-shrink:0}
+.modti{background:transparent;border:none;font-weight:600;font-size:13px;color:var(--tx);flex:1;outline:none;padding:0}
+.modti:focus{color:var(--tc)}
+.mtog{color:var(--mu);font-size:11px;transition:transform .2s;flex-shrink:0}
+.modc.open .mtog{transform:rotate(180deg);color:var(--tc)}
+.modb{display:none;padding:0 12px 12px;border-top:1px solid var(--bd)}
+.modc.open .modb{display:block;padding-top:10px}
+
+/* QR */
+.qrg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qri{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:9px 12px}
+.qricon{font-size:18px;flex-shrink:0}
+.qrlb{font-size:12px;font-weight:600}
+.qrml{margin-left:auto}
+.qrml input{cursor:pointer}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.chip{padding:3px 10px;border-radius:16px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--bd);color:var(--mu);background:transparent;transition:all .13s;user-select:none}
+.chip:hover{border-color:var(--tc);color:var(--tc)}
+.chip.on{background:var(--tdim);border-color:var(--tc);color:var(--tc)}
+
+/* preview */
+.psg{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:18px}
+.ps{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:13px}
+.psv{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;line-height:1}
+.psl{font-size:10px;color:var(--mu);margin-top:4px}
+.ptg{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:7px;margin-bottom:18px}
+.pt{aspect-ratio:16/9;border-radius:6px;overflow:hidden;border:1px solid var(--bd);display:flex;flex-direction:column;position:relative;transition:transform .15s}
+.pt:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.pth{padding:5px 7px;font-size:6.5px;font-weight:700;line-height:1.2;flex-shrink:0}
+.ptb{padding:3px 7px;flex:1;font-size:5.5px;line-height:1.3;opacity:.75}
+.pttag{position:absolute;top:3px;right:4px;background:rgba(0,0,0,.55);color:#fff;font-size:5.5px;font-weight:600;padding:1px 5px;border-radius:3px}
+
+/* buttons */
+.brow{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;border:none;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.bp{background:var(--tc);color:#08111A;box-shadow:0 4px 12px rgba(29,212,192,.28)}
+.bp:hover{background:#22E0CA;transform:translateY(-1px)}
+.bg{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}
+.bg:hover{border-color:var(--mu)}
+.bgen{background:linear-gradient(135deg,var(--tc),var(--tc2));color:#08111A;font-size:14px;padding:13px 26px;border-radius:9px;width:100%;justify-content:center;box-shadow:0 5px 20px rgba(29,212,192,.3);margin-top:12px}
+.bgen:hover:not(:disabled){box-shadow:0 7px 26px rgba(29,212,192,.42);transform:translateY(-1px)}
+.bgen:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.bjson{background:rgba(244,165,53,.14);color:var(--am);border:1px solid rgba(244,165,53,.32);padding:9px 18px;font-size:12px}
+.bjson:hover{background:rgba(244,165,53,.24)}
+.spin{width:14px;height:14px;border:2px solid rgba(8,17,26,.3);border-top-color:#08111A;border-radius:50%;animation:sp .6s linear infinite;display:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.expbox{background:var(--s1);border:1px solid rgba(244,165,53,.28);border-radius:var(--r);padding:16px;margin-top:14px}
+.exptitle{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--am);margin-bottom:5px}
+.expdsc{font-size:12px;color:var(--mu);line-height:1.6;margin-bottom:10px}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;box-shadow:0 8px 28px rgba(0,0,0,.45);display:flex;align-items:center;gap:9px;font-size:13px;transform:translateY(66px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+.fmttoolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ftitle{font-family:'Syne',sans-serif;font-size:12px;font-weight:700}
+.factions{display:flex;gap:6px}
+</style>
+<style>
+/* ═══ PR-SIDEBAR UNIVERSELLE ═══ */
+body.has-pr-sidebar { margin-left: 72px; }
+#pr-sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 72px;
+  background: #0C3A5C;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 9999;
+  border-right: 1px solid rgba(255,255,255,.08);
+  font-family: 'Syne', 'DM Sans', sans-serif;
+}
+#pr-sidebar .pr-sb-logo {
+  width: 44px; height: 44px; background: #009FC4; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: white; line-height: 1.1;
+  text-align: center; margin-bottom: 8px; text-decoration: none;
+  flex-shrink: 0;
+}
+#pr-sidebar .pr-sb-sep {
+  width: 36px; height: 1px; background: rgba(255,255,255,.12); margin: 4px 0;
+}
+#pr-sidebar .pr-sb-btn {
+  width: 48px; height: 48px; border-radius: 12px; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; background: transparent; transition: background .15s;
+  position: relative; text-decoration: none;
+}
+#pr-sidebar .pr-sb-btn:hover { background: rgba(255,255,255,.1); }
+#pr-sidebar .pr-sb-btn.pr-active { background: #009FC4; }
+#pr-sidebar .pr-sb-btn .pr-icon { font-size: 18px; line-height: 1; }
+#pr-sidebar .pr-sb-btn .pr-lbl {
+  font-size: 8px; font-weight: 700; color: rgba(255,255,255,.45);
+  letter-spacing: .03em; line-height: 1;
+}
+#pr-sidebar .pr-sb-btn.pr-active .pr-lbl { color: rgba(255,255,255,.9); }
+#pr-sidebar .pr-sb-btn .pr-tip {
+  position: absolute; left: 66px; background: #1a2332; color: white;
+  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity .15s; z-index: 10000;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#pr-sidebar .pr-sb-btn:hover .pr-tip { opacity: 1; }
+</style>
+</head>
+<body class="has-pr-sidebar">
+
+<!-- ═══ PR-SIDEBAR UNIVERSELLE ═══ -->
+<nav id="pr-sidebar">
+  <a class="pr-sb-logo" href="prevent_road.html" title="Prevent'Road">P'<br>Road</a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_road.html">
+    <span class="pr-icon">🗓</span><span class="pr-lbl">Road</span>
+    <div class="pr-tip">Prevent'Road — Accueil</div>
+  </a>
+  <a class="pr-sb-btn" href="preventcards_parcours__2_.html">
+    <span class="pr-icon">🃏</span><span class="pr-lbl">Cards</span>
+    <div class="pr-tip">Prevent'Cards — 84 cartes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_obeya_qraft_v2__2_.html">
+    <span class="pr-icon">📊</span><span class="pr-lbl">QRAFT</span>
+    <div class="pr-tip">QRAFT — Obeya promotion</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_andon.html">
+    <span class="pr-icon">🚨</span><span class="pr-lbl">Andon</span>
+    <div class="pr-tip">Prevent'Andon — Alertes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_dashboard.html">
+    <span class="pr-icon">📈</span><span class="pr-lbl">Board</span>
+    <div class="pr-tip">Dashboard Prevent'IS</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_assist.html">
+    <span class="pr-icon">🤖</span><span class="pr-lbl">Assist</span>
+    <div class="pr-tip">Prevent'Assist — IA pédagogique</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_exam.html">
+    <span class="pr-icon">📝</span><span class="pr-lbl">Exam</span>
+    <div class="pr-tip">Prevent'Exam — Mémoire CQPM</div>
+  </a>
+  <a class="pr-sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+    <span class="pr-icon">📚</span><span class="pr-lbl">Agil</span>
+    <div class="pr-tip">Prevent'Agil — Cours Digipad</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="FormAgil_Didacticiel1_Mere.html" class="pr-sb-btn pr-active">
+    <span class="pr-icon">📐</span><span class="pr-lbl">Form</span>
+    <div class="pr-tip">Form'Agil — Didacticiel</div>
+  </a>
+</nav>
+
+<div class="shell">
+
+<header class="topbar">
+  <div class="gem">🎓</div>
+  <span class="brand">Preventys</span>
+  <div class="tdiv"></div>
+  <span class="tsub">Form'Agil — Didacticiel 1</span>
+  <span class="tpill">Diaporama Mère</span>
+  <span class="tpill2">CQP / CQPM</span>
+</header>
+
+<nav class="sidebar">
+  <div class="slbl">Construction</div>
+  <div class="ni act" onclick="go(1)" id="nav-1"><div class="nn">1</div><div class="ninfo"><div class="nt">La Formation CQP</div><div class="ns">Titre, référentiel</div></div><span class="nck">✓</span></div>
+  <div class="ni" onclick="go(2)" id="nav-2"><div class="nn">2</div><div class="ninfo"><div class="nt">L'Entreprise fictive</div><div class="ns">Contexte narratif</div></div><span class="nck">✓</span></div>
+  <div class="ni" onclick="go(3)" id="nav-3"><div class="nn">3</div><div class="ninfo"><div class="nt">Formateurs + Modules</div><div class="ns">Équipe Preventys</div></div><span class="nck">✓</span></div>
+  <div class="ni" onclick="go(4)" id="nav-4"><div class="nn">4</div><div class="ninfo"><div class="nt">Outils Prevent'IS</div><div class="ns">QR codes intégrés</div></div><span class="nck">✓</span></div>
+  <div class="ni" onclick="go(5)" id="nav-5"><div class="nn">5</div><div class="ninfo"><div class="nt">Aperçu & Export</div><div class="ns">PPTX + config JSON</div></div><span class="nck">✓</span></div>
+
+  <div class="slbl" style="margin-top:14px">Boucle Form'Agil</div>
+  <div class="schema">
+    <b>✉</b> Lettre formateur<br>
+    <b>📚</b> Apport théorique<br>
+    <b>⚙</b> TP / Production<br>
+    <b>📱</b> QR Prevent'IS<br>
+    <b>🔍</b> Analyse débrief
+  </div>
+
+  <div class="sbotm">
+    <div class="sprow"><span>Avancement</span><span id="ptxt">1/5</span></div>
+    <div class="spt"><div class="spf" id="pbar"></div></div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ═══ PANEL 1 — FORMATION ═══ -->
+<div class="panel act" id="panel-1">
+  <div class="eye">Étape 1 / 5</div>
+  <h1 class="ph1">La Formation CQP</h1>
+  <p class="pdsc">Informations de la certification préparée — elles alimenteront la slide de titre, la slide objectifs, et tous les en-têtes du diaporama mère.</p>
+  <div class="co co-t"><span class="coi">🏆</span><span>Ce diaporama est le <b>fil conducteur de toute la formation</b>. Il présente la structure globale aux stagiaires, l'équipe Preventys qui intervient, et la progression module par module — comme Shaolean présente La Chaletterie.</span></div>
+  <div class="fsec">
+    <div class="fst">🎓 Identité de la certification</div>
+    <div class="fg2">
+      <div class="fg sp"><label>Intitulé exact du CQP / CQPM <span class="req">*</span></label><input type="text" id="f-titre" placeholder="ex : CQP Coordinateur QSE · CQPM Technicien Lean Six Sigma"/></div>
+      <div class="fg"><label>Code certification</label><input type="text" id="f-code" placeholder="ex : CQPM 0217"/></div>
+      <div class="fg"><label>Branche professionnelle</label><input type="text" id="f-branche" placeholder="ex : Métallurgie · Aéronautique"/></div>
+      <div class="fg"><label>Durée totale</label><input type="text" id="f-duree" placeholder="ex : 10 jours — 70h"/></div>
+      <div class="fg"><label>Modalité</label>
+        <select id="f-modalite"><option>Présentiel</option><option>Distanciel</option><option>Mixte présentiel / distanciel</option><option>Formation en situation de travail (FEST)</option></select>
+      </div>
+      <div class="fg sp"><label>Objectifs de la certification <span class="req">*</span></label><textarea id="f-objectifs" placeholder="Un objectif par ligne :&#10;• Piloter un système de management QSE&#10;• Conduire une démarche d'amélioration continue&#10;• Animer des groupes de travail"></textarea></div>
+      <div class="fg sp"><label>Unités de compétences (UC)</label><textarea id="f-ucs" placeholder="UC1 : …&#10;UC2 : …" style="min-height:65px"></textarea></div>
+      <div class="fg"><label>Coordinateur pédagogique</label><input type="text" id="f-coord" placeholder="ex : Dominique Bru"/></div>
+      <div class="fg"><label>Slogan / accroche</label><input type="text" id="f-slogan" placeholder="ex : L'excellence, un sprint à la fois"/></div>
+    </div>
+  </div>
+  <div class="fsec">
+    <div class="fst">🎨 Charte visuelle partagée</div>
+    <div class="co co-i" style="margin-bottom:12px"><span class="coi">🔗</span><span>Cette couleur sera exportée dans le <b>fichier de configuration JSON</b> et automatiquement reprise par tous les Diaporamas Fils des formateurs.</span></div>
+    <div class="crow" id="cpick">
+      <div class="csw on" style="background:#028090" data-c="028090" onclick="pickC(this)"></div>
+      <div class="csw" style="background:#0891B2" data-c="0891B2" onclick="pickC(this)"></div>
+      <div class="csw" style="background:#7C3AED" data-c="7C3AED" onclick="pickC(this)"></div>
+      <div class="csw" style="background:#E11D48" data-c="E11D48" onclick="pickC(this)"></div>
+      <div class="csw" style="background:#16A34A" data-c="16A34A" onclick="pickC(this)"></div>
+      <div class="csw" style="background:#D97706" data-c="D97706" onclick="pickC(this)"></div>
+      <div class="csw" style="background:#0EA5E9" data-c="0EA5E9" onclick="pickC(this)"></div>
+      <div class="csw" style="background:#6D28D9" data-c="6D28D9" onclick="pickC(this)"></div>
+    </div>
+  </div>
+  <div class="brow"><button class="btn bp" onclick="go(2)">Étape suivante →</button></div>
+</div>
+
+<!-- ═══ PANEL 2 — ENTREPRISE ═══ -->
+<div class="panel" id="panel-2">
+  <div class="eye">Étape 2 / 5</div>
+  <h1 class="ph1">L'Entreprise Fictive</h1>
+  <p class="pdsc">Le contexte immersif partagé par toute la formation. Les stagiaires incarnent ses équipes. Sera exporté dans le JSON pour tous les formateurs fils.</p>
+  <div class="co co-t"><span class="coi">🏭</span><span>Choisissez un secteur <b>proche du métier des stagiaires</b>. Une entreprise aéronautique pour un CQPM maintenance, chimique pour un CQP HSE industriel…</span></div>
+  <div class="fsec">
+    <div class="fst">🏢 Identité</div>
+    <div class="fg2">
+      <div class="fg"><label>Nom <span class="req">*</span></label><input type="text" id="e-nom" placeholder="ex : AéroTech Solutions"/></div>
+      <div class="fg"><label>Secteur <span class="req">*</span></label><input type="text" id="e-secteur" placeholder="ex : Maintenance aéronautique"/></div>
+      <div class="fg"><label>Devise</label><input type="text" id="e-devise" placeholder="ex : La qualité, un engagement sans faille"/></div>
+      <div class="fg"><label>Localisation</label><input type="text" id="e-lieu" placeholder="ex : Toulouse (31)"/></div>
+      <div class="fg"><label>Effectifs</label><input type="text" id="e-eff" placeholder="ex : 120 salariés"/></div>
+      <div class="fg"><label>Chiffre d'affaires</label><input type="text" id="e-ca" placeholder="ex : 18 M€"/></div>
+      <div class="fg sp"><label>Certifications actuelles</label><input type="text" id="e-certs" placeholder="ex : EN 9100 · ISO 14001 · ISO 45001"/></div>
+      <div class="fg sp"><label>Présentation narrative</label><textarea id="e-desc" placeholder="Fondée en 2001 par des ingénieurs passionnés…"></textarea></div>
+    </div>
+  </div>
+  <div class="fsec">
+    <div class="fst">🚀 Programme stratégique (≈ Cap 2030)</div>
+    <div class="fg2">
+      <div class="fg"><label>Intitulé du programme <span class="req">*</span></label><input type="text" id="e-prog" placeholder="ex : Excellence 2028 — Lean & QSE intégrée"/></div>
+      <div class="fg"><label>Vision stratégique</label><input type="text" id="e-vision" placeholder="ex : Devenir la référence européenne"/></div>
+      <div class="fg sp"><label>Message d'ouverture (discours de lancement)</label><textarea id="e-msg" placeholder="Chers collègues, face aux exigences croissantes de notre secteur…"></textarea></div>
+    </div>
+  </div>
+  <div class="fsec">
+    <div class="fst">🎭 Rôles des participants</div>
+    <div class="fg1">
+      <div class="fg"><label>Rôles dans les équipes (un par ligne)</label><textarea id="e-roles" style="min-height:100px" placeholder="Responsable QHSE&#10;Coordinateur amélioration continue&#10;Chef d'atelier / Team Leader&#10;Contrôleur qualité&#10;Opérateur de production&#10;Gestionnaire de flux"></textarea></div>
+    </div>
+  </div>
+  <div class="brow">
+    <button class="btn bg" onclick="go(1)">← Retour</button>
+    <button class="btn bp" onclick="go(3)">Formateurs & Modules →</button>
+  </div>
+</div>
+
+<!-- ═══ PANEL 3 — FORMATEURS ═══ -->
+<div class="panel" id="panel-3">
+  <div class="eye">Étape 3 / 5</div>
+  <h1 class="ph1">Formateurs Preventys & Modules</h1>
+  <p class="pdsc">Chaque formateur est présenté dans la slide "équipe pédagogique" ET signe les lettres fictives de ses modules. Ils remplacent les dirigeants de La Chaletterie.</p>
+  <div class="co co-i"><span class="coi">✉</span><span>Dans Shaolean, Séverine / René / Denis signaient les lettres. Dans Form'Agil, <b>ce sont vos formateurs Preventys</b> qui signent — en tant que "responsables de domaine" dans l'entreprise fictive.</span></div>
+  <div class="fmttoolbar">
+    <div class="ftitle"><span id="fcount">1</span> formateur(s)</div>
+    <div class="factions">
+      <button class="btn bg" style="padding:5px 11px;font-size:11px" onclick="rmFmt()">− Retirer</button>
+      <button class="btn bg" style="padding:5px 11px;font-size:11px" onclick="addFmt()">+ Formateur</button>
+    </div>
+  </div>
+  <div class="fmtl" id="fmtl"></div>
+  <div class="brow">
+    <button class="btn bg" onclick="go(2)">← Retour</button>
+    <button class="btn bp" onclick="go(4)">Outils Prevent'IS →</button>
+  </div>
+</div>
+
+<!-- ═══ PANEL 4 — OUTILS ═══ -->
+<div class="panel" id="panel-4">
+  <div class="eye">Étape 4 / 5</div>
+  <h1 class="ph1">Outils Numériques Prevent'IS</h1>
+  <p class="pdsc">Configurez les QR codes intégrés dans le diaporama. Chaque outil s'active automatiquement au bon moment dans la boucle Form'Agil.</p>
+  <div class="co co-t"><span class="coi">📱</span><span><b>Prevent'Live</b> en ouverture de séquence · <b>Prevent'Assist</b> pendant les TP · <b>Prevent'Exam</b> en clôture de module · <b>Prevent'Daily</b> en fin de journée. Les QR codes sont incrustés aux slides correspondantes.</span></div>
+  <div class="fsec">
+    <div class="fst">🔧 Activation</div>
+    <div class="qrg" id="qrg"></div>
+  </div>
+  <div class="fsec">
+    <div class="fst">🌐 URLs Prevent'IS</div>
+    <div class="fg2">
+      <div class="fg"><label>Prevent'Live</label><input type="text" id="u-live" value="https://live.preventys.com"/></div>
+      <div class="fg"><label>Prevent'Assist</label><input type="text" id="u-assist" value="https://assist.preventys.com"/></div>
+      <div class="fg"><label>Prevent'Exam</label><input type="text" id="u-exam" value="https://exam.preventys.com"/></div>
+      <div class="fg"><label>Prevent'Daily</label><input type="text" id="u-daily" value="https://daily.preventys.com"/></div>
+    </div>
+    <div class="hint" style="margin-top:8px">Ces URLs seront encodées dans les QR codes et exportées dans le JSON pour les formateurs fils.</div>
+  </div>
+  <div class="brow">
+    <button class="btn bg" onclick="go(3)">← Retour</button>
+    <button class="btn bp" onclick="go(5)">Aperçu & Export →</button>
+  </div>
+</div>
+
+<!-- ═══ PANEL 5 — EXPORT ═══ -->
+<div class="panel" id="panel-5">
+  <div class="eye">Étape 5 / 5</div>
+  <h1 class="ph1">Aperçu & Export</h1>
+  <p class="pdsc">Vérifiez la structure, puis générez le Diaporama Mère et la configuration JSON pour vos formateurs.</p>
+  <div class="psg" id="psg"></div>
+  <div class="fst" style="margin-bottom:12px">🖼 Aperçu des slides</div>
+  <div class="ptg" id="ptg"></div>
+  <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:16px">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;margin-bottom:4px">Diaporama Mère</div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:2px">Support de présentation global — à projeter en plénière d'ouverture.</div>
+    <button class="btn bgen" id="bgen" onclick="doGen()">
+      <span class="spin" id="genspin"></span>
+      <span id="genlbl">⬇ Générer le Diaporama Mère (PPTX)</span>
+    </button>
+  </div>
+  <div class="expbox">
+    <div class="exptitle">📦 Configuration JSON — Pour les Diaporamas Fils</div>
+    <div class="expdsc">Contient la charte visuelle, l'entreprise fictive, les URLs Prevent'IS et la liste des modules. Chaque formateur l'importe dans le Didacticiel 2 pour créer son diaporama fils en cohérence automatique.</div>
+    <button class="btn bjson" onclick="exportJSON()">⬇ Exporter la config JSON</button>
+  </div>
+  <div class="brow"><button class="btn bg" onclick="go(4)">← Retour</button></div>
+</div>
+
+</main>
+</div>
+<div class="toast" id="toast"><span id="tico">✅</span><span id="tmsg">OK</span></div>
+
+<script>
+// ══════════ STATE ══════════
+let step=1, mainC='028090';
+const PAL=['028090','7C3AED','F59E0B','E11D48','0EA5E9','16A34A','F97316','02C39A','9B6FE8','E11D48'];
+const TOOLS=['5S','PDCA','A3','Ishikawa','5 Pourquoi','VSM','Kanban','SMED','AMDEC',
+  'Poka-Yoke','Kaizen','Management visuel','Standard Work','Pareto','Gemba Walk',
+  'Cartographie flux','QQOQCCP','8D','SPC/MSP','Hoshin','Arbre des causes'];
+const QRS=[
+  {id:'live',  icon:'📡',name:"Prevent'Live",  desc:'Q&A · Sondages · Chrono',    moment:'Ouverture de séquence', on:true},
+  {id:'assist',icon:'🤖',name:"Prevent'Assist",desc:'Assistant IA 24h/7j',         moment:'Pendant les TP',        on:true},
+  {id:'exam',  icon:'📝',name:"Prevent'Exam",  desc:'QCM · Auto-évaluation',       moment:'Clôture de module',     on:true},
+  {id:'daily', icon:'🎬',name:"Prevent'Daily", desc:'Vidéo récap personnalisée',   moment:'Fin de journée',        on:true},
+];
+let fmts=[];
+
+// ══════════ INIT ══════════
+window.onload=()=>{fmts=[mkFmt(0)];renderFmts();renderQR();};
+
+function mkFmt(i){return{id:Date.now()+i+Math.random(),nom:'',role:'',spec:'',mods:[mkMod(0)]};}
+function mkMod(i){return{id:Date.now()+i+Math.random(),titre:'',objectif:'',cours:'',tp:'',livrable:'',lettre:'',heureTP:'',tprod:30,tanalyse:45,outils:[]};}
+
+// ══════════ NAV ══════════
+function go(n){
+  if(n===5) bldPreview();
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('act'));
+  document.getElementById('panel-'+n).classList.add('act');
+  document.querySelectorAll('.ni').forEach((el,i)=>{el.classList.remove('act');i<n-1?el.classList.add('done'):el.classList.remove('done');});
+  document.getElementById('nav-'+n).classList.add('act');
+  step=n;
+  document.getElementById('ptxt').textContent=n+'/5';
+  document.getElementById('pbar').style.width=(n/5*100)+'%';
+  document.querySelector('.main').scrollTo({top:0,behavior:'smooth'});
+}
+function pickC(el){document.querySelectorAll('.csw').forEach(s=>s.classList.remove('on'));el.classList.add('on');mainC=el.dataset.c;}
+
+// ══════════ FORMATEURS ══════════
+function addFmt(){if(fmts.length>=8){toast('Max 8 formateurs','⚠️');return;}fmts.push(mkFmt(fmts.length));renderFmts();}
+function rmFmt(){if(fmts.length<=1){toast('Minimum 1 formateur','⚠️');return;}fmts.pop();renderFmts();}
+
+function renderFmts(){
+  document.getElementById('fcount').textContent=fmts.length;
+  const list=document.getElementById('fmtl');
+  list.innerHTML='';
+  fmts.forEach((f,fi)=>{
+    const col=PAL[fi%PAL.length];
+    const av=f.nom?f.nom[0].toUpperCase():String(fi+1);
+    const el=document.createElement('div');
+    el.className='fmtc'+(fi===0?' open':'');
+    el.id='fc'+f.id;
+    el.innerHTML=
+      '<div class="fmth" onclick="this.parentElement.classList.toggle(\'open\')">'
+      +'<div class="fmtav" style="background:#'+col+'" id="fav'+fi+'">'+av+'</div>'
+      +'<div style="flex:1"><input class="fmtni" type="text" value="'+esc(f.nom)+'" placeholder="Prénom Nom du formateur"'
+        +' oninput="fmts['+fi+'].nom=this.value;upAv('+fi+',this.value)" onclick="event.stopPropagation()"/>'
+        +'<input class="fmtri" type="text" value="'+esc(f.role)+'" placeholder="Rôle dans l\'entreprise fictive"'
+        +' oninput="fmts['+fi+'].role=this.value" onclick="event.stopPropagation()"/></div>'
+      +'<span class="ftog">▾</span></div>'
+      +'<div class="fmtb">'
+        +'<div class="fg2" style="margin-bottom:12px">'
+          +'<div class="fg sp"><label>Spécialité / domaines</label>'
+          +'<input type="text" value="'+esc(f.spec)+'" placeholder="ex : Lean Six Sigma · AMDEC · Audit interne"'
+          +' oninput="fmts['+fi+'].spec=this.value"/></div></div>'
+        +'<div class="fmttoolbar">'
+          +'<div class="ftitle"><span id="mc'+fi+'">'+f.mods.length+'</span> module(s)</div>'
+          +'<div class="factions">'
+            +'<button class="btn bg" style="padding:4px 9px;font-size:11px" onclick="event.stopPropagation();rmMod('+fi+')">− Module</button>'
+            +'<button class="btn bg" style="padding:4px 9px;font-size:11px" onclick="event.stopPropagation();addMod('+fi+')">+ Module</button>'
+          +'</div></div>'
+        +'<div class="modl" id="ml'+fi+'"></div>'
+      +'</div>';
+    list.appendChild(el);
+    renderMods(fi);
+  });
+}
+function upAv(fi,val){const a=document.getElementById('fav'+fi);if(a)a.textContent=val?val[0].toUpperCase():String(fi+1);}
+
+// ══════════ MODULES ══════════
+function addMod(fi){if(fmts[fi].mods.length>=6){toast('Max 6 modules par formateur','⚠️');return;}fmts[fi].mods.push(mkMod(fmts[fi].mods.length));renderMods(fi);document.getElementById('mc'+fi).textContent=fmts[fi].mods.length;}
+function rmMod(fi){if(fmts[fi].mods.length<=1){toast('Min 1 module','⚠️');return;}fmts[fi].mods.pop();renderMods(fi);document.getElementById('mc'+fi).textContent=fmts[fi].mods.length;}
+
+function renderMods(fi){
+  const list=document.getElementById('ml'+fi);
+  if(!list)return;list.innerHTML='';
+  fmts[fi].mods.forEach((m,mi)=>{
+    const col=PAL[(fi*3+mi)%PAL.length];
+    const el=document.createElement('div');
+    el.className='modc'+(mi===0?' open':'');
+    const sigNote='Signature auto : '+(fmts[fi].nom||'[Formateur]')+' · '+(fmts[fi].role||'[Rôle]');
+    el.innerHTML=
+      '<div class="modh" onclick="this.parentElement.classList.toggle(\'open\')">'
+        +'<div class="modn" style="background:#'+col+'">'+String(mi+1).padStart(2,'0')+'</div>'
+        +'<input class="modti" type="text" value="'+esc(m.titre)+'" placeholder="Titre du module"'
+          +' oninput="fmts['+fi+'].mods['+mi+'].titre=this.value" onclick="event.stopPropagation()"/>'
+        +'<span class="mtog">▾</span>'
+      +'</div>'
+      +'<div class="modb">'
+        +'<div class="fg1">'
+          +'<div class="fg"><label>✉ Lettre fictive (signée par ce formateur)</label>'
+            +'<textarea placeholder="Rédigez la lettre qui introduit le problème de ce module.&#10;Laissez vide → lettre auto-générée signée par le formateur."'
+              +' oninput="fmts['+fi+'].mods['+mi+'].lettre=this.value">'+esc(m.lettre)+'</textarea>'
+            +'<span class="hint">'+sigNote+'</span></div>'
+          +'<div class="fg"><label>📚 Contenu du cours (notions clés)</label>'
+            +'<textarea placeholder="• Notion 1&#10;• Notion 2&#10;• Notion 3"'
+              +' oninput="fmts['+fi+'].mods['+mi+'].cours=this.value">'+esc(m.cours)+'</textarea></div>'
+          +'<div class="fg"><label>🎯 Objectif pédagogique</label>'
+            +'<input type="text" value="'+esc(m.objectif)+'" placeholder="Être capable de…"'
+              +' oninput="fmts['+fi+'].mods['+mi+'].objectif=this.value"/></div>'
+          +'<div class="fg"><label>⚙ Travaux pratiques / Production</label>'
+            +'<textarea placeholder="Décrivez le TP Aircraft à réaliser…"'
+              +' oninput="fmts['+fi+'].mods['+mi+'].tp=this.value">'+esc(m.tp)+'</textarea></div>'
+          +'<div class="fg2">'
+            +'<div class="fg"><label>📦 Livrables attendus</label>'
+              +'<input type="text" value="'+esc(m.livrable)+'" placeholder="ex : AMDEC + plan d\'actions"'
+                +' oninput="fmts['+fi+'].mods['+mi+'].livrable=this.value"/></div>'
+            +'<div class="fg"><label>🕐 Heure démarrage production</label>'
+              +'<input type="text" value="'+esc(m.heureTP)+'" placeholder="ex : 10h00"'
+                +' oninput="fmts['+fi+'].mods['+mi+'].heureTP=this.value"/></div>'
+          +'</div>'
+          +'<div class="fg"><label>🔧 Outils utilisés</label><div class="chips" id="chips-'+fi+'-'+mi+'"></div></div>'
+        +'</div>'
+      +'</div>';
+    list.appendChild(el);
+    renderChips(fi,mi,m.outils);
+  });
+}
+
+function renderChips(fi,mi,sel){
+  const w=document.getElementById('chips-'+fi+'-'+mi);
+  if(!w)return;w.innerHTML='';
+  TOOLS.forEach(t=>{
+    const c=document.createElement('div');
+    c.className='chip'+(sel.includes(t)?' on':'');
+    c.textContent=t;
+    c.onclick=()=>{const a=fmts[fi].mods[mi].outils,idx=a.indexOf(t);idx>=0?a.splice(idx,1):a.push(t);c.classList.toggle('on');};
+    w.appendChild(c);
+  });
+}
+
+// ══════════ QR ITEMS ══════════
+function renderQR(){
+  const w=document.getElementById('qrg');
+  if(!w)return;
+  w.innerHTML=QRS.map(q=>
+    '<div class="qri"><span class="qricon">'+q.icon+'</span><div><div class="qrlb">'+q.name+'</div>'
+    +'<div style="font-size:10px;color:var(--mu)">'+q.moment+'</div>'
+    +'<div style="font-size:10px;color:var(--mu)">'+q.desc+'</div></div>'
+    +'<label class="qrml"><input type="checkbox" id="qr-'+q.id+'" '+(q.on?'checked':'')+'/></label></div>'
+  ).join('');
+}
+function qrOn(id){const el=document.getElementById('qr-'+id);return el&&el.checked;}
+
+// ══════════ PREVIEW ══════════
+function bldPreview(){
+  const titre=gv('f-titre')||'Formation CQP';
+  const eNom=gv('e-nom')||'Entreprise';
+  const totMods=fmts.reduce((s,f)=>s+f.mods.length,0);
+  const totSlides=8+totMods*4+(qrOn('assist')?totMods:0)+(qrOn('daily')?fmts.length:0)+(qrOn('exam')?1:0)+1;
+  document.getElementById('psg').innerHTML=
+    '<div class="ps"><div class="psv" style="color:#1DD4C0">'+fmts.length+'</div><div class="psl">Formateurs</div></div>'
+    +'<div class="ps"><div class="psv" style="color:#F4A535">'+totMods+'</div><div class="psl">Modules</div></div>'
+    +'<div class="ps"><div class="psv" style="color:#9B6FE8">'+totSlides+'</div><div class="psl">Slides</div></div>'
+    +'<div class="ps"><div class="psv" style="color:#28C87A">'+fmts.reduce((s,f)=>s+f.mods.reduce((ss,m)=>ss+m.tprod,0),0)+'</div><div class="psl">Min production</div></div>';
+
+  const slides=[];
+  slides.push({bg:'#'+mainC,t:titre,s:eNom,tag:'Titre'});
+  slides.push({bg:'#0E1C28',t:'Objectifs & Principes',s:'',tag:'Objectifs'});
+  slides.push({bg:'#'+mainC,t:eNom,s:'Présentation',tag:'Entreprise'});
+  slides.push({bg:'#0E1C28',t:gv('e-prog')||'Programme',s:'Direction',tag:'Programme'});
+  slides.push({bg:'#0E1C28',t:'Équipe Preventys',s:'Les formateurs',tag:'Équipe'});
+  slides.push({bg:'#0E1C28',t:'Roadmap des modules',s:'Parcours',tag:'Roadmap'});
+  slides.push({bg:'#0E1C28',t:"Règles Form'Agil",s:'Boucle Shaolean',tag:'Règles'});
+  slides.push({bg:'#0E1C28',t:'Rôles & Équipes',s:'',tag:'Rôles'});
+
+  let mg=0;
+  fmts.forEach((f,fi)=>{
+    f.mods.forEach((m,mi)=>{
+      mg++;
+      const col='#'+PAL[(fi*3+mi)%PAL.length];
+      slides.push({bg:'#F4F1EB',t:'✉ M'+String(mg).padStart(2,'0')+' — '+(m.titre||f.nom),s:f.nom,tag:'M'+mg+' Lettre'});
+      slides.push({bg:col,t:'📚 '+(m.titre||'Module '+mg),s:'Cours',tag:'M'+mg+' Cours'});
+      slides.push({bg:'#0E1C28',t:'⚙ Production #'+mg,s:m.tprod+'min',tag:'M'+mg+' Prod.'});
+      if(qrOn('assist')) slides.push({bg:'#0E1C28',t:"📱 Prevent'Assist",s:'QR TP',tag:'M'+mg+' QR'});
+      slides.push({bg:'#F4F1EB',t:'🔍 Analyse M'+mg,s:m.tanalyse+'min',tag:'M'+mg+' Débr.'});
+    });
+    if(qrOn('daily')) slides.push({bg:'#0E1C28',t:"🎬 Prevent'Daily",s:'F'+(fi+1),tag:'Daily'});
+  });
+  if(qrOn('exam')) slides.push({bg:'#'+mainC,t:"📝 Prevent'Exam",s:'Validation',tag:'Exam'});
+  slides.push({bg:'#'+mainC,t:'Soutenance finale',s:'Portfolio + Jury',tag:'Soutenance'});
+
+  const g=document.getElementById('ptg');
+  g.innerHTML='';
+  slides.forEach(sl=>{
+    const el=document.createElement('div');
+    el.className='pt';el.style.background=sl.bg;
+    const tc=(sl.bg==='#F4F1EB')?'#0E1C28':'#fff';
+    el.innerHTML='<div class="pth" style="color:'+tc+'">'+sl.t+'</div><div class="ptb" style="color:'+tc+'">'+sl.s+'</div><div class="pttag">'+sl.tag+'</div>';
+    g.appendChild(el);
+  });
+}
+
+// ══════════ PPTX ══════════
+async function doGen(){
+  const btn=document.getElementById('bgen'),spn=document.getElementById('genspin'),lbl=document.getElementById('genlbl');
+  btn.disabled=true;spn.style.display='inline-block';lbl.textContent='Génération…';
+  await new Promise(r=>setTimeout(r,80));
+  try{
+    const pres=new PptxGenJS();pres.layout='LAYOUT_16x9';
+    const C=mainC,INK='0E1C28',WHI='FFFFFF',PAP='F4F1EB';
+    const titre=gv('f-titre')||'Formation CQP',code=gv('f-code')||'',duree=gv('f-duree')||'',
+      modalite=gv('f-modalite')||'',objTxt=gv('f-objectifs')||'',slogan=gv('f-slogan')||"L'excellence, un sprint à la fois",
+      coord=gv('f-coord')||'';
+    const eNom=gv('e-nom')||'Entreprise',eSecteur=gv('e-secteur')||'',eDevise=gv('e-devise')||'',
+      eLieu=gv('e-lieu')||'',eEff=gv('e-eff')||'',eCa=gv('e-ca')||'',eCerts=gv('e-certs')||'',
+      eDesc=gv('e-desc')||'',eProg=gv('e-prog')||'Programme Stratégique',eVision=gv('e-vision')||'',
+      eMsg=gv('e-msg')||'',eRoles=gv('e-roles')||'';
+    const uLive=gv('u-live'),uAssist=gv('u-assist'),uExam=gv('u-exam'),uDaily=gv('u-daily');
+
+    const sh=(op=.15)=>({type:'outer',blur:7,offset:3,angle:135,color:'000000',opacity:op});
+    function dk(h){let r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return[Math.max(0,r-35),Math.max(0,g-35),Math.max(0,b-35)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+    function hdr(s,t,sub,bg,tc){bg=bg||C;tc=tc||WHI;s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:.68,fill:{color:bg}});s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.17,h:.68,fill:{color:dk(bg)}});s.addText(t,{x:.32,y:.10,w:9.4,h:.34,fontSize:14,bold:true,color:tc,fontFace:'Calibri',margin:0});if(sub)s.addText(sub,{x:.32,y:.44,w:9.4,h:.20,fontSize:9,color:tc,fontFace:'Calibri',italic:true,margin:0,transparency:25});}
+    function stripe(s,col,x,y,h){s.addShape(pres.shapes.RECTANGLE,{x,y,w:.06,h,fill:{color:col}});}
+    function oval(s,t,x,y,w,h,bg,tc){s.addShape(pres.shapes.OVAL,{x,y,w,h,fill:{color:bg}});s.addText(t,{x,y,w,h,fontSize:Math.max(8,Math.min(14,h*18)),bold:true,color:tc||WHI,align:'center',fontFace:'Calibri',margin:0});}
+    function qrBox(s,url,name,x,y){
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w:2.2,h:2.2,fill:{color:WHI},shadow:sh(.2)});
+      s.addText('📱',{x:x+.4,y:y+.18,w:1.4,h:1.0,fontSize:36,align:'center',margin:0});
+      s.addText('QR → '+name,{x,y:y+1.26,w:2.2,h:.22,fontSize:8,bold:true,color:INK,align:'center',fontFace:'Calibri',margin:0});
+      s.addText(url,{x,y:y+1.50,w:2.2,h:.18,fontSize:7,color:'4A5568',align:'center',fontFace:'Calibri',margin:0});
+      s.addText('▸ Scanner pour accéder',{x,y:y+1.70,w:2.2,h:.18,fontSize:7,color:'6B7280',align:'center',fontFace:'Calibri',italic:true,margin:0});
+    }
+
+    // S1 TITRE
+    {const s=pres.addSlide();s.background={color:INK};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.26,h:5.625,fill:{color:C}});
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:4.45,w:10,h:1.175,fill:{color:C,transparency:90}});
+    s.addText('PREVENTYS · FORM\'AGIL',{x:.52,y:.38,w:9,h:.28,fontSize:10,bold:true,color:C,fontFace:'Calibri',charSpacing:3,margin:0});
+    s.addText(titre,{x:.52,y:.76,w:8.8,h:1.8,fontSize:32,bold:true,color:WHI,fontFace:'Calibri',margin:0});
+    s.addShape(pres.shapes.RECTANGLE,{x:.52,y:2.64,w:4,h:.05,fill:{color:C}});
+    s.addText(eNom+(eSecteur?' — '+eSecteur:''),{x:.52,y:2.78,w:9,h:.32,fontSize:14,color:C,fontFace:'Calibri',margin:0});
+    if(slogan)s.addText(slogan,{x:.52,y:3.18,w:9,h:.28,fontSize:12,color:WHI,fontFace:'Calibri',italic:true,margin:0,transparency:30});
+    s.addText([code,duree,modalite].filter(Boolean).join('   ·   '),{x:.52,y:4.54,w:9,h:.22,fontSize:9,color:WHI,fontFace:'Calibri',margin:0,transparency:35});
+    s.addText('Preventys · Form\'Agil'+(coord?' · '+coord:''),{x:.52,y:5.10,w:9,h:.22,fontSize:9,color:WHI,fontFace:'Calibri',margin:0,transparency:40});}
+
+    // S2 OBJECTIFS
+    {const s=pres.addSlide();s.background={color:INK};hdr(s,"Objectifs & Principes Form'Agil",titre);
+    const objs=objTxt.split('\n').map(l=>l.replace(/^[•\-]\s*/,'')).filter(Boolean).slice(0,5);
+    const princ=["La boucle Form'Agil est invariante — la structure ne change jamais, le contenu évolue","Chaque module = lettre formateur → cours → TP → Prevent'IS → analyse débrief","Les formateurs Preventys signent les lettres en tant que responsables de domaine","Les outils Prevent'IS sont intégrés via QR code à chaque moment clé","La soutenance finale évalue l'ensemble du parcours — portfolio co-validé"];
+    s.addText('OBJECTIFS',{x:.38,y:.80,w:4.5,h:.22,fontSize:9,bold:true,color:C,fontFace:'Calibri',charSpacing:1.5,margin:0});
+    objs.forEach((o,i)=>{stripe(s,C,.38,1.08+i*.60,.48);s.addText(o,{x:.54,y:1.08+i*.60,w:4.3,h:.52,fontSize:10.5,color:WHI,fontFace:'Calibri',margin:0});});
+    s.addText("PRINCIPES FORM'AGIL",{x:5.1,y:.80,w:4.7,h:.22,fontSize:9,bold:true,color:C,fontFace:'Calibri',charSpacing:1.5,margin:0});
+    princ.forEach((p,i)=>{stripe(s,C,5.1,1.08+i*.60,.48);s.addText(p,{x:5.26,y:1.08+i*.60,w:4.3,h:.52,fontSize:10,color:WHI,fontFace:'Calibri',margin:0});});}
+
+    // S3 ENTREPRISE
+    {const s=pres.addSlide();s.background={color:PAP};hdr(s,eNom+' — Qui sommes-nous ?',eDevise,C,WHI);
+    s.addShape(pres.shapes.RECTANGLE,{x:.28,y:.80,w:5.9,h:4.58,fill:{color:WHI},shadow:sh()});
+    s.addShape(pres.shapes.RECTANGLE,{x:.28,y:.80,w:5.9,h:.40,fill:{color:C}});
+    s.addText('PRÉSENTATION',{x:.44,y:.88,w:5.6,h:.24,fontSize:9,bold:true,color:WHI,fontFace:'Calibri',charSpacing:2,margin:0});
+    s.addText(eDesc||eNom+' est un acteur de référence dans le secteur '+eSecteur+'.',{x:.44,y:1.28,w:5.6,h:1.56,fontSize:10.5,color:INK,fontFace:'Calibri',margin:0});
+    [[`Secteur`,eSecteur],['Effectifs',eEff],['CA',eCa],['Localisation',eLieu],['Certifications',eCerts]].filter(([,v])=>v).forEach(([k,v],i)=>{const y=2.96+i*.40;s.addShape(pres.shapes.RECTANGLE,{x:.28,y,w:5.9,h:.38,fill:{color:i%2?'F8FAFB':WHI}});s.addText(k,{x:.44,y:y+.06,w:1.3,h:.24,fontSize:9,bold:true,color:C,fontFace:'Calibri',charSpacing:1,margin:0});s.addText(v,{x:1.74,y:y+.06,w:4.3,h:.24,fontSize:10,color:'334155',fontFace:'Calibri',margin:0});});
+    s.addShape(pres.shapes.RECTANGLE,{x:6.4,y:.80,w:3.3,h:4.58,fill:{color:C,transparency:90},line:{color:C,width:1}});
+    s.addText('NOS VALEURS',{x:6.56,y:.92,w:3.0,h:.22,fontSize:9,bold:true,color:C,fontFace:'Calibri',charSpacing:2,margin:0});
+    ['Innovation','Qualité','Sécurité','Engagement','Excellence'].forEach((v,i)=>{stripe(s,C,6.56,1.20+i*.54,.42);s.addText(v,{x:6.72,y:1.20+i*.54,w:2.8,h:.42,fontSize:10.5,color:INK,fontFace:'Calibri',margin:0});});
+    if(eDevise)s.addText(eDevise,{x:6.4,y:4.86,w:3.3,h:.28,fontSize:9,color:C,fontFace:'Calibri',italic:true,align:'center',margin:0});}
+
+    // S4 PROGRAMME
+    {const s=pres.addSlide();s.background={color:INK};hdr(s,eProg,'Le message de la direction');
+    s.addShape(pres.shapes.RECTANGLE,{x:.38,y:.80,w:9.2,h:3.8,fill:{color:C,transparency:92},line:{color:C,width:1}});
+    s.addText('"',{x:.52,y:.84,w:.8,h:.8,fontSize:50,color:C,fontFace:'Calibri',margin:0,transparency:35});
+    s.addText(eMsg||'Chers collègues, face aux exigences croissantes de notre secteur, nous lançons '+eProg+'. Ce programme est notre boussole vers l\'excellence opérationnelle. Ensemble, innovons, améliorons et avançons vers notre objectif commun.',{x:1.06,y:1.32,w:8.0,h:1.5,fontSize:12,color:WHI,fontFace:'Calibri',italic:true,margin:0});
+    if(eVision)s.addText('"'+eVision+'"',{x:.38,y:2.98,w:9.2,h:.38,fontSize:11,color:WHI,fontFace:'Calibri',italic:true,align:'center',margin:0,transparency:25});
+    s.addText('La Direction · '+eNom,{x:6.5,y:3.48,w:2.8,h:.38,fontSize:10,color:C,fontFace:'Calibri',bold:true,align:'right',margin:0});}
+
+    // S5 ÉQUIPE PREVENTYS
+    {const s=pres.addSlide();s.background={color:INK};hdr(s,'Équipe Pédagogique Preventys','Vos formateurs — responsables de domaine dans '+eNom);
+    const nbF=fmts.length,cols=nbF<=3?nbF:Math.ceil(nbF/2);
+    fmts.forEach((f,fi)=>{
+      const col=PAL[fi%PAL.length],r=Math.floor(fi/cols),c=fi%cols;
+      const x=.38+c*(9.24/cols),y=.86+r*2.48,w=9.24/cols-.18;
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w,h:2.08,fill:{color:col,transparency:90},line:{color:col,width:1.5}});
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w,h:.36,fill:{color:col}});
+      oval(s,f.nom?f.nom[0].toUpperCase():String(fi+1),x+w/2-.30,y+.44,.60,.60,col,WHI);
+      s.addText(f.nom||'Formateur '+(fi+1),{x,y:y+1.12,w,h:.26,fontSize:10,bold:true,color:WHI,fontFace:'Calibri',align:'center',margin:0});
+      s.addText(f.role||f.spec||'',{x,y:y+1.42,w,h:.22,fontSize:9,color:WHI,fontFace:'Calibri',align:'center',italic:true,margin:0,transparency:25});
+      s.addText(f.mods.map(m=>m.titre||'Module').join(' · ').substring(0,38),{x,y:y+1.66,w,h:.20,fontSize:8,color:col,fontFace:'Calibri',align:'center',margin:0});
+    });}
+
+    // S6 ROADMAP
+    {const s=pres.addSlide();s.background={color:INK};hdr(s,'Roadmap des Modules','Du sprint 01 à la certification');
+    const allM=[];fmts.forEach((f,fi)=>f.mods.forEach((m,mi)=>allM.push({...m,fmt:f,fi,mi,col:PAL[(fi*3+mi)%PAL.length]})));
+    const half=Math.ceil(allM.length/2);
+    [allM.slice(0,half),allM.slice(half)].forEach((row,ri)=>{
+      const y=ri===0?.88:3.16;
+      row.forEach((m,i)=>{
+        const x=.38+i*(9.24/half),w=9.24/half-.18;
+        s.addShape(pres.shapes.RECTANGLE,{x,y,w,h:2.02,fill:{color:m.col,transparency:91},line:{color:m.col,width:1.5}});
+        s.addShape(pres.shapes.RECTANGLE,{x,y,w,h:.34,fill:{color:m.col}});
+        s.addText(String(ri*half+i+1).padStart(2,'0'),{x:x+.06,y:y+.03,w:.4,h:.28,fontSize:12,bold:true,color:WHI,fontFace:'Calibri',margin:0});
+        s.addText(m.titre||m.fmt.nom,{x,y:y+.40,w,h:.26,fontSize:9,bold:true,color:m.col,fontFace:'Calibri',align:'center',margin:0});
+        s.addText(m.fmt.nom||'',{x,y:y+.70,w,h:.22,fontSize:8.5,color:WHI,fontFace:'Calibri',align:'center',italic:true,margin:0,transparency:30});
+        s.addText(m.tprod+'min',{x,y:y+1.48,w,h:.20,fontSize:8,color:m.col,fontFace:'Calibri',align:'center',margin:0});
+      });
+    });}
+
+    // S7 RÈGLES
+    {const s=pres.addSlide();s.background={color:INK};hdr(s,"Règles Form'Agil","La boucle Shaolean appliquée à la formation certifiante");
+    [{t:"La boucle est invariante",d:"Lettre formateur → Cours → TP → Prevent'IS → Analyse. La structure ne change jamais."},{t:"On ne produit pas sans mission définie",d:"Chaque TP démarre sur une lettre signée par le formateur responsable du module."},{t:"Les outils Prevent'IS ponctuent le parcours",d:"QR codes aux moments clés : Live en ouverture, Assist pendant le TP, Exam en clôture."},{t:"La co-validation rythme la progression",d:"Stagiaire propose, formateur confirme. Chaque carte compétence avance de 0% à 100%."},{t:"La soutenance finale certifie",d:"Portfolio des cartes compétences co-validées + présentation devant jury."}].forEach((r,i)=>{
+      const y=.86+i*.70;
+      s.addShape(pres.shapes.RECTANGLE,{x:.28,y,w:9.44,h:.62,fill:{color:i%2?WHI:'F8FAFB',transparency:i%2?94:96},line:{color:C,width:i===0?2:.5}});
+      oval(s,String(i+1),.36,y+.15,.32,.32,C,INK);
+      s.addText(r.t,{x:.80,y:y+.06,w:8.7,h:.24,fontSize:11,bold:true,color:INK,fontFace:'Calibri',margin:0});
+      s.addText(r.d,{x:.80,y:y+.30,w:8.7,h:.24,fontSize:10,color:'4A5568',fontFace:'Calibri',margin:0});
+    });}
+
+    // S8 RÔLES
+    {const s=pres.addSlide();s.background={color:INK};hdr(s,'Répartition des Équipes','Rôles dans '+eNom);
+    const roles=eRoles.split('\n').filter(Boolean);
+    const cols=roles.length<=4?2:3;
+    roles.forEach((role,i)=>{
+      const c=i%cols,r=Math.floor(i/cols),x=.38+c*(9.24/cols),y=.86+r*1.22,w=9.24/cols-.18,rc=PAL[i%PAL.length];
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w,h:1.04,fill:{color:rc,transparency:91},line:{color:rc,width:1.5}});
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w,h:.30,fill:{color:rc}});
+      s.addText(role,{x:x+.07,y,w:w-.14,h:.30,fontSize:9,bold:true,color:WHI,fontFace:'Calibri',margin:0,valign:'middle'});
+      s.addText('Agir dans son périmètre pour optimiser la production collective.',{x:x+.07,y:y+.34,w:w-.14,h:.60,fontSize:8.5,color:WHI,fontFace:'Calibri',margin:0,transparency:25});
+    });}
+
+    // BOUCLE MODULES
+    let mg=0;
+    fmts.forEach((fmt,fi)=>{
+      fmt.mods.forEach((mod,mi)=>{
+        mg++;
+        const sc=PAL[(fi*3+mi)%PAL.length],sn=String(mg).padStart(2,'0');
+
+        // LETTRE
+        {const s=pres.addSlide();s.background={color:PAP};hdr(s,'Module '+sn+' — '+(mod.titre||fmt.nom+' · Module '+(mi+1)),fmt.nom+' — '+fmt.role,sc,WHI);
+        s.addShape(pres.shapes.RECTANGLE,{x:.66,y:.80,w:8.68,h:4.58,fill:{color:WHI},shadow:sh(.2)});
+        s.addShape(pres.shapes.RECTANGLE,{x:.66,y:.80,w:.16,h:4.58,fill:{color:sc}});
+        oval(s,fmt.nom?fmt.nom[0].toUpperCase():String(fi+1),8.78,.92,.66,.66,sc,WHI);
+        s.addText('Objet : '+(mod.titre||'Module '+sn)+' — Introduction',{x:1.0,y:.92,w:7.5,h:.22,fontSize:10,bold:true,color:INK,fontFace:'Calibri',margin:0});
+        s.addShape(pres.shapes.RECTANGLE,{x:1.0,y:1.18,w:7.6,h:.02,fill:{color:sc,transparency:50}});
+        const lettre=mod.lettre||'Cher(e)s collègues,\n\nDans le cadre de notre programme '+eProg+', je souhaite attirer votre attention sur un enjeu opérationnel important : "'+( mod.titre||'ce module')+'".\n\n'+(mod.cours?'Les notions clés à maîtriser : '+mod.cours.split('\n').filter(Boolean).slice(0,3).map(l=>l.replace(/^[•\-]\s*/,'')).join(' · ')+'.\n\n':'')+' Je compte sur votre engagement pour produire les livrables attendus'+(mod.livrable?' ('+mod.livrable+')':'')+'.\n\nBien cordialement,\n'+( fmt.nom||'Le formateur')+'\n'+(fmt.role?fmt.role+' · ':'')+eNom;
+        s.addText(lettre,{x:1.0,y:1.26,w:7.6,h:3.82,fontSize:10.5,color:INK,fontFace:'Calibri',margin:0,valign:'top'});}
+
+        // COURS
+        {const s=pres.addSlide();s.background={color:sc};
+        s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.20,h:5.625,fill:{color:dk(sc)}});
+        s.addText(sn,{x:.36,y:.16,w:.9,h:.88,fontSize:48,bold:true,color:WHI,fontFace:'Calibri',margin:0,transparency:20});
+        s.addText(mod.titre||fmt.nom+' · Module '+(mi+1),{x:1.24,y:.20,w:8.4,h:.58,fontSize:26,bold:true,color:WHI,fontFace:'Calibri',margin:0});
+        s.addText('Formateur : '+fmt.nom+(fmt.spec?' · '+fmt.spec:''),{x:1.24,y:.80,w:8.4,h:.26,fontSize:11,color:WHI,fontFace:'Calibri',italic:true,margin:0,transparency:25});
+        s.addShape(pres.shapes.RECTANGLE,{x:.36,y:1.14,w:9.28,h:.04,fill:{color:WHI,transparency:65}});
+        if(mod.objectif){s.addShape(pres.shapes.RECTANGLE,{x:.36,y:1.26,w:9.28,h:.50,fill:{color:WHI,transparency:88},line:{color:WHI,width:1}});s.addText('Objectif : '+mod.objectif,{x:.52,y:1.32,w:9.0,h:.38,fontSize:11,color:WHI,fontFace:'Calibri',italic:true,margin:0});}
+        mod.cours.split('\n').map(l=>l.replace(/^[•\-]\s*/,'')).filter(Boolean).slice(0,5).forEach((line,i)=>{stripe(s,WHI,.36,1.88+i*.60,.46);s.addText(line,{x:.56,y:1.88+i*.60,w:9.0,h:.52,fontSize:11,color:WHI,fontFace:'Calibri',margin:0});});
+        if(mod.outils.length>0)s.addText('Outils : '+mod.outils.join(' — '),{x:.36,y:5.20,w:9.28,h:.22,fontSize:9,color:WHI,fontFace:'Calibri',italic:true,margin:0,transparency:30});}
+
+        // PRODUCTION
+        {const s=pres.addSlide();s.background={color:INK};hdr(s,'Production #'+mg+' — '+(mod.titre||'Module '+sn),eNom+(mod.heureTP?' · Démarrage '+mod.heureTP:''),sc);
+        s.addShape(pres.shapes.OVAL,{x:7.72,y:.96,w:1.96,h:1.96,fill:{color:sc},shadow:sh(.25)});
+        s.addText(String(mod.tprod||30),{x:7.72,y:1.20,w:1.96,h:.78,fontSize:36,bold:true,color:WHI,align:'center',fontFace:'Calibri',margin:0});
+        s.addText('minutes',{x:7.72,y:1.98,w:1.96,h:.24,fontSize:11,color:WHI,align:'center',fontFace:'Calibri',margin:0});
+        s.addText('A vous de jouer !',{x:.38,y:1.00,w:7.0,h:.50,fontSize:24,bold:true,color:WHI,fontFace:'Calibri',margin:0});
+        s.addShape(pres.shapes.RECTANGLE,{x:.38,y:1.58,w:3.8,h:.05,fill:{color:sc}});
+        (mod.tp||'Réaliser la production du module '+sn+'.\nAppliquer les concepts de "'+(mod.titre||'ce module')+'"').split('\n').filter(Boolean).slice(0,4).forEach((m2,i)=>{stripe(s,sc,.38,1.74+i*.56,.44);s.addText(m2,{x:.56,y:1.74+i*.56,w:6.8,h:.50,fontSize:11,color:WHI,fontFace:'Calibri',margin:0});});
+        if(mod.livrable){s.addShape(pres.shapes.RECTANGLE,{x:.38,y:4.66,w:6.8,h:.60,fill:{color:sc,transparency:88},line:{color:sc,width:1}});s.addText('Livrables : '+mod.livrable,{x:.52,y:4.74,w:6.6,h:.44,fontSize:10,color:WHI,fontFace:'Calibri',italic:true,margin:0});}
+        if(mod.heureTP){s.addShape(pres.shapes.RECTANGLE,{x:.38,y:5.22,w:9.24,h:.26,fill:{color:sc}});s.addText('⚠ ATTENTION : Démarrage à '+mod.heureTP,{x:.38,y:5.22,w:9.24,h:.26,fontSize:11,bold:true,color:WHI,align:'center',fontFace:'Calibri',margin:0});}
+        if(qrOn('assist')) qrBox(s,uAssist,"Prevent'Assist",7.56,1.22);}
+
+        // ANALYSE
+        {const s=pres.addSlide();s.background={color:PAP};hdr(s,'Analyse — Module '+sn,(mod.tanalyse||45)+'min'+(mod.heureTP?' · Prochain démarrage à '+mod.heureTP:''),sc,WHI);
+        [{t:'Débriefez votre production',d:"Qu'a-t-on produit ? Quels écarts ?"},{t:'Mettez à jour vos indicateurs',d:'Qualité, cadence, délais, valeur ajoutée'},{t:'Appliquez les fiches outils',d:mod.outils.length>0?'Outils : '+mod.outils.slice(0,3).join(', '):'Utilisez les outils vus dans le cours'},{t:"Avancez vos cartes compétences",d:'Co-validez les cartes maîtrisées avec votre formateur'},{t:'Préparez la prochaine séquence',d:'1 amélioration concrète à mettre en œuvre'}].forEach((st,i)=>{const y=.84+i*.72;s.addShape(pres.shapes.RECTANGLE,{x:.28,y,w:9.44,h:.64,fill:{color:i%2?WHI:'F8FAFB'},line:{color:'E2E8F0',width:1}});oval(s,String(i+1),.36,y+.16,.32,.32,sc,WHI);s.addText(st.t,{x:.80,y:y+.06,w:8.7,h:.26,fontSize:11,bold:true,color:INK,fontFace:'Calibri',margin:0});s.addText(st.d,{x:.80,y:y+.32,w:8.7,h:.24,fontSize:10,color:'4A5568',fontFace:'Calibri',margin:0});});
+        if(qrOn('live')){s.addShape(pres.shapes.RECTANGLE,{x:.28,y:4.72,w:5.8,h:.60,fill:{color:sc,transparency:88},line:{color:sc,width:1}});s.addText("📡 Prevent'Live : "+uLive,{x:.44,y:4.84,w:5.6,h:.38,fontSize:10,color:INK,fontFace:'Calibri',margin:0});}}
+      });
+
+      // DAILY fin de journée formateur
+      if(qrOn('daily')){const s=pres.addSlide();s.background={color:INK};hdr(s,"Prevent'Daily — Fin de journée","Vidéo récap personnalisée — "+fmt.nom);
+      s.addShape(pres.shapes.RECTANGLE,{x:.38,y:.80,w:9.24,h:3.8,fill:{color:C,transparency:92},line:{color:C,width:1}});
+      s.addText('🎬',{x:3.8,y:1.26,w:2.4,h:1.2,fontSize:54,align:'center',margin:0});
+      s.addText("Votre Prevent'Daily est disponible",{x:.5,y:2.78,w:9,h:.38,fontSize:16,bold:true,color:WHI,fontFace:'Calibri',align:'center',margin:0});
+      s.addText('Vidéo personnalisée · Récap du jour · Programme de demain',{x:.5,y:3.24,w:9,h:.28,fontSize:12,color:WHI,fontFace:'Calibri',align:'center',italic:true,margin:0,transparency:25});
+      qrBox(s,uDaily,"Prevent'Daily",3.9,3.58);}
+    });
+
+    // EXAM GLOBAL
+    if(qrOn('exam')){const s=pres.addSlide();s.background={color:INK};hdr(s,"Prevent'Exam — Validation finale",'Évaluation de certification');
+    s.addShape(pres.shapes.RECTANGLE,{x:.38,y:.80,w:9.24,h:3.6,fill:{color:C,transparency:92},line:{color:C,width:1}});
+    s.addText('📝',{x:3.8,y:1.2,w:2.4,h:1.2,fontSize:54,align:'center',margin:0});
+    s.addText("Prevent'Exam — Évaluation de certification",{x:.5,y:2.6,w:9,h:.38,fontSize:16,bold:true,color:WHI,fontFace:'Calibri',align:'center',margin:0});
+    qrBox(s,uExam,"Prevent'Exam",3.9,3.44);}
+
+    // SOUTENANCE
+    {const s=pres.addSlide();s.background={color:INK};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.26,h:5.625,fill:{color:C}});
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:4.38,w:10,h:1.245,fill:{color:C,transparency:90}});
+    s.addText('SOUTENANCE FINALE',{x:.52,y:.60,w:9,h:.60,fontSize:30,bold:true,color:WHI,fontFace:'Calibri',margin:0});
+    s.addShape(pres.shapes.RECTANGLE,{x:.52,y:1.28,w:4.5,h:.05,fill:{color:C}});
+    s.addText(eNom+' — '+titre,{x:.52,y:1.42,w:9,h:.30,fontSize:13,color:C,fontFace:'Calibri',margin:0});
+    ['Préparez votre bilan de synthèse : apprentissages, progression, leviers','Structurez votre présentation module par module','Présentez devant le jury et vos pairs — même durée pour chaque équipe','Le jury évalue : maîtrise technique · démarche d\'amélioration · travail collectif','Portfolio des cartes compétences co-validées à remettre — traçabilité Qualiopi'].forEach((item,i)=>{stripe(s,C,.52,1.98+i*.54,.42);s.addText(item,{x:.70,y:1.98+i*.54,w:8.8,h:.50,fontSize:11,color:WHI,fontFace:'Calibri',margin:0});});
+    s.addText(eDevise||('Preventys · Form\'Agil · '+slogan),{x:.52,y:4.86,w:9,h:.24,fontSize:9,color:C,fontFace:'Calibri',italic:true,margin:0});}
+
+    const fname='FormAgil_Mere_'+titre.replace(/[^a-zA-Z0-9]/g,'_').substring(0,35)+'_'+new Date().toISOString().slice(0,10)+'.pptx';
+    await pres.writeFile({fileName:fname});
+    toast('Diaporama Mère généré ! ✅','✅');
+    lbl.textContent='⬇ Télécharger à nouveau';btn.disabled=false;spn.style.display='none';
+  }catch(err){console.error(err);toast('Erreur — voir console','⚠️');lbl.textContent='⬇ Générer le Diaporama Mère (PPTX)';btn.disabled=false;spn.style.display='none';}
+}
+
+// ══════════ JSON EXPORT ══════════
+function exportJSON(){
+  const cfg={
+    version:'FormAgil-1.0',generated:new Date().toISOString(),
+    formation:{titre:gv('f-titre'),code:gv('f-code'),branche:gv('f-branche'),duree:gv('f-duree'),modalite:gv('f-modalite'),slogan:gv('f-slogan'),coord:gv('f-coord')},
+    charte:{couleur:mainC},
+    entreprise:{nom:gv('e-nom'),secteur:gv('e-secteur'),devise:gv('e-devise'),lieu:gv('e-lieu'),effectifs:gv('e-eff'),ca:gv('e-ca'),certifications:gv('e-certs'),description:gv('e-desc'),programme:gv('e-prog'),vision:gv('e-vision')},
+    preventIs:{live:gv('u-live'),assist:gv('u-assist'),exam:gv('u-exam'),daily:gv('u-daily'),actifs:{live:qrOn('live'),assist:qrOn('assist'),exam:qrOn('exam'),daily:qrOn('daily')}},
+    modules:fmts.flatMap((f,fi)=>f.mods.map((m,mi)=>({formateur:{nom:f.nom,role:f.role,specialite:f.spec},titre:m.titre,couleur:PAL[(fi*3+mi)%PAL.length],index:fi*10+mi}))),
+  };
+  const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='config_formagil_'+(gv('f-titre')||'formation').replace(/[^a-z0-9]/gi,'_').toLowerCase().substring(0,30)+'.json';
+  a.click();toast('Config JSON exportée ! 📦','📦');
+}
+
+// ══════════ UTILS ══════════
+function gv(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(msg,icon){const t=document.getElementById('toast');document.getElementById('tmsg').textContent=msg;document.getElementById('tico').textContent=icon||'✅';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3600);}
+</script>
+</body>
+</html>

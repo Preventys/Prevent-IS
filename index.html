@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevent'IS — Écosystème pédagogique Preventys</title>
+<meta http-equiv="refresh" content="3;url=prevent_road.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:#0a1628;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.bg{
+  position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 40%, #0C3A5C 0%, #0a1628 70%);
+}
+.grid{
+  position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,159,196,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,159,196,.04) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.container{
+  position:relative;z-index:10;
+  text-align:center;padding:40px 20px;
+  animation:fadeUp .8s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.logo{
+  width:80px;height:80px;background:#009FC4;border-radius:20px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;
+  line-height:1.1;margin-bottom:28px;
+  box-shadow:0 0 40px rgba(0,159,196,.4);
+}
+h1{
+  font-family:'Syne',sans-serif;font-size:42px;font-weight:800;
+  color:white;letter-spacing:-.02em;margin-bottom:8px;
+}
+h1 span{color:#7DD3FA;}
+.sub{font-size:16px;color:rgba(255,255,255,.5);margin-bottom:40px;}
+.pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;}
+.pill{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.7);padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;
+}
+.redirect-box{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;padding:24px 32px;display:inline-block;
+}
+.rd-lbl{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:10px;}
+.rd-bar{width:240px;height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin:0 auto 16px;}
+.rd-fill{height:100%;background:linear-gradient(90deg,#009FC4,#7DD3FA);border-radius:99px;animation:fill 3s linear forwards;}
+@keyframes fill{from{width:0%}to{width:100%}}
+.rd-link{
+  display:inline-block;background:#009FC4;color:white;text-decoration:none;
+  padding:10px 24px;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;
+  font-weight:700;transition:background .15s;
+}
+.rd-link:hover{background:#0078A0;}
+.tools{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+}
+.tool-chip{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.4);padding:5px 12px;border-radius:8px;
+  font-size:11px;text-decoration:none;transition:all .15s;
+}
+.tool-chip:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="grid"></div>
+<div class="container">
+  <div class="logo">P'IS</div>
+  <h1>Prevent'<span>IS</span></h1>
+  <div class="sub">Écosystème pédagogique · Preventys · CQPM QSE</div>
+  <div class="pills">
+    <div class="pill">🗓 Prevent'Road</div>
+    <div class="pill">🃏 Prevent'Cards · 84 cartes</div>
+    <div class="pill">📊 QRAFT</div>
+    <div class="pill">🤖 Prevent'Assist</div>
+    <div class="pill">🔍 Prevent'Veille</div>
+    <div class="pill">🚨 Prevent'Andon</div>
+  </div>
+  <div class="redirect-box">
+    <div class="rd-lbl">Redirection vers Prevent'Road dans 3 secondes…</div>
+    <div class="rd-bar"><div class="rd-fill"></div></div>
+    <a class="rd-link" href="prevent_road.html">→ Accéder maintenant</a>
+  </div>
+</div>
+<div class="tools">
+  <a class="tool-chip" href="prevent_road.html">🗓 Road</a>
+  <a class="tool-chip" href="preventcards_parcours__2_.html">🃏 Cards</a>
+  <a class="tool-chip" href="preventis_obeya_qraft_v2__2_.html">📊 QRAFT</a>
+  <a class="tool-chip" href="prevent_andon.html">🚨 Andon</a>
+  <a class="tool-chip" href="prevent_assist.html">🤖 Assist</a>
+  <a class="tool-chip" href="prevent_exam.html">📝 Exam</a>
+  <a class="tool-chip" href="prevent_veille.html">🔍 Veille</a>
+  <a class="tool-chip" href="preventis_dashboard.html">📈 Dashboard</a>
+</div>
+</body>
+</html>

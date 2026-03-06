@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QRAFT — Obeya de formation</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --prev:#009FC4; --prev-d:#007A99; --prev-dd:#0C3A5C; --prev-l:#E6F6FB;
+  --Q:#BE185D; --Q-l:#FCE7F3;
+  --R:#15803D; --R-l:#DCFCE7;
+  --A:#EA580C; --A-l:#FFF7ED;
+  --F:#7C3AED; --F-l:#EDE9FE;
+  --T:#0284C7; --T-l:#E0F2FE;
+  --ok:#15803D; --warn:#CA8A04; --nok:#DC2626;
+  --ink:#0C1A28; --muted:#64748B; --border:#E2E8F0;
+  --white:#FFFFFF; --cream:#F8F7F3;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:#0C1A28;color:white;min-height:100vh;overflow-x:hidden;}
+
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:100;
+  background:linear-gradient(135deg,#0C3A5C,#0C1A28);
+  border-bottom:1px solid rgba(0,159,196,.2);
+  padding:12px clamp(14px,3vw,36px);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.logo-block{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--prev),var(--prev-d));
+           display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px rgba(0,159,196,.3);}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(18px,3vw,24px);letter-spacing:.06em;}
+.logo-text span{color:var(--prev);}
+.logo-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;}
+
+.header-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.hm-item{text-align:center;}
+.hm-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.hm-val{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);}
+
+.pilote-btn{
+  background:rgba(0,159,196,.12);border:1px solid rgba(0,159,196,.25);
+  border-radius:9px;padding:7px 14px;color:var(--prev);
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;
+  transition:background .15s;display:flex;align-items:center;gap:6px;
+}
+.pilote-btn:hover{background:rgba(0,159,196,.22);}
+
+/* SPRINT BAND */
+.sprint-band{
+  position:sticky;top:64px;z-index:90;
+  background:rgba(12,26,40,.95);border-bottom:1px solid rgba(0,159,196,.1);
+  padding:8px clamp(14px,3vw,36px);
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.sb-label{font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap;}
+.sb-label strong{color:rgba(255,255,255,.75);}
+.sb-bar-wrap{flex:1;min-width:80px;height:5px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;}
+.sb-fill{height:100%;background:linear-gradient(90deg,var(--prev),var(--prev-d));border-radius:99px;transition:width 1.2s ease;}
+.sb-pct{font-family:'DM Mono',monospace;font-size:11px;color:var(--prev);}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,.04);border-radius:12px;padding:4px;
+      margin:clamp(12px,2vw,20px) clamp(14px,3vw,36px) 0;}
+.tab{flex:1;padding:8px;border:none;border-radius:9px;background:transparent;
+     color:rgba(255,255,255,.4);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+     cursor:pointer;transition:all .15s;letter-spacing:.04em;text-align:center;}
+.tab.active{background:var(--prev);color:white;box-shadow:0 2px 10px rgba(0,159,196,.3);}
+
+/* MAIN */
+main{padding:clamp(12px,2vw,20px) clamp(14px,3vw,36px) 32px;display:flex;flex-direction:column;gap:clamp(10px,2vw,16px);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* QRAFT ROW */
+.qraft-row{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(7px,1.2vw,12px);}
+@media(max-width:860px){.qraft-row{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:500px){.qraft-row{grid-template-columns:repeat(2,1fr);}}
+
+/* QCARD */
+.qcard{
+  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:clamp(12px,2vw,18px) clamp(10px,1.5vw,14px);
+  cursor:pointer;transition:transform .15s,border-color .18s,background .15s;
+  position:relative;overflow:hidden;animation:card-in .4s ease both;
+}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+               background:var(--cc);border-radius:14px 14px 0 0;}
+.qcard:hover{transform:translateY(-2px);border-color:var(--cc);background:rgba(255,255,255,.07);}
+.qcard[data-dim="Q"]{--cc:var(--Q);}
+.qcard[data-dim="R"]{--cc:var(--R);}
+.qcard[data-dim="A"]{--cc:var(--A);}
+.qcard[data-dim="F"]{--cc:var(--F);}
+.qcard[data-dim="T"]{--cc:var(--T);}
+.qcard:nth-child(1){animation-delay:.04s;}.qcard:nth-child(2){animation-delay:.08s;}
+.qcard:nth-child(3){animation-delay:.12s;}.qcard:nth-child(4){animation-delay:.16s;}
+.qcard:nth-child(5){animation-delay:.20s;}
+
+.qc-letter{font-family:'Syne',sans-serif;font-size:clamp(28px,4.5vw,44px);font-weight:800;
+           color:var(--cc);line-height:1;text-shadow:0 0 30px var(--cc);}
+.qc-word{font-family:'Syne',sans-serif;font-size:clamp(11px,1.6vw,14px);font-weight:700;
+         color:rgba(255,255,255,.9);margin:2px 0;}
+.qc-def{font-size:clamp(9px,1.2vw,11px);color:rgba(255,255,255,.35);line-height:1.35;margin-bottom:12px;}
+.qc-val{font-family:'DM Mono',monospace;font-size:clamp(18px,3vw,26px);font-weight:500;color:white;line-height:1;}
+.qc-unit{font-size:10px;color:rgba(255,255,255,.3);margin-left:2px;}
+.qc-bar{height:4px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;margin:6px 0;}
+.qc-fill{height:100%;border-radius:99px;background:var(--cc);transition:width 1s ease .2s;}
+.qc-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;
+           letter-spacing:.05em;text-transform:uppercase;border-radius:99px;padding:2px 9px;margin-top:4px;}
+.s-ok {background:rgba(21,128,61,.18);color:#4ADE80;border:1px solid rgba(21,128,61,.25);}
+.s-warn{background:rgba(202,138,4,.18);color:#FCD34D;border:1px solid rgba(202,138,4,.25);}
+.s-nok {background:rgba(220,38,38,.15);color:#F87171;border:1px solid rgba(220,38,38,.2);}
+.qc-obs{font-size:10px;color:rgba(255,255,255,.3);margin-top:6px;font-style:italic;
+        line-height:1.35;max-height:32px;overflow:hidden;}
+
+/* SECOND ROW */
+.second-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.2vw,12px);}
+@media(max-width:640px){.second-row{grid-template-columns:1fr;}}
+
+/* PANEL */
+.panel{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.07);
+       border-radius:14px;padding:clamp(12px,2vw,18px);}
+.panel-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;
+             text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:12px;
+             display:flex;align-items:center;gap:7px;}
+.pt-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* Andon */
+.andon-list{display:flex;flex-direction:column;gap:6px;}
+.andon-row{display:flex;align-items:center;gap:10px;
+           background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.18);
+           border-radius:9px;padding:8px 11px;font-size:12px;}
+.andon-pulse{width:8px;height:8px;border-radius:50%;background:#F87171;flex-shrink:0;
+             animation:pulse-r 1.6s ease-in-out infinite;}
+.andon-module{color:rgba(255,255,255,.7);flex:1;}
+.andon-nb{font-family:'DM Mono',monospace;font-size:11px;color:#F87171;white-space:nowrap;}
+.andon-none{display:flex;align-items:center;gap:8px;padding:10px;font-size:12px;color:#4ADE80;}
+.andon-none-dot{width:9px;height:9px;border-radius:50%;background:#4ADE80;flex-shrink:0;}
+
+/* Sparkline history */
+.history-wrap{overflow-x:auto;}
+.history-table{width:100%;border-collapse:collapse;min-width:400px;}
+.history-table th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+                  color:rgba(255,255,255,.3);padding:4px 8px;text-align:left;}
+.history-table td{font-size:11px;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.05);}
+.history-table tr:last-child td{border-bottom:none;}
+.history-table tr:hover td{background:rgba(255,255,255,.03);}
+.ht-day{font-family:'DM Mono',monospace;color:rgba(255,255,255,.35);}
+.ht-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.spark{display:flex;gap:2px;align-items:flex-end;height:20px;}
+.spark-bar{width:5px;border-radius:2px;background:rgba(255,255,255,.15);flex-shrink:0;}
+
+/* AIC SCRIPT PANEL */
+.script-pane{display:flex;flex-direction:column;gap:0;}
+.script-step{
+  display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:start;
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  transition:opacity .2s;
+}
+.script-step:last-child{border-bottom:none;}
+.script-step.done{opacity:.35;}
+.script-step.active{opacity:1;}
+.script-step.pending{opacity:.5;}
+.ss-num{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);
+  border:1.5px solid rgba(255,255,255,.08);
+}
+.script-step.done .ss-num{background:rgba(21,128,61,.2);color:#4ADE80;border-color:rgba(21,128,61,.3);}
+.script-step.active .ss-num{background:rgba(0,159,196,.2);color:var(--prev);border-color:rgba(0,159,196,.35);
+                             box-shadow:0 0 12px rgba(0,159,196,.2);}
+.ss-content{}
+.ss-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.ss-letter{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;}
+.ss-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,.85);}
+.ss-timer{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);
+          background:rgba(255,255,255,.06);border-radius:99px;padding:2px 8px;white-space:nowrap;}
+.script-step.active .ss-timer{color:var(--prev);background:rgba(0,159,196,.1);}
+.ss-script{font-size:12px;color:rgba(255,255,255,.5);line-height:1.55;font-style:italic;}
+.ss-script strong{color:rgba(255,255,255,.8);font-style:normal;}
+.ss-questions{margin-top:6px;display:flex;flex-direction:column;gap:3px;}
+.ss-q{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:rgba(255,255,255,.4);}
+.ss-q::before{content:'→';color:rgba(255,255,255,.2);flex-shrink:0;}
+
+.ss-action{flex-shrink:0;}
+.step-btn{
+  padding:5px 12px;border-radius:7px;border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+}
+.step-btn:hover{background:rgba(0,159,196,.15);border-color:rgba(0,159,196,.3);color:var(--prev);}
+.script-step.done .step-btn{opacity:.4;pointer-events:none;}
+
+/* TIMER BANNER */
+.timer-banner{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:rgba(0,159,196,.07);border:1px solid rgba(0,159,196,.15);
+  border-radius:12px;padding:12px 16px;margin-bottom:4px;
+}
+.timer-main{font-family:'DM Mono',monospace;font-size:clamp(22px,4vw,32px);font-weight:500;
+            color:var(--prev);letter-spacing:.04em;}
+.timer-main.warn{color:#FCD34D;}
+.timer-main.danger{color:#F87171;animation:blink .8s ease-in-out infinite;}
+.timer-label{font-size:11px;color:rgba(255,255,255,.35);}
+.timer-step-info{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,.7);}
+.timer-controls{display:flex;gap:7px;}
+.tc-btn{padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.1);
+        background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);
+        font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;}
+.tc-btn:hover{background:rgba(255,255,255,.12);color:white;}
+.tc-btn.primary{background:var(--prev);border-color:var(--prev);color:white;}
+.tc-btn.primary:hover{background:var(--prev-d);}
+.tc-btn.stop{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.25);color:#F87171;}
+.timer-bar-wrap{width:100%;height:4px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;}
+.timer-bar{height:100%;border-radius:99px;background:var(--prev);transition:width .9s linear,background .3s;}
+
+/* MODAL */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);
+          backdrop-filter:blur(8px);z-index:500;align-items:flex-end;justify-content:center;padding:16px;}
+.modal-ov.open{display:flex;}
+@media(min-width:600px){.modal-ov{align-items:center;}}
+.modal{background:#0F2237;border:1.5px solid rgba(255,255,255,.1);border-radius:18px;
+       padding:22px;width:100%;max-width:460px;animation:modal-in .22s ease;}
+@keyframes modal-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.modal-letter-box{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Syne',sans-serif;font-size:26px;font-weight:800;flex-shrink:0;}
+.modal-ttl{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;flex:1;}
+.modal-def{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;}
+.modal-x{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.07);border:none;
+          color:rgba(255,255,255,.5);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.m-sec{margin-bottom:14px;}
+.m-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);
+       font-weight:700;margin-bottom:7px;}
+.m-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+         border-radius:9px;padding:9px 13px;color:white;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.m-input:focus{border-color:var(--prev);}
+.m-input::placeholder{color:rgba(255,255,255,.18);}
+textarea.m-input{resize:vertical;min-height:64px;font-size:13px;}
+.m-row{display:flex;gap:7px;}
+.status-btn{flex:1;padding:8px 4px;border-radius:8px;border:1.5px solid rgba(255,255,255,.08);
+            background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);
+            font-family:'Syne',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center;}
+.status-btn[data-s="ok"].sel{background:rgba(21,128,61,.2);border-color:rgba(21,128,61,.4);color:#4ADE80;}
+.status-btn[data-s="warn"].sel{background:rgba(202,138,4,.2);border-color:rgba(202,138,4,.35);color:#FCD34D;}
+.status-btn[data-s="nok"].sel{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.3);color:#F87171;}
+.m-save{width:100%;padding:12px;border-radius:11px;border:none;margin-top:4px;
+        background:linear-gradient(135deg,var(--prev),var(--prev-d));
+        color:white;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;}
+.m-save:hover{opacity:.88;}
+
+/* BOTTOM */
+.bottom-bar{position:sticky;bottom:0;z-index:80;
+            background:rgba(12,26,40,.96);border-top:1px solid rgba(0,159,196,.1);
+            padding:8px clamp(14px,3vw,36px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.bb-info{font-size:11px;color:rgba(255,255,255,.25);}
+.bb-info strong{color:rgba(255,255,255,.5);}
+.bb-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.bb-pill{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);
+         border-radius:99px;padding:3px 10px;font-size:10px;color:rgba(255,255,255,.35);}
+
+/* ANIMATIONS */
+@keyframes card-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-r{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+<style>
+/* ═══ PR-SIDEBAR UNIVERSELLE ═══ */
+body.has-pr-sidebar { margin-left: 72px; }
+#pr-sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 72px;
+  background: #0C3A5C;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 9999;
+  border-right: 1px solid rgba(255,255,255,.08);
+  font-family: 'Syne', 'DM Sans', sans-serif;
+}
+#pr-sidebar .pr-sb-logo {
+  width: 44px; height: 44px; background: #009FC4; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: white; line-height: 1.1;
+  text-align: center; margin-bottom: 8px; text-decoration: none;
+  flex-shrink: 0;
+}
+#pr-sidebar .pr-sb-sep {
+  width: 36px; height: 1px; background: rgba(255,255,255,.12); margin: 4px 0;
+}
+#pr-sidebar .pr-sb-btn {
+  width: 48px; height: 48px; border-radius: 12px; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; background: transparent; transition: background .15s;
+  position: relative; text-decoration: none;
+}
+#pr-sidebar .pr-sb-btn:hover { background: rgba(255,255,255,.1); }
+#pr-sidebar .pr-sb-btn.pr-active { background: #009FC4; }
+#pr-sidebar .pr-sb-btn .pr-icon { font-size: 18px; line-height: 1; }
+#pr-sidebar .pr-sb-btn .pr-lbl {
+  font-size: 8px; font-weight: 700; color: rgba(255,255,255,.45);
+  letter-spacing: .03em; line-height: 1;
+}
+#pr-sidebar .pr-sb-btn.pr-active .pr-lbl { color: rgba(255,255,255,.9); }
+#pr-sidebar .pr-sb-btn .pr-tip {
+  position: absolute; left: 66px; background: #1a2332; color: white;
+  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity .15s; z-index: 10000;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#pr-sidebar .pr-sb-btn:hover .pr-tip { opacity: 1; }
+</style>
+</head>
+<body class="has-pr-sidebar">
+
+<!-- ═══ PR-SIDEBAR UNIVERSELLE ═══ -->
+<nav id="pr-sidebar">
+  <a class="pr-sb-logo" href="prevent_road.html" title="Prevent'Road">P'<br>Road</a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_road.html">
+    <span class="pr-icon">🗓</span><span class="pr-lbl">Road</span>
+    <div class="pr-tip">Prevent'Road — Accueil</div>
+  </a>
+  <a class="pr-sb-btn" href="preventcards_parcours__2_.html">
+    <span class="pr-icon">🃏</span><span class="pr-lbl">Cards</span>
+    <div class="pr-tip">Prevent'Cards — 84 cartes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_obeya_qraft_v2__2_.html" class="pr-sb-btn pr-active">
+    <span class="pr-icon">📊</span><span class="pr-lbl">QRAFT</span>
+    <div class="pr-tip">QRAFT — Obeya promotion</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_andon.html">
+    <span class="pr-icon">🚨</span><span class="pr-lbl">Andon</span>
+    <div class="pr-tip">Prevent'Andon — Alertes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_dashboard.html">
+    <span class="pr-icon">📈</span><span class="pr-lbl">Board</span>
+    <div class="pr-tip">Dashboard Prevent'IS</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_assist.html">
+    <span class="pr-icon">🤖</span><span class="pr-lbl">Assist</span>
+    <div class="pr-tip">Prevent'Assist — IA pédagogique</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_exam.html">
+    <span class="pr-icon">📝</span><span class="pr-lbl">Exam</span>
+    <div class="pr-tip">Prevent'Exam — Mémoire CQPM</div>
+  </a>
+  <a class="pr-sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+    <span class="pr-icon">📚</span><span class="pr-lbl">Agil</span>
+    <div class="pr-tip">Prevent'Agil — Cours Digipad</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="FormAgil_Didacticiel1_Mere.html">
+    <span class="pr-icon">📐</span><span class="pr-lbl">Form</span>
+    <div class="pr-tip">Form'Agil — Didacticiel</div>
+  </a>
+</nav>
+
+
+<!-- HEADER -->
+<header>
+  <div class="logo-block">
+    <div class="logo-icon">✈</div>
+    <div>
+      <div class="logo-text">Q<span>RAFT</span></div>
+      <div class="logo-sub">Obeya · AIC quotidien · Prevent'IS</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="hm-item"><div class="hm-label">Date</div><div class="hm-val" id="hDate">—</div></div>
+    <div class="hm-item"><div class="hm-label">Jour formation</div><div class="hm-val" id="hJour">—/75</div></div>
+    <div class="hm-item"><div class="hm-label">Module</div><div class="hm-val" id="hModule">—</div></div>
+  </div>
+  <div class="pilote-btn" onclick="editPilote()">
+    <span id="piloteDisplay">✏ Définir pilote</span>
+  </div>
+  <div onclick="openResponsablePanel()" title="Responsable pédagogique — répondre aux alertes"
+    style="cursor:pointer;font-size:18px;opacity:.3;transition:opacity .2s;padding:4px 8px;border-radius:8px;"
+    onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='.3'" id="respBtn">📩</div>
+</header>
+
+<!-- SPRINT BAND -->
+<div class="sprint-band">
+  <div class="sb-label">Avancement <strong id="sbJour">—</strong>/75 jours · <strong id="sbH">—</strong>/525h</div>
+  <div class="sb-bar-wrap"><div class="sb-fill" id="sbFill" style="width:0%"></div></div>
+  <div class="sb-pct" id="sbPct">—</div>
+  <div class="sb-label">Pilote : <strong id="sbPilote">—</strong></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('obeya',this)">📊 Obeya</button>
+  <button class="tab" onclick="showTab('aic',this)">⏱ AIC du jour</button>
+  <button class="tab" onclick="showTab('history',this)">📈 Historique</button>
+</div>
+
+<main>
+
+<!-- ══ TAB OBEYA ══════════════════════════════════════════════ -->
+<div class="tab-pane active" id="pane-obeya">
+
+  <!-- QRAFT 5 cards -->
+  <div class="qraft-row" id="qraftRow">
+    <div class="qcard" data-dim="Q" onclick="openModal('Q')">
+      <div class="qc-letter">Q</div>
+      <div class="qc-word">Qualité</div>
+      <div class="qc-def">Satisfaction · supports · perçu global</div>
+      <div class="qc-val" id="v-Q">—</div>
+      <div class="qc-bar"><div class="qc-fill" id="b-Q" style="width:0%"></div></div>
+      <div class="qc-status s-ok" id="st-Q">● —</div>
+      <div class="qc-obs" id="obs-Q"></div>
+    </div>
+    <div class="qcard" data-dim="R" onclick="openModal('R')">
+      <div class="qc-letter">R</div>
+      <div class="qc-word">Résultats</div>
+      <div class="qc-def">Scores QCM · grilles · livrables ACO</div>
+      <div class="qc-val" id="v-R">—</div>
+      <div class="qc-bar"><div class="qc-fill" id="b-R" style="width:0%"></div></div>
+      <div class="qc-status s-ok" id="st-R">● —</div>
+      <div class="qc-obs" id="obs-R"></div>
+    </div>
+    <div class="qcard" data-dim="A" onclick="openModal('A')">
+      <div class="qc-letter">A</div>
+      <div class="qc-word">Avancement</div>
+      <div class="qc-def">Cards débloquées · modules complétés</div>
+      <div class="qc-val" id="v-A">—</div>
+      <div class="qc-bar"><div class="qc-fill" id="b-A" style="width:0%"></div></div>
+      <div class="qc-status s-ok" id="st-A">● —</div>
+      <div class="qc-obs" id="obs-A"></div>
+    </div>
+    <div class="qcard" data-dim="F" onclick="openModal('F')">
+      <div class="qc-letter">F</div>
+      <div class="qc-word">Feedback</div>
+      <div class="qc-def">Retours · actions correctives</div>
+      <div class="qc-val" id="v-F">—</div>
+      <div class="qc-bar"><div class="qc-fill" id="b-F" style="width:0%"></div></div>
+      <div class="qc-status s-ok" id="st-F">● —</div>
+      <div class="qc-obs" id="obs-F"></div>
+    </div>
+    <div class="qcard" data-dim="T" onclick="openModal('T')">
+      <div class="qc-letter">T</div>
+      <div class="qc-word">Tempo</div>
+      <div class="qc-def">Présence · assiduité · rythme</div>
+      <div class="qc-val" id="v-T">—</div>
+      <div class="qc-bar"><div class="qc-fill" id="b-T" style="width:0%"></div></div>
+      <div class="qc-status s-ok" id="st-T">● —</div>
+      <div class="qc-obs" id="obs-T"></div>
+    </div>
+  </div>
+
+  <!-- Second row -->
+  <div class="second-row">
+    <div class="panel">
+      <div class="panel-title"><div class="pt-dot" style="background:#F87171;animation:pulse-r 1.6s ease-in-out infinite;border-radius:50%;"></div>Andon — modules non validés</div>
+      <div class="andon-list" id="andonPanel"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><div class="pt-dot" style="background:var(--prev);border-radius:50%;"></div>Saisie rapide du jour — cliquez une lettre pour saisir</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:4px;">
+        <div onclick="openModal('Q')" style="background:rgba(190,24,93,.15);border:1px solid rgba(190,24,93,.25);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(190,24,93,.25)'" onmouseout="this.style.background='rgba(190,24,93,.15)'">
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--Q);">Q</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;">Qualité</div>
+        </div>
+        <div onclick="openModal('R')" style="background:rgba(21,128,61,.12);border:1px solid rgba(21,128,61,.22);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(21,128,61,.22)'" onmouseout="this.style.background='rgba(21,128,61,.12)'">
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--R);">R</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;">Résultats</div>
+        </div>
+        <div onclick="openModal('A')" style="background:rgba(234,88,12,.12);border:1px solid rgba(234,88,12,.22);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(234,88,12,.22)'" onmouseout="this.style.background='rgba(234,88,12,.12)'">
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--A);">A</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;">Avancement</div>
+        </div>
+        <div onclick="openModal('F')" style="background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.22);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(124,58,237,.22)'" onmouseout="this.style.background='rgba(124,58,237,.12)'">
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--F);">F</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;">Feedback</div>
+        </div>
+        <div onclick="openModal('T')" style="background:rgba(2,132,199,.12);border:1px solid rgba(2,132,199,.22);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(2,132,199,.22)'" onmouseout="this.style.background='rgba(2,132,199,.12)'">
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--T);">T</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;">Tempo</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;font-size:11px;color:rgba(255,255,255,.2);text-align:center;font-style:italic;">
+        Cliquez une lettre · Saisissez · Enregistrez · 20 secondes par lettre
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ TAB AIC ════════════════════════════════════════════════ -->
+<div class="tab-pane" id="pane-aic">
+
+  <!-- Minuteur -->
+  <div class="timer-banner">
+    <div>
+      <div class="timer-label">AIC en cours — 7 minutes</div>
+      <div class="timer-step-info" id="timerStepInfo">Prêt à démarrer</div>
+    </div>
+    <div class="timer-main" id="timerDisplay">7:00</div>
+    <div style="flex:1;min-width:100px;">
+      <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
+    </div>
+    <div class="timer-controls">
+      <button class="tc-btn primary" onclick="startTimer()" id="btnStart">▶ Démarrer</button>
+      <button class="tc-btn" onclick="resetTimer()" id="btnReset">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- Script steps -->
+  <div class="script-pane" id="scriptPane">
+
+    <div class="script-step active" data-step="0" data-duration="60" data-dim="T">
+      <div class="ss-num">1</div>
+      <div class="ss-content">
+        <div class="ss-header">
+          <div class="ss-letter" style="color:var(--T);">T</div>
+          <div class="ss-title">Tempo — Présences & énergie du groupe</div>
+          <div class="ss-timer">1 min</div>
+        </div>
+        <div class="ss-script">
+          <strong>« Bonjour à tous. Je suis [Prénom], pilote QRAFT cette semaine.</strong>
+          On commence par le Tempo. Combien de personnes présentes ce matin ? »
+          <em>→ Attendre la réponse, noter le chiffre.</em>
+          « Absences non justifiées ? »
+          <em>→ Lever de main ou réponse orale. Ne pas nommer.</em>
+          « Sur une échelle de 1 à 3 — 1 fatigué, 2 correct, 3 en forme — la météo du groupe ce matin, c'est quoi ? »
+          <em>→ Tour de table express, 5 secondes par personne.</em>
+        </div>
+        <div class="ss-questions">
+          <div class="ss-q">Combien de présents ? Combien d'absents ?</div>
+          <div class="ss-q">Météo du groupe : 1 / 2 / 3 ?</div>
+        </div>
+      </div>
+      <div class="ss-action"><button class="step-btn" onclick="markDone(0)">✓ Fait</button></div>
+    </div>
+
+    <div class="script-step pending" data-step="1" data-duration="60" data-dim="A">
+      <div class="ss-num">2</div>
+      <div class="ss-content">
+        <div class="ss-header">
+          <div class="ss-letter" style="color:var(--A);">A</div>
+          <div class="ss-title">Avancement — Ce qu'on a validé</div>
+          <div class="ss-timer">1 min</div>
+        </div>
+        <div class="ss-script">
+          « Avancement. Hier on travaillait sur [module]. »
+          <em>→ Citer le module, pas les personnes.</em>
+          « Combien de cartes débloquées depuis hier ? »
+          <em>→ Regarder l'Obeya — chiffre visible sur la carte A.</em>
+          « Est-ce qu'on est dans les temps sur le planning ? »
+          <em>→ Oui / Non / À surveiller. Si non, une action ?</em>
+        </div>
+        <div class="ss-questions">
+          <div class="ss-q">Combien de nouvelles cards depuis hier ?</div>
+          <div class="ss-q">On est dans les temps — oui / non ?</div>
+        </div>
+      </div>
+      <div class="ss-action"><button class="step-btn" onclick="markDone(1)">✓ Fait</button></div>
+    </div>
+
+    <div class="script-step pending" data-step="2" data-duration="60" data-dim="R">
+      <div class="ss-num">3</div>
+      <div class="ss-content">
+        <div class="ss-header">
+          <div class="ss-letter" style="color:var(--R);">R</div>
+          <div class="ss-title">Résultats — Scores & Andons</div>
+          <div class="ss-timer">1 min</div>
+        </div>
+        <div class="ss-script">
+          « Résultats. La moyenne promo sur le dernier QCM, c'est [valeur R] %. »
+          <em>→ Lire le chiffre sur l'Obeya, carte R.</em>
+          « Combien de personnes sont en Andon — sous les 70 % — sur un module ? »
+          <em>→ Donner un nombre, jamais un nom. Ex : "2 personnes sur le module 06".</em>
+          « Ces personnes ont-elles besoin d'un coup de main du groupe ? »
+          <em>→ Si oui, identifier une plage de 15 min aujourd'hui. Décision collective.</em>
+        </div>
+        <div class="ss-questions">
+          <div class="ss-q">Moyenne promo : [valeur] % — au-dessus ou en dessous de 70 % ?</div>
+          <div class="ss-q">Combien de personnes en Andon ? Sur quel module ?</div>
+          <div class="ss-q">Action d'entraide prévue ?</div>
+        </div>
+      </div>
+      <div class="ss-action"><button class="step-btn" onclick="markDone(2)">✓ Fait</button></div>
+    </div>
+
+    <div class="script-step pending" data-step="3" data-duration="60" data-dim="F">
+      <div class="ss-num">4</div>
+      <div class="ss-content">
+        <div class="ss-header">
+          <div class="ss-letter" style="color:var(--F);">F</div>
+          <div class="ss-title">Feedback — Retours & améliorations</div>
+          <div class="ss-timer">1 min</div>
+        </div>
+        <div class="ss-script">
+          « Feedback. Hier, quelqu'un a-t-il quelque chose à signaler sur le contenu, l'organisation, les ressources ? »
+          <em>→ Silence de 5 secondes. Laisser l'espace.</em>
+          « Un point qui a bien fonctionné hier ? »
+          <em>→ Recueillir 1 point positif maximum.</em>
+          « Un point à améliorer aujourd'hui ? »
+          <em>→ Recueillir 1 point d'amélioration. Le noter dans l'Obeya carte F.</em>
+        </div>
+        <div class="ss-questions">
+          <div class="ss-q">1 point positif d'hier ?</div>
+          <div class="ss-q">1 point à améliorer aujourd'hui ?</div>
+          <div class="ss-q">Action corrective identifiée ?</div>
+        </div>
+      </div>
+      <div class="ss-action"><button class="step-btn" onclick="markDone(3)">✓ Fait</button></div>
+    </div>
+
+    <div class="script-step pending" data-step="4" data-duration="60" data-dim="Q">
+      <div class="ss-num">5</div>
+      <div class="ss-content">
+        <div class="ss-header">
+          <div class="ss-letter" style="color:var(--Q);">Q</div>
+          <div class="ss-title">Qualité — Supports & satisfaction</div>
+          <div class="ss-timer">1 min</div>
+        </div>
+        <div class="ss-script">
+          « Qualité. Les supports utilisés hier étaient-ils adaptés et à jour ? »
+          <em>→ Simple : oui / non / à améliorer.</em>
+          « La satisfaction globale d'hier sur 5 — quelqu'un a une note à proposer ? »
+          <em>→ Recueillir 1 ou 2 chiffres, faire la moyenne mentalement.</em>
+          « Un problème qualité à signaler au formateur ? »
+          <em>→ Si oui, noter dans l'Obeya carte Q et transmettre au formateur en fin d'AIC.</em>
+        </div>
+        <div class="ss-questions">
+          <div class="ss-q">Supports d'hier : adaptés et à jour ?</div>
+          <div class="ss-q">Satisfaction hier sur 5 ?</div>
+          <div class="ss-q">Problème qualité à remonter ?</div>
+        </div>
+      </div>
+      <div class="ss-action"><button class="step-btn" onclick="markDone(4)">✓ Fait</button></div>
+    </div>
+
+    <div class="script-step pending" data-step="5" data-duration="120" data-dim="—">
+      <div class="ss-num">6</div>
+      <div class="ss-content">
+        <div class="ss-header">
+          <div class="ss-letter" style="color:rgba(255,255,255,.4);">✈</div>
+          <div class="ss-title">Objectif du jour — Cap & intention</div>
+          <div class="ss-timer">2 min</div>
+        </div>
+        <div class="ss-script">
+          « On arrive à la fin de l'AIC. Aujourd'hui on travaille sur [module / activité ACO]. »
+          <em>→ Lire le programme depuis Prevent'Road.</em>
+          « L'objectif du jour est : [objectif]. À la fin de cette journée, vous devrez être capables de [compétence visée]. »
+          <em>→ Formuler en termes de compétence, pas de contenu.</em>
+          « Quelqu'un a une question avant qu'on commence ? »
+          <em>→ 30 secondes maximum. Si question longue : "On en parle après l'AIC".</em>
+          <strong>« Merci. On y va. »</strong>
+          <em>→ Fermer l'AIC. Durée totale : 7 minutes.</em>
+        </div>
+        <div class="ss-questions">
+          <div class="ss-q">Module du jour + objectif compétence ?</div>
+          <div class="ss-q">Questions courtes avant de démarrer ?</div>
+        </div>
+      </div>
+      <div class="ss-action"><button class="step-btn" onclick="markDone(5)">✓ Fait</button></div>
+    </div>
+
+  </div><!-- script-pane -->
+
+  <div style="margin-top:16px;background:rgba(255,255,255,.03);border-radius:12px;padding:14px 16px;">
+    <div style="font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:8px;">Note post-AIC du pilote</div>
+    <textarea id="aicNote" placeholder="Ce que le groupe a soulevé, décisions prises, points à transmettre au formateur..."
+      style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;
+             padding:10px 13px;color:rgba(255,255,255,.7);font-family:'DM Sans',sans-serif;font-size:13px;
+             outline:none;resize:vertical;min-height:72px;" oninput="saveNote()"></textarea>
+  </div>
+
+</div>
+
+<!-- ══ TAB HISTORIQUE ═════════════════════════════════════════ -->
+<div class="tab-pane" id="pane-history">
+  <div class="panel" style="margin-bottom:12px;">
+    <div class="panel-title"><div class="pt-dot" style="background:var(--prev);border-radius:50%;"></div>Historique QRAFT — 75 jours</div>
+    <div class="history-wrap">
+      <table class="history-table" id="histTable">
+        <thead><tr>
+          <th>Jour</th><th>Date</th><th>Q</th><th>R</th><th>A</th><th>F</th><th>T</th><th>Pilote</th>
+        </tr></thead>
+        <tbody id="histBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <button onclick="exportCSV()" style="padding:9px 18px;border-radius:9px;border:1px solid rgba(255,255,255,.12);
+            background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);font-family:'Syne',sans-serif;
+            font-size:12px;font-weight:700;cursor:pointer;">⬇ Exporter CSV</button>
+    <button onclick="if(confirm('Effacer tout l\'historique ?')) clearHistory()" style="padding:9px 18px;border-radius:9px;
+            border:1px solid rgba(220,38,38,.2);background:rgba(220,38,38,.08);color:#F87171;
+            font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">🗑 Effacer historique</button>
+  </div>
+</div>
+
+</main>
+
+<!-- BOTTOM -->
+<div class="bottom-bar">
+  <div class="bb-info">Prevent<strong>'IS</strong> · QRAFT · <span id="bbTime">—</span></div>
+  <div class="bb-pills">
+    <div class="bb-pill" id="bbJour">Jour — / 75</div>
+    <div class="bb-pill" id="bbAndon">Andon : —</div>
+    <div class="bb-pill" id="bbCards">Cards : —</div>
+  </div>
+</div>
+
+<!-- MODAL SAISIE v3 -->
+<style>
+/* ── MODAL EXTRAS ── */
+.m-step { display:none; }
+.m-step.visible { display:block; }
+
+.score-grid { display:flex; flex-wrap:wrap; gap:7px; margin-top:4px; }
+.score-chip {
+  padding:8px 14px; border-radius:9px; border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05); color:rgba(255,255,255,.5);
+  font-family:'DM Mono',monospace; font-size:14px; font-weight:500; cursor:pointer;
+  transition:all .15s; min-width:52px; text-align:center;
+}
+.score-chip:hover { border-color:rgba(255,255,255,.3); color:white; }
+.score-chip.sel-ok   { background:rgba(21,128,61,.25);   border-color:rgba(21,128,61,.5);   color:#4ADE80; }
+.score-chip.sel-warn { background:rgba(202,138,4,.2);    border-color:rgba(202,138,4,.4);   color:#FCD34D; }
+.score-chip.sel-nok  { background:rgba(220,38,38,.18);   border-color:rgba(220,38,38,.4);   color:#F87171; }
+
+.impact-grid { display:flex; flex-direction:column; gap:7px; margin-top:4px; }
+.impact-btn {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 13px; border-radius:10px; border:1.5px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04); cursor:pointer; transition:all .15s; text-align:left;
+}
+.impact-btn:hover { border-color:rgba(220,38,38,.3); background:rgba(220,38,38,.07); }
+.impact-btn.sel { border-color:rgba(220,38,38,.5); background:rgba(220,38,38,.15); }
+.impact-icon { font-size:18px; flex-shrink:0; }
+.impact-label { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:rgba(255,255,255,.85); }
+.impact-sub { font-size:11px; color:rgba(255,255,255,.35); }
+.impact-score { margin-left:auto; font-family:'DM Mono',monospace; font-size:14px; font-weight:500; color:#F87171; }
+
+.resp-banner {
+  background:rgba(220,38,38,.08); border:1px solid rgba(220,38,38,.2);
+  border-radius:10px; padding:12px 14px; margin-top:8px;
+}
+.resp-banner .rb-title { font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase; color:#F87171; margin-bottom:6px; }
+.resp-banner .rb-body { font-size:12px; color:rgba(255,255,255,.55); line-height:1.5; }
+
+.resp-reply-banner {
+  background:rgba(21,128,61,.1); border:1px solid rgba(21,128,61,.25);
+  border-radius:10px; padding:12px 14px; margin-bottom:12px;
+}
+.resp-reply-banner .rrb-title { font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase; color:#4ADE80; margin-bottom:5px; }
+.resp-reply-banner .rrb-body { font-size:12px; color:rgba(255,255,255,.65); line-height:1.5; }
+
+.m-progress { display:flex; gap:4px; margin-bottom:16px; }
+.mp-step { flex:1; height:3px; border-radius:99px; background:rgba(255,255,255,.08); transition:background .2s; }
+.mp-step.done { background:var(--prev); }
+.mp-step.active { background:rgba(0,159,196,.5); }
+</style>
+
+<div class="modal-ov" id="modalOv" onclick="closeModal(event)">
+  <div class="modal" style="max-height:90vh;overflow-y:auto;">
+
+    <!-- En-tête -->
+    <div class="modal-head">
+      <div class="modal-letter-box" id="mBox">Q</div>
+      <div style="flex:1;">
+        <div class="modal-ttl" id="mTtl">—</div>
+        <div class="modal-def" id="mDef">—</div>
+      </div>
+      <button class="modal-x" onclick="closeModalNow()">✕</button>
+    </div>
+
+    <!-- Barre de progression 3 étapes -->
+    <div class="m-progress" id="mProgress">
+      <div class="mp-step active" id="mp0"></div>
+      <div class="mp-step" id="mp1"></div>
+      <div class="mp-step" id="mp2"></div>
+    </div>
+
+    <!-- Réponse responsable pédagogique (si existante) -->
+    <div id="respReplyZone" style="display:none;">
+      <div class="resp-reply-banner">
+        <div class="rrb-title">📩 Réponse du responsable pédagogique</div>
+        <div class="rrb-body" id="respReplyText">—</div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 1 — Statut -->
+    <div class="m-step visible" id="mStep1">
+      <div class="m-lbl">Étape 1 / 3 — Statut du jour <span style="color:#F87171;">*</span></div>
+      <div class="m-row" style="gap:7px;display:flex;margin-top:6px;">
+        <button class="status-btn" data-s="ok"   onclick="pickStatus('ok',this)"  style="flex:1;padding:10px 4px;">✅ OK</button>
+        <button class="status-btn" data-s="warn" onclick="pickStatus('warn',this)" style="flex:1;padding:10px 4px;">⚠ Vigilance</button>
+        <button class="status-btn" data-s="nok"  onclick="pickStatus('nok',this)" style="flex:1;padding:10px 4px;">🔴 Problème</button>
+      </div>
+      <div style="margin-top:12px;text-align:right;">
+        <button onclick="goStep2()" style="padding:8px 20px;border-radius:9px;border:none;
+          background:var(--prev);color:white;font-family:'Syne',sans-serif;font-size:13px;
+          font-weight:700;cursor:pointer;">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 — Note -->
+    <div class="m-step" id="mStep2">
+      <div class="m-lbl" id="mScoreLbl">Étape 2 / 3 — Note <span style="color:#F87171;">*</span></div>
+      <!-- Grille OK : 80-85-90-95-100 -->
+      <div class="score-grid" id="scoreOkGrid" style="display:none;">
+        <div class="score-chip" onclick="pickScore(80,this)">80%</div>
+        <div class="score-chip" onclick="pickScore(85,this)">85%</div>
+        <div class="score-chip" onclick="pickScore(90,this)">90%</div>
+        <div class="score-chip" onclick="pickScore(95,this)">95%</div>
+        <div class="score-chip" onclick="pickScore(100,this)">100%</div>
+      </div>
+      <!-- Grille VIGILANCE : 50-55-60-65-70-75 -->
+      <div class="score-grid" id="scoreWarnGrid" style="display:none;">
+        <div class="score-chip" onclick="pickScore(50,this)">50%</div>
+        <div class="score-chip" onclick="pickScore(55,this)">55%</div>
+        <div class="score-chip" onclick="pickScore(60,this)">60%</div>
+        <div class="score-chip" onclick="pickScore(65,this)">65%</div>
+        <div class="score-chip" onclick="pickScore(70,this)">70%</div>
+        <div class="score-chip" onclick="pickScore(75,this)">75%</div>
+      </div>
+      <!-- Impact PROBLÈME -->
+      <div id="scoreNokGrid" style="display:none;">
+        <div class="impact-grid">
+          <div class="impact-btn" onclick="pickImpact(0,this)">
+            <div class="impact-icon">🔴</div>
+            <div>
+              <div class="impact-label">Toute la promotion</div>
+              <div class="impact-sub">Problème impacte l'ensemble des stagiaires</div>
+            </div>
+            <div class="impact-score">0%</div>
+          </div>
+          <div class="impact-btn" onclick="pickImpact(20,this)">
+            <div class="impact-icon">🟠</div>
+            <div>
+              <div class="impact-label">La moitié de la promotion</div>
+              <div class="impact-sub">Environ 50% des stagiaires concernés</div>
+            </div>
+            <div class="impact-score">20%</div>
+          </div>
+          <div class="impact-btn" onclick="pickImpact(40,this)">
+            <div class="impact-icon">🟡</div>
+            <div>
+              <div class="impact-label">1 ou 2 stagiaires</div>
+              <div class="impact-sub">Problème individuel ou en binôme</div>
+            </div>
+            <div class="impact-score">40%</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;display:flex;justify-content:space-between;">
+        <button onclick="goStep1()" style="padding:8px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.1);
+          background:transparent;color:rgba(255,255,255,.5);font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;">← Retour</button>
+        <button onclick="goStep3()" style="padding:8px 20px;border-radius:9px;border:none;
+          background:var(--prev);color:white;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 — Observation + (si NOK) impact visuel + envoi responsable -->
+    <div class="m-step" id="mStep3">
+      <div class="m-lbl">Étape 3 / 3 — Observation anonyme <span style="color:#F87171;">*</span></div>
+      <textarea class="m-input" id="mObs" style="margin-top:6px;" rows="3"
+        placeholder="ex : 2 personnes sous 70% sur M06 · action entraide prévue à 14h"></textarea>
+
+      <!-- Zone envoi responsable (uniquement si NOK) -->
+      <div id="respZone" style="display:none;">
+        <div class="resp-banner" style="margin-top:10px;">
+          <div class="rb-title">📤 Message automatique au responsable pédagogique</div>
+          <div class="rb-body" id="respPreview">—</div>
+        </div>
+        <div style="margin-top:8px;">
+          <div class="m-lbl">Complément pour le responsable (optionnel)</div>
+          <textarea class="m-input" id="mRespNote" rows="2"
+            placeholder="Contexte supplémentaire à transmettre..."></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;">
+        <button onclick="goStep2()" style="padding:8px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.1);
+          background:transparent;color:rgba(255,255,255,.5);font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;">← Retour</button>
+        <button class="m-save" onclick="saveEntry()" style="flex:1;margin-top:0;">
+          Enregistrer dans le QRAFT
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── CONSTANTES ─────────────────────────────────────────────────
+const TOTAL_DAYS = 75;
+const TOTAL_HOURS = 525;
+const DIMS_CFG = {
+  Q:{ word:'Qualité',   def:'Satisfaction · supports · perçu global',    col:'190,24,93',  css:'var(--Q)' },
+  R:{ word:'Résultats', def:'Scores QCM · grilles · livrables ACO',       col:'21,128,61',  css:'var(--R)' },
+  A:{ word:'Avancement',def:'Cards débloquées · modules complétés',        col:'234,88,12',  css:'var(--A)' },
+  F:{ word:'Feedback',  def:'Retours · actions correctives',              col:'124,58,237', css:'var(--F)' },
+  T:{ word:'Tempo',     def:'Présence · assiduité · rythme du groupe',    col:'2,132,199',  css:'var(--T)' }
+};
+const STATUS_LBL = { ok:'● OK',  warn:'● Vigilance', nok:'● Problème' };
+const STATUS_CLS = { ok:'s-ok', warn:'s-warn',       nok:'s-nok'      };
+
+// ── ÉTAT ────────────────────────────────────────────────────────
+let state = {
+  jourNum: 1,
+  pilote: '',
+  module: 'M01',
+  today: {},       // { Q:{val,status,obs}, R:{...}, ... }
+  history: [],     // [{ date, jour, pilote, Q, R, A, F, T, note }]
+  aicStep: -1
+};
+
+let timerInterval = null;
+let timerSeconds = 420; // 7 min
+let timerRunning = false;
+
+// supprimé — déclaré dans le bloc modal ci-dessous
+
+// ── INIT ────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  renderAll();
+  updateClock();
+  setInterval(updateClock, 1000);
+});
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('qraft_v2');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state = { ...state, ...parsed };
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem('qraft_v2', JSON.stringify(state)); } catch(e) {}
+}
+
+// ── RENDER ──────────────────────────────────────────────────────
+function renderAll() {
+  // Header
+  document.getElementById('hJour').textContent = state.jourNum + '/75';
+  document.getElementById('hModule').textContent = state.module || '—';
+  document.getElementById('piloteDisplay').textContent = state.pilote ? '👤 ' + state.pilote : '✏ Définir pilote';
+  document.getElementById('sbPilote').textContent = state.pilote || '—';
+  document.getElementById('sbJour').textContent = state.jourNum;
+  document.getElementById('sbH').textContent = Math.round(state.jourNum * 7);
+
+  const pct = Math.round(state.jourNum / TOTAL_DAYS * 100);
+  setTimeout(() => {
+    document.getElementById('sbFill').style.width = pct + '%';
+    document.getElementById('sbPct').textContent = pct + '%';
+  }, 200);
+
+  document.getElementById('bbJour').textContent = 'Jour ' + state.jourNum + ' / 75';
+
+  // Cards QRAFT
+  Object.keys(DIMS_CFG).forEach(k => {
+    const d = state.today[k];
+    if (d) {
+      const val = d.val !== undefined ? d.val : '—';
+      document.getElementById('v-' + k).innerHTML = val !== '—' ? val + '<span class="qc-unit">%</span>' : '—';
+      document.getElementById('b-' + k).style.width = (val !== '—' ? val : 0) + '%';
+      const stEl = document.getElementById('st-' + k);
+      stEl.className = 'qc-status ' + STATUS_CLS[d.status];
+      stEl.textContent = STATUS_LBL[d.status];
+      document.getElementById('obs-' + k).textContent = d.obs || '';
+    } else {
+      document.getElementById('v-' + k).textContent = '—';
+      document.getElementById('st-' + k).className = 'qc-status s-ok';
+      document.getElementById('st-' + k).textContent = '● Non saisi';
+    }
+  });
+
+  // Andon panel
+  renderAndon();
+  // History
+  renderHistory();
+  // Bottom pills
+  const andons = Object.values(state.today).filter(d => d && d.status === 'nok').length;
+  document.getElementById('bbAndon').textContent = 'Andon : ' + andons;
+
+  // Note AIC
+  if (state.aicNote) document.getElementById('aicNote').value = state.aicNote;
+}
+
+function renderAndon() {
+  const panel = document.getElementById('andonPanel');
+  const andons = Object.entries(state.today).filter(([k,d]) => d && d.status === 'nok');
+  if (andons.length === 0) {
+    panel.innerHTML = '<div class="andon-none"><div class="andon-none-dot"></div>Aucun Andon actif — tous les indicateurs sont OK</div>';
+  } else {
+    panel.innerHTML = andons.map(([k,d]) => `
+      <div class="andon-row">
+        <div class="andon-pulse"></div>
+        <div class="andon-module">${DIMS_CFG[k].word} — ${d.obs || 'problème signalé'}</div>
+        <div class="andon-nb">${k}</div>
+      </div>`).join('');
+  }
+}
+
+function renderHistory() {
+  const tbody = document.getElementById('histBody');
+  if (!state.history || state.history.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="color:rgba(255,255,255,.2);font-style:italic;text-align:center;padding:20px;">Aucune donnée — le QRAFT s\'enrichit chaque jour</td></tr>';
+    return;
+  }
+  const rows = [...state.history].reverse().map(h => {
+    const badge = (s) => {
+      if (!s) return '<span style="color:rgba(255,255,255,.2)">—</span>';
+      const c = s === 'ok' ? '#4ADE80' : s === 'warn' ? '#FCD34D' : '#F87171';
+      const sym = s === 'ok' ? '●' : s === 'warn' ? '◆' : '✖';
+      return `<span style="color:${c}">${sym}</span>`;
+    };
+    return `<tr>
+      <td class="ht-day">J${String(h.jour).padStart(2,'0')}</td>
+      <td style="color:rgba(255,255,255,.4);font-size:11px;">${h.date || '—'}</td>
+      <td>${badge(h.Q)}</td><td>${badge(h.R)}</td>
+      <td>${badge(h.A)}</td><td>${badge(h.F)}</td><td>${badge(h.T)}</td>
+      <td style="color:rgba(255,255,255,.35);font-size:11px;">${h.pilote || '—'}</td>
+    </tr>`;
+  }).join('');
+  tbody.innerHTML = rows;
+}
+
+// ── DATE ────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('hDate').textContent =
+    now.toLocaleDateString('fr-FR', {weekday:'short', day:'numeric', month:'short'});
+  document.getElementById('bbTime').textContent =
+    now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+
+// ── PILOTE ──────────────────────────────────────────────────────
+function editPilote() {
+  const v = prompt('Pilote QRAFT cette semaine :', state.pilote);
+  if (v !== null) {
+    state.pilote = v.trim();
+    const m = prompt('Module en cours :', state.module);
+    if (m !== null) state.module = m.trim();
+    const j = prompt('Numéro du jour de formation (1-75) :', state.jourNum);
+    if (j !== null && !isNaN(parseInt(j))) state.jourNum = Math.min(75, Math.max(1, parseInt(j)));
+    saveState();
+    renderAll();
+  }
+}
+
+// ── MODAL ───────────────────────────────────────────────────────
+let currentDim  = null;
+let modalStatus = null;
+let modalScore  = null;
+let modalStep   = 1;
+
+function openModal(dim) {
+  currentDim  = dim;
+  modalStatus = null;
+  modalScore  = null;
+  modalStep   = 1;
+
+  const cfg      = DIMS_CFG[dim];
+  const existing = state.today[dim];
+
+  // En-tête
+  const box = document.getElementById('mBox');
+  box.textContent  = dim;
+  box.style.cssText = `background:rgba(${cfg.col},.15);color:${cfg.css};
+    font-family:'Syne',sans-serif;font-weight:800;font-size:26px;
+    display:flex;align-items:center;justify-content:center;border-radius:12px;
+    width:48px;height:48px;flex-shrink:0;`;
+  document.getElementById('mTtl').textContent = cfg.word;
+  document.getElementById('mDef').textContent = cfg.def;
+
+  // Pré-remplir si déjà saisi
+  if (existing) {
+    modalStatus = existing.status;
+    modalScore  = existing.val;
+    document.getElementById('mObs').value = existing.obs || '';
+    document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('sel'));
+    const btn = document.querySelector(`.status-btn[data-s="${existing.status}"]`);
+    if (btn) btn.classList.add('sel');
+  } else {
+    document.getElementById('mObs').value = '';
+    document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('sel'));
+  }
+
+  // Réponse responsable pédagogique
+  const reply = state.respReplies && state.respReplies[dim];
+  const replyZone = document.getElementById('respReplyZone');
+  if (reply && reply.text) {
+    document.getElementById('respReplyText').textContent =
+      `${reply.from || 'Responsable pédagogique'} — J${reply.jour || '?'} : ${reply.text}`;
+    replyZone.style.display = 'block';
+  } else {
+    replyZone.style.display = 'none';
+  }
+
+  showModalStep(1);
+  document.getElementById('modalOv').classList.add('open');
+}
+
+function showModalStep(n) {
+  modalStep = n;
+  ['mStep1','mStep2','mStep3'].forEach((id, i) => {
+    document.getElementById(id).classList.toggle('visible', i + 1 === n);
+  });
+  // Barre progression
+  ['mp0','mp1','mp2'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'mp-step ' + (i + 1 < n ? 'done' : i + 1 === n ? 'active' : '');
+  });
+  if (n === 2) renderScoreStep();
+  if (n === 3) renderObsStep();
+}
+
+function goStep1() { showModalStep(1); }
+function goStep2() {
+  if (!modalStatus) { alert('Choisissez un statut avant de continuer.'); return; }
+  showModalStep(2);
+}
+function goStep3() {
+  if (modalScore === null || modalScore === undefined) {
+    alert('Choisissez une note avant de continuer.'); return;
+  }
+  showModalStep(3);
+}
+
+function pickStatus(s, btn) {
+  modalStatus = s;
+  modalScore  = null; // reset score si on change de statut
+  document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function renderScoreStep() {
+  // Cacher toutes les grilles
+  document.getElementById('scoreOkGrid').style.display   = 'none';
+  document.getElementById('scoreWarnGrid').style.display = 'none';
+  document.getElementById('scoreNokGrid').style.display  = 'none';
+
+  const lbl = document.getElementById('mScoreLbl');
+
+  if (modalStatus === 'ok') {
+    lbl.innerHTML = 'Étape 2 / 3 — Note <span style="color:#F87171;">*</span> · Plage OK : 80 % → 100 %';
+    const g = document.getElementById('scoreOkGrid');
+    g.style.display = 'flex';
+    g.querySelectorAll('.score-chip').forEach(c => {
+      c.className = 'score-chip';
+      if (parseInt(c.textContent) === modalScore) c.classList.add('sel-ok');
+    });
+  } else if (modalStatus === 'warn') {
+    lbl.innerHTML = 'Étape 2 / 3 — Note <span style="color:#F87171;">*</span> · Plage Vigilance : 50 % → 75 %';
+    const g = document.getElementById('scoreWarnGrid');
+    g.style.display = 'flex';
+    g.querySelectorAll('.score-chip').forEach(c => {
+      c.className = 'score-chip';
+      if (parseInt(c.textContent) === modalScore) c.classList.add('sel-warn');
+    });
+  } else if (modalStatus === 'nok') {
+    lbl.innerHTML = 'Étape 2 / 3 — Impact du problème <span style="color:#F87171;">*</span>';
+    document.getElementById('scoreNokGrid').style.display = 'block';
+    document.querySelectorAll('.impact-btn').forEach(b => {
+      b.classList.toggle('sel', parseInt(b.querySelector('.impact-score').textContent) === modalScore);
+    });
+  }
+}
+
+function pickScore(val, chip) {
+  modalScore = val;
+  const cls = modalStatus === 'ok' ? 'sel-ok' : modalStatus === 'warn' ? 'sel-warn' : 'sel-nok';
+  chip.closest('.score-grid, #scoreNokGrid') &&
+    chip.closest('.score-grid') &&
+    chip.closest('.score-grid').querySelectorAll('.score-chip').forEach(c => c.className = 'score-chip');
+  chip.classList.add(cls);
+}
+
+function pickImpact(val, btn) {
+  modalScore = val;
+  document.querySelectorAll('.impact-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function renderObsStep() {
+  const isNok = modalStatus === 'nok';
+  document.getElementById('respZone').style.display = isNok ? 'block' : 'none';
+  if (isNok) {
+    const impactLabel = modalScore === 0   ? 'toute la promotion (score : 0%)'
+                      : modalScore === 20  ? 'la moitié de la promotion (score : 20%)'
+                      : 'des cas individuels (score : 40%)';
+    document.getElementById('respPreview').innerHTML =
+      `<strong>Alerte QRAFT — Dimension ${currentDim} (${DIMS_CFG[currentDim].word})</strong><br>` +
+      `Jour J${state.jourNum} · Module ${state.module || '—'} · Pilote : ${state.pilote || '—'}<br>` +
+      `Impact : ${impactLabel}<br>` +
+      `Observation : <em>[à compléter à l'étape suivante]</em>`;
+  }
+}
+
+function saveEntry() {
+  const obs = document.getElementById('mObs').value.trim();
+  if (!obs) { alert('L\'observation est obligatoire — décrivez le point en une phrase.'); return; }
+
+  if (!state.today) state.today = {};
+  state.today[currentDim] = {
+    status: modalStatus,
+    val:    modalScore,
+    obs:    obs
+  };
+
+  // Si problème : créer message responsable
+  if (modalStatus === 'nok') {
+    const note = document.getElementById('mRespNote') ? document.getElementById('mRespNote').value.trim() : '';
+    const impactLabel = modalScore === 0   ? 'Toute la promotion'
+                      : modalScore === 20  ? 'La moitié de la promotion'
+                      : '1 ou 2 stagiaires';
+    const msg = {
+      jour:   state.jourNum,
+      dim:    currentDim,
+      dimWord: DIMS_CFG[currentDim].word,
+      impact: impactLabel,
+      score:  modalScore,
+      obs:    obs,
+      note:   note,
+      pilote: state.pilote,
+      module: state.module,
+      date:   new Date().toLocaleDateString('fr-FR'),
+      read:   false
+    };
+    if (!state.alerts) state.alerts = [];
+    // Supprimer alerte précédente du même jour + dim
+    state.alerts = state.alerts.filter(a => !(a.jour === msg.jour && a.dim === msg.dim));
+    state.alerts.push(msg);
+    // Effacer réponse précédente pour cette dimension (nouvelle alerte)
+    if (state.respReplies) delete state.respReplies[currentDim];
+    // Simuler l'envoi (dans un système réel : Apps Script email)
+    simulateSendAlert(msg);
+  }
+
+  saveState();
+  renderAll();
+  closeModalNow();
+}
+
+function simulateSendAlert(msg) {
+  // Dans un déploiement réel, cette fonction appellerait un Apps Script Web App
+  // qui enverrait un email à Dominique avec un lien pour répondre.
+  // Ici on stocke localement et on affiche une confirmation.
+  console.log('ALERTE QRAFT envoyée:', msg);
+  // Afficher une notification discrète
+  showToast(`🔴 Alerte envoyée au responsable pédagogique — ${msg.dimWord} J${msg.jour}`);
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+    background:#0F2237;border:1px solid rgba(220,38,38,.3);color:#F87171;
+    padding:10px 18px;border-radius:10px;font-size:12px;z-index:9999;
+    font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.4);
+    animation:card-in .3s ease;`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// ── RÉPONSE RESPONSABLE ─────────────────────────────────────────
+// Fonction à appeler par le responsable pédagogique depuis son interface
+// (dans un déploiement réel : page dédiée ou Google Form)
+function addResponsableReply(dim, replyText, fromName) {
+  if (!state.respReplies) state.respReplies = {};
+  state.respReplies[dim] = {
+    text: replyText,
+    from: fromName || 'Responsable pédagogique',
+    jour: state.jourNum,
+    date: new Date().toLocaleDateString('fr-FR')
+  };
+  saveState();
+  renderAll();
+  showToast(`📩 Réponse du responsable reçue pour ${DIMS_CFG[dim].word}`);
+}
+
+// Panneau réponse responsable (visible uniquement pour le responsable)
+function openResponsablePanel() {
+  const pwd = prompt('Code responsable pédagogique :');
+  if (pwd !== 'preventys') { alert('Code incorrect.'); return; }
+  const pending = (state.alerts || []).filter(a => !a.read);
+  if (pending.length === 0) { alert('Aucune alerte en attente.'); return; }
+  const a = pending[0];
+  const reply = prompt(
+    `Alerte J${a.jour} — ${a.dimWord}\nImpact : ${a.impact}\nObservation : ${a.obs}\n\nVotre réponse (apparaîtra à l'AIC suivante) :`
+  );
+  if (reply && reply.trim()) {
+    a.read = true;
+    addResponsableReply(a.dim, reply.trim(), 'D. Bru');
+    saveState();
+  }
+}
+
+function closeModal(e) { if (e.target.id === 'modalOv') closeModalNow(); }
+function closeModalNow() {
+  document.getElementById('modalOv').classList.remove('open');
+  currentDim = null; modalStatus = null; modalScore = null; modalStep = 1;
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalNow(); });
+
+// ── TABS ────────────────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'history') renderHistory();
+}
+
+// ── TIMER ───────────────────────────────────────────────────────
+function startTimer() {
+  if (timerRunning) { pauseTimer(); return; }
+  timerRunning = true;
+  document.getElementById('btnStart').textContent = '⏸ Pause';
+  document.getElementById('btnStart').classList.remove('primary');
+  document.getElementById('btnStart').classList.add('stop');
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay();
+    if (timerSeconds <= 0) { clearInterval(timerInterval); timerRunning = false; endAIC(); }
+  }, 1000);
+}
+
+function pauseTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  document.getElementById('btnStart').textContent = '▶ Reprendre';
+  document.getElementById('btnStart').classList.remove('stop');
+  document.getElementById('btnStart').classList.add('primary');
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerSeconds = 420;
+  updateTimerDisplay();
+  document.getElementById('btnStart').textContent = '▶ Démarrer';
+  document.getElementById('btnStart').classList.remove('stop');
+  document.getElementById('btnStart').classList.add('primary');
+  document.getElementById('timerStepInfo').textContent = 'Prêt à démarrer';
+  resetSteps();
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds / 60);
+  const s = timerSeconds % 60;
+  const disp = `${m}:${String(s).padStart(2,'0')}`;
+  const el = document.getElementById('timerDisplay');
+  el.textContent = disp;
+  el.className = 'timer-main' + (timerSeconds <= 60 ? ' danger' : timerSeconds <= 120 ? ' warn' : '');
+  const pct = timerSeconds / 420 * 100;
+  const bar = document.getElementById('timerBar');
+  bar.style.width = pct + '%';
+  bar.style.background = timerSeconds <= 60 ? '#F87171' : timerSeconds <= 120 ? '#FCD34D' : 'var(--prev)';
+
+  // Activer l'étape correspondante
+  const elapsed = 420 - timerSeconds;
+  const steps = [{ start:0,end:60,idx:0 },{ start:60,end:120,idx:1 },{ start:120,end:180,idx:2 },
+                 { start:180,end:240,idx:3 },{ start:240,end:300,idx:4 },{ start:300,end:420,idx:5 }];
+  let cur = steps.find(s => elapsed >= s.start && elapsed < s.end);
+  if (cur) {
+    document.getElementById('timerStepInfo').textContent =
+      ['T — Tempo','A — Avancement','R — Résultats','F — Feedback','Q — Qualité','✈ Objectif du jour'][cur.idx];
+  }
+}
+
+function endAIC() {
+  document.getElementById('timerDisplay').textContent = '0:00';
+  document.getElementById('timerStepInfo').textContent = '✅ AIC terminé — 7 minutes';
+  document.getElementById('btnStart').textContent = '▶ Démarrer';
+  document.getElementById('btnStart').classList.remove('stop');
+  document.getElementById('btnStart').classList.add('primary');
+  // Archiver la journée
+  archiveDay();
+}
+
+// ── AIC STEPS ───────────────────────────────────────────────────
+function markDone(idx) {
+  const step = document.querySelector(`.script-step[data-step="${idx}"]`);
+  if (step) { step.classList.remove('active','pending'); step.classList.add('done'); }
+  const next = document.querySelector(`.script-step[data-step="${idx+1}"]`);
+  if (next) { next.classList.remove('pending'); next.classList.add('active'); }
+}
+
+function resetSteps() {
+  document.querySelectorAll('.script-step').forEach((s, i) => {
+    s.classList.remove('done','active','pending');
+    s.classList.add(i === 0 ? 'active' : 'pending');
+  });
+}
+
+// ── ARCHIVAGE ───────────────────────────────────────────────────
+function archiveDay() {
+  if (!state.history) state.history = [];
+  const already = state.history.find(h => h.jour === state.jourNum);
+  const entry = {
+    jour: state.jourNum,
+    date: new Date().toLocaleDateString('fr-FR'),
+    pilote: state.pilote,
+    Q: state.today.Q ? state.today.Q.status : null,
+    R: state.today.R ? state.today.R.status : null,
+    A: state.today.A ? state.today.A.status : null,
+    F: state.today.F ? state.today.F.status : null,
+    T: state.today.T ? state.today.T.status : null,
+    note: state.aicNote || ''
+  };
+  if (already) { Object.assign(already, entry); }
+  else { state.history.push(entry); }
+  saveState();
+  renderHistory();
+}
+
+// ── NOTE AIC ────────────────────────────────────────────────────
+function saveNote() {
+  state.aicNote = document.getElementById('aicNote').value;
+  saveState();
+}
+
+// ── EXPORT CSV ──────────────────────────────────────────────────
+function exportCSV() {
+  if (!state.history || state.history.length === 0) { alert('Aucune donnée à exporter.'); return; }
+  const header = 'Jour,Date,Q,R,A,F,T,Pilote,Note\n';
+  const rows = state.history.map(h =>
+    `${h.jour},${h.date},${h.Q||''},${h.R||''},${h.A||''},${h.F||''},${h.T||''},${h.pilote||''},"${(h.note||'').replace(/"/g,'""')}"`
+  ).join('\n');
+  const blob = new Blob([header + rows], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `QRAFT_historique_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function clearHistory() {
+  state.history = [];
+  state.today = {};
+  saveState();
+  renderAll();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevent'Assist — Assistant pédagogique Preventys</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --prev:#009FC4; --prev-d:#007A99; --prev-dd:#0C3A5C; --prev-l:#E6F6FB;
+  --grn:#15803D;  --grn-l:#DCFCE7; --grn-d:#14532D;
+  --ink:#1A2332;  --muted:#6B7A8D; --faint:#9AAAB8;
+  --white:#FFFFFF; --cream:#F6F4EF; --warm:#EDE9E1;
+  --border:#DDD8CE; --border-l:#EDE9E4;
+  --user-bg:#0C3A5C; --assist-bg:#FFFFFF;
+  --shadow: 0 2px 12px rgba(26,35,50,.08);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html,body { height:100%; }
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  overflow:hidden;
+  font-size:15px;
+  line-height:1.6;
+}
+
+/* ── GRAIN ── */
+body::after {
+  content:'';pointer-events:none;position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.6;
+}
+
+/* ── HEADER ── */
+header {
+  position:relative;z-index:10;
+  background:var(--grn-d);
+  padding:0 clamp(16px,3vw,32px);
+  height:58px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 2px 16px rgba(20,83,45,.25);
+  flex-shrink:0;
+}
+.h-brand { display:flex;align-items:center;gap:11px; }
+.h-icon {
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,#22C55E,#16A34A);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 2px 8px rgba(21,128,61,.35);
+  flex-shrink:0;
+}
+.h-name {
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(16px,2.5vw,20px);letter-spacing:.04em;color:white;
+}
+.h-name span { color:#86EFAC; font-weight:600; }
+.h-sub { font-size:11px;color:rgba(255,255,255,.45);margin-top:1px;letter-spacing:.02em; }
+
+.h-badge {
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:99px;padding:5px 12px;
+}
+.h-badge-dot { width:7px;height:7px;border-radius:50%;background:#4ADE80;animation:pulse-g 2s ease-in-out infinite; }
+.h-badge-txt { font-size:11px;color:rgba(255,255,255,.7);letter-spacing:.04em; }
+
+.h-clear {
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:5px 12px;color:rgba(255,255,255,.5);
+  font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;
+}
+.h-clear:hover { background:rgba(255,255,255,.14);color:rgba(255,255,255,.8); }
+
+/* ── TOPICS BAR ── */
+.topics-bar {
+  position:relative;z-index:9;
+  background:var(--warm);
+  border-bottom:1px solid var(--border);
+  padding:8px clamp(16px,3vw,32px);
+  display:flex;align-items:center;gap:8px;overflow-x:auto;flex-shrink:0;
+}
+.topics-bar::-webkit-scrollbar { display:none; }
+.t-label { font-size:11px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;font-weight:600; }
+.topic-chip {
+  background:white;border:1.5px solid var(--border);border-radius:99px;
+  padding:4px 12px;font-size:12px;color:var(--muted);cursor:pointer;
+  white-space:nowrap;transition:all .15s;font-weight:500;flex-shrink:0;
+}
+.topic-chip:hover { border-color:var(--grn);color:var(--grn);background:#F0FDF4; }
+
+/* ── MESSAGES AREA ── */
+#chatArea {
+  flex:1;overflow-y:auto;
+  padding:clamp(16px,3vw,28px) clamp(16px,3vw,32px);
+  display:flex;flex-direction:column;gap:18px;
+  position:relative;z-index:5;
+}
+#chatArea::-webkit-scrollbar { width:4px; }
+#chatArea::-webkit-scrollbar-track { background:transparent; }
+#chatArea::-webkit-scrollbar-thumb { background:var(--border);border-radius:99px; }
+
+/* ── MESSAGES ── */
+.msg { display:flex;gap:10px;animation:msg-in .3s ease both; }
+.msg.user { flex-direction:row-reverse; }
+
+@keyframes msg-in {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.msg-avatar {
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  margin-top:2px;
+}
+.msg.user .msg-avatar {
+  background:var(--user-bg);color:white;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+}
+.msg.assist .msg-avatar {
+  background:linear-gradient(135deg,#22C55E,#16A34A);color:white;font-size:16px;
+  box-shadow:0 2px 8px rgba(21,128,61,.2);
+}
+
+.msg-bubble {
+  max-width:min(78%,640px);
+  padding:12px 16px;border-radius:16px;
+  font-size:14px;line-height:1.65;
+  position:relative;
+}
+.msg.user .msg-bubble {
+  background:var(--user-bg);color:white;border-radius:16px 4px 16px 16px;
+  box-shadow:0 2px 10px rgba(12,58,92,.18);
+}
+.msg.assist .msg-bubble {
+  background:white;color:var(--ink);border-radius:4px 16px 16px 16px;
+  border:1.5px solid var(--border-l);
+  box-shadow:var(--shadow);
+}
+
+.msg-bubble p { margin-bottom:8px; }
+.msg-bubble p:last-child { margin-bottom:0; }
+.msg-bubble strong { font-weight:600;color:var(--grn-d); }
+.msg.user .msg-bubble strong { color:#86EFAC; }
+.msg-bubble em { font-style:italic;color:var(--muted); }
+.msg.user .msg-bubble em { color:rgba(255,255,255,.65); }
+.msg-bubble ul,.msg-bubble ol { padding-left:18px;margin:6px 0; }
+.msg-bubble li { margin-bottom:4px; }
+.msg-bubble code {
+  background:rgba(21,128,61,.08);color:var(--grn-d);
+  border-radius:5px;padding:1px 6px;font-family:'DM Mono',monospace;font-size:13px;
+}
+
+/* Typing indicator */
+.typing-dots { display:flex;gap:5px;align-items:center;padding:4px 2px; }
+.typing-dots span {
+  width:7px;height:7px;border-radius:50%;background:var(--grn);opacity:.4;
+  animation:dot-bounce .9s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay:.18s; }
+.typing-dots span:nth-child(3) { animation-delay:.36s; }
+@keyframes dot-bounce { 0%,80%,100%{transform:translateY(0);opacity:.4} 40%{transform:translateY(-6px);opacity:1} }
+
+/* ── WELCOME ── */
+.welcome {
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:32px 20px;flex:1;gap:16px;
+  animation:msg-in .5s ease both;
+}
+.welcome-icon {
+  width:64px;height:64px;border-radius:20px;
+  background:linear-gradient(135deg,#22C55E,#16A34A);
+  display:flex;align-items:center;justify-content:center;font-size:32px;
+  box-shadow:0 8px 24px rgba(21,128,61,.2);
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.welcome h2 {
+  font-family:'Syne',sans-serif;font-size:clamp(18px,3vw,24px);font-weight:800;
+  color:var(--ink);line-height:1.2;
+}
+.welcome p { font-size:14px;color:var(--muted);max-width:420px;line-height:1.6; }
+.welcome-starters { display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px; }
+.starter {
+  background:white;border:1.5px solid var(--border);border-radius:12px;
+  padding:8px 14px;font-size:13px;color:var(--ink);cursor:pointer;
+  transition:all .15s;text-align:left;max-width:260px;line-height:1.4;
+  box-shadow:var(--shadow);
+}
+.starter:hover { border-color:var(--grn);background:#F0FDF4;color:var(--grn-d); }
+
+/* ── INPUT ZONE ── */
+.input-zone {
+  position:relative;z-index:10;
+  background:var(--warm);
+  border-top:1px solid var(--border);
+  padding:clamp(12px,2vw,16px) clamp(16px,3vw,32px);
+  flex-shrink:0;
+}
+.input-wrap {
+  display:flex;align-items:flex-end;gap:10px;
+  background:white;border:1.5px solid var(--border);border-radius:14px;
+  padding:8px 8px 8px 16px;
+  box-shadow:var(--shadow);
+  transition:border-color .18s;
+}
+.input-wrap:focus-within { border-color:var(--grn); }
+#userInput {
+  flex:1;border:none;outline:none;background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);
+  resize:none;min-height:24px;max-height:120px;line-height:1.5;
+  padding-top:2px;
+}
+#userInput::placeholder { color:var(--faint); }
+.send-btn {
+  width:36px;height:36px;border-radius:10px;border:none;flex-shrink:0;
+  background:linear-gradient(135deg,#22C55E,#16A34A);
+  color:white;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;box-shadow:0 2px 8px rgba(21,128,61,.25);
+}
+.send-btn:hover { transform:scale(1.06);box-shadow:0 4px 12px rgba(21,128,61,.35); }
+.send-btn:disabled { background:#C8D5C0;box-shadow:none;cursor:not-allowed;transform:none; }
+.input-hint {
+  font-size:11px;color:var(--faint);margin-top:6px;text-align:center;letter-spacing:.02em;
+}
+
+/* ── FOOTER ── */
+footer {
+  position:relative;z-index:10;
+  background:var(--cream);border-top:1px solid var(--border-l);
+  padding:6px clamp(16px,3vw,32px);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.footer-left { font-size:10px;color:var(--faint);letter-spacing:.04em; }
+.footer-right { font-size:10px;color:var(--faint); }
+
+/* ── ANIMATIONS ── */
+@keyframes pulse-g { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(.75)} }
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px) {
+  .topics-bar { display:none; }
+  .h-badge { display:none; }
+}
+</style>
+<style>
+/* ═══ PR-SIDEBAR UNIVERSELLE ═══ */
+body.has-pr-sidebar { margin-left: 72px; }
+#pr-sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 72px;
+  background: #0C3A5C;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 9999;
+  border-right: 1px solid rgba(255,255,255,.08);
+  font-family: 'Syne', 'DM Sans', sans-serif;
+}
+#pr-sidebar .pr-sb-logo {
+  width: 44px; height: 44px; background: #009FC4; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: white; line-height: 1.1;
+  text-align: center; margin-bottom: 8px; text-decoration: none;
+  flex-shrink: 0;
+}
+#pr-sidebar .pr-sb-sep {
+  width: 36px; height: 1px; background: rgba(255,255,255,.12); margin: 4px 0;
+}
+#pr-sidebar .pr-sb-btn {
+  width: 48px; height: 48px; border-radius: 12px; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; background: transparent; transition: background .15s;
+  position: relative; text-decoration: none;
+}
+#pr-sidebar .pr-sb-btn:hover { background: rgba(255,255,255,.1); }
+#pr-sidebar .pr-sb-btn.pr-active { background: #009FC4; }
+#pr-sidebar .pr-sb-btn .pr-icon { font-size: 18px; line-height: 1; }
+#pr-sidebar .pr-sb-btn .pr-lbl {
+  font-size: 8px; font-weight: 700; color: rgba(255,255,255,.45);
+  letter-spacing: .03em; line-height: 1;
+}
+#pr-sidebar .pr-sb-btn.pr-active .pr-lbl { color: rgba(255,255,255,.9); }
+#pr-sidebar .pr-sb-btn .pr-tip {
+  position: absolute; left: 66px; background: #1a2332; color: white;
+  font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity .15s; z-index: 10000;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#pr-sidebar .pr-sb-btn:hover .pr-tip { opacity: 1; }
+</style>
+</head>
+<body class="has-pr-sidebar">
+
+<!-- ═══ PR-SIDEBAR UNIVERSELLE ═══ -->
+<nav id="pr-sidebar">
+  <a class="pr-sb-logo" href="prevent_road.html" title="Prevent'Road">P'<br>Road</a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_road.html">
+    <span class="pr-icon">🗓</span><span class="pr-lbl">Road</span>
+    <div class="pr-tip">Prevent'Road — Accueil</div>
+  </a>
+  <a class="pr-sb-btn" href="preventcards_parcours__2_.html">
+    <span class="pr-icon">🃏</span><span class="pr-lbl">Cards</span>
+    <div class="pr-tip">Prevent'Cards — 84 cartes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_obeya_qraft_v2__2_.html">
+    <span class="pr-icon">📊</span><span class="pr-lbl">QRAFT</span>
+    <div class="pr-tip">QRAFT — Obeya promotion</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_andon.html">
+    <span class="pr-icon">🚨</span><span class="pr-lbl">Andon</span>
+    <div class="pr-tip">Prevent'Andon — Alertes</div>
+  </a>
+  <a class="pr-sb-btn" href="preventis_dashboard.html">
+    <span class="pr-icon">📈</span><span class="pr-lbl">Board</span>
+    <div class="pr-tip">Dashboard Prevent'IS</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_assist.html" class="pr-sb-btn pr-active">
+    <span class="pr-icon">🤖</span><span class="pr-lbl">Assist</span>
+    <div class="pr-tip">Prevent'Assist — IA pédagogique</div>
+  </a>
+  <a class="pr-sb-btn" href="prevent_exam.html">
+    <span class="pr-icon">📝</span><span class="pr-lbl">Exam</span>
+    <div class="pr-tip">Prevent'Exam — Mémoire CQPM</div>
+  </a>
+  <a class="pr-sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank">
+    <span class="pr-icon">📚</span><span class="pr-lbl">Agil</span>
+    <div class="pr-tip">Prevent'Agil — Cours Digipad</div>
+  </a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="FormAgil_Didacticiel1_Mere.html">
+    <span class="pr-icon">📐</span><span class="pr-lbl">Form</span>
+    <div class="pr-tip">Form'Agil — Didacticiel</div>
+  </a>
+</nav>
+
+
+<!-- HEADER -->
+<header>
+  <div class="h-brand">
+    <div class="h-icon">🧭</div>
+    <div>
+      <div class="h-name">Prevent<span>'Assist</span></div>
+      <div class="h-sub">Assistant pédagogique · Preventys</div>
+    </div>
+  </div>
+  <div class="h-badge">
+    <div class="h-badge-dot"></div>
+    <div class="h-badge-txt">En ligne</div>
+  </div>
+  <button class="h-clear" onclick="clearChat()">↺ Nouvelle session</button>
+</header>
+
+<!-- TOPICS BAR -->
+<div class="topics-bar">
+  <div class="t-label">Accès rapide</div>
+  <div class="topic-chip" onclick="sendTopic('ISO 9001')">ISO 9001</div>
+  <div class="topic-chip" onclick="sendTopic('ISO 14001')">ISO 14001</div>
+  <div class="topic-chip" onclick="sendTopic('ISO 45001')">ISO 45001</div>
+  <div class="topic-chip" onclick="sendTopic('Audit interne')">Audit interne</div>
+  <div class="topic-chip" onclick="sendTopic('DUER')">DUER</div>
+  <div class="topic-chip" onclick="sendTopic('Lean Six Sigma')">Lean Six Sigma</div>
+  <div class="topic-chip" onclick="sendTopic('5S')">5S</div>
+  <div class="topic-chip" onclick="sendTopic('DMAIC')">DMAIC</div>
+  <div class="topic-chip" onclick="sendTopic('CQPM')">CQPM</div>
+  <div class="topic-chip" onclick="sendTopic('Non-conformité')">Non-conformité</div>
+  <div class="topic-chip" onclick="sendTopic('VSM')">VSM</div>
+  <div class="topic-chip" onclick="sendTopic('8D')">8D</div>
+</div>
+
+<!-- CHAT AREA -->
+<div id="chatArea">
+  <div class="welcome" id="welcome">
+    <div class="welcome-icon">🧭</div>
+    <h2>Bonjour ! Je suis Prevent'Assist</h2>
+    <p>Ton assistant de formation Preventys. Je suis là pour t'accompagner dans ta progression — pas pour te donner les réponses, mais pour t'aider à les construire.</p>
+    <div class="welcome-starters">
+      <div class="starter" onclick="sendStarter(this)">💡 Je ne comprends pas la différence entre ISO 9001 et ISO 14001</div>
+      <div class="starter" onclick="sendStarter(this)">🔍 Comment préparer un audit interne ?</div>
+      <div class="starter" onclick="sendStarter(this)">📋 C'est quoi le DUER et comment le remplir ?</div>
+      <div class="starter" onclick="sendStarter(this)">⚙️ Explique-moi la démarche DMAIC</div>
+      <div class="starter" onclick="sendStarter(this)">🎯 Comment préparer ma certification CQPM ?</div>
+      <div class="starter" onclick="sendStarter(this)">📉 Qu'est-ce qu'une non-conformité et comment la traiter ?</div>
+    </div>
+  </div>
+</div>
+
+<!-- INPUT -->
+<div class="input-zone">
+  <div class="input-wrap">
+    <textarea id="userInput" placeholder="Pose ta question ici…" rows="1"
+      oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+  </div>
+  <div class="input-hint">Entrée pour envoyer · Maj+Entrée pour saut de ligne</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">Prevent'IS · Preventys · Formation QHSE Lean RH</div>
+  <div class="footer-right">Propulsé par Claude · Anthropic</div>
+</footer>
+
+<script>
+// ── SYSTEM PROMPT ──────────────────────────────────────────────
+const SYSTEM_PROMPT = `# PREVENT'ASSIST — System Prompt
+
+## Identité
+
+Tu es **Prevent'Assist**, l'assistant pédagogique de **Preventys**, organisme de formation spécialisé en QHSE, Lean Management et certification RH.
+
+Tu accompagnes des **apprenants en reconversion professionnelle** dans leur parcours de formation. Tu n'es pas un moteur de réponses : tu es un **compagnon de route**. Ton rôle est de guider, pas de porter.
+
+---
+
+## Ta posture fondamentale
+
+Tu n'es jamais là pour faire le travail à la place du stagiaire. Jamais.
+
+Quand un stagiaire te pose une question à laquelle il pourrait trouver lui-même la réponse, ta première réaction est de **lui renvoyer une question qui l'invite à chercher dans son expérience ou son raisonnement**. Tu ne livres une réponse directe qu'après avoir tenté de faire émerger la compréhension.
+
+Exemples de formulations de relance :
+- "Bonne question. Avant de te répondre, dis-moi : dans ton expérience, qu'est-ce que tu as déjà observé sur ce sujet ?"
+- "Tu as sûrement déjà une intuition là-dessus. Qu'est-ce qui te vient spontanément ?"
+- "Imaginons que tu sois dans une entreprise demain. Comment tu aborderais cette situation ?"
+- "On va y aller ensemble. Pour commencer : qu'est-ce que tu comprends déjà de ce concept ?"
+
+---
+
+## Ton ton
+
+Tu adaptes ton registre selon le contexte :
+
+- **Bienveillant et chaleureux** quand le stagiaire est en difficulté, dans le doute, ou exprime de l'anxiété face à une certification. Tu rassures sur la méthode, jamais sur le résultat.
+- **Rigoureux et précis** quand il s'agit d'une norme, d'un outil, d'une exigence réglementaire. Tu ne simplifies pas au point de déformer.
+- **Socratique et stimulant** quand le stagiaire est en phase d'apprentissage actif. Tu questionnes, tu challenges doucement, tu ouvres des perspectives.
+
+Dans tous les cas : tu **tutoies** le stagiaire. Le tutoiement crée une proximité qui aide les personnes en reconversion à se sentir légitimes et à oser.
+
+---
+
+## Tes domaines de compétence
+
+Tu couvres l'ensemble des champs enseignés par Preventys :
+
+**Qualité & Systèmes de Management**
+- ISO 9001 (management de la qualité)
+- ISO 14001 (management environnemental)
+- ISO 45001 (santé-sécurité au travail)
+- Audit interne, revue de direction, non-conformités, actions correctives
+
+**Lean Management & Amélioration continue**
+- Les 7 gaspillages, VSM, 5S, SMED, Kaizen
+- Lean Six Sigma (jusqu'au niveau Green Belt)
+- PDCA, DMAIC, résolution de problèmes (8D, Ishikawa, 5 pourquoi)
+- Management visuel, flux, indicateurs de performance
+
+**QHSE & Prévention des risques**
+- Document Unique d'Évaluation des Risques (DUER)
+- Analyse des risques chimiques, ergonomiques, organisationnels
+- Réglementation HSE applicable aux entreprises françaises
+
+**Ressources Humaines & Certification**
+- CQPM (Certificats de Qualification Paritaire de la Métallurgie)
+- Green Belt RH
+- Gestion des compétences, GPEC, entretiens professionnels
+
+---
+
+## Ce que tu ne fais jamais
+
+- **Tu ne rédiges pas à la place du stagiaire** : pas de rapport, pas de dossier, pas d'analyse complète "clé en main". Tu peux accompagner la structure, commenter une ébauche, suggérer des pistes — mais la plume reste à l'apprenant.
+- **Tu ne corriges pas sans expliquer**. Quand quelque chose est inexact, tu commences par identifier ce qui est juste dans le raisonnement, puis tu ouvres vers ce qui manque.
+- **Tu ne paniques pas face à l'anxiété de certification**. Tu accueilles, tu recentres sur la méthode et la progression, tu rappelles le chemin déjà parcouru.
+- **Tu ne dépasses pas ton périmètre** : si une question sort clairement du champ QHSE/Lean/RH, tu le signales avec bienveillance et tu ramènes vers ce que tu peux apporter.
+
+---
+
+## Comment tu ancres les concepts
+
+Tu travailles toujours du **concret vers l'abstrait**, jamais l'inverse.
+
+Avant d'expliquer une notion, tu cherches à l'ancrer dans une situation réelle, un exemple métier, une image parlante. Les normes ISO ne sont pas des textes juridiques à réciter : elles décrivent des **pratiques de bon sens** que les entreprises formalisent. Tu les présentes toujours ainsi.
+
+---
+
+## Ta phrase d'accueil type
+
+Quand un stagiaire commence une conversation avec toi :
+
+> "Bonjour ! Je suis Prevent'Assist, ton assistant de formation Preventys. Je suis là pour t'accompagner dans ta progression — pas pour te donner les réponses, mais pour t'aider à les construire. Alors, on commence par quoi aujourd'hui ?"
+
+---
+
+## Ce qui fait ta différence
+
+Tu sais que les personnes en reconversion portent souvent un doute sur leur légitimité. Ton rôle est de leur montrer, par tes questions et tes retours, qu'elles savent déjà beaucoup de choses — et qu'elles sont capables de construire le reste. **Tu valorises l'effort et le raisonnement autant que la bonne réponse.**
+
+La dignité dans l'apprentissage n'est pas un bonus : c'est le cœur de ce que tu incarnes.`;
+
+// ── ÉTAT ──────────────────────────────────────────────────────
+let messages = [];
+let isLoading = false;
+
+// ── RENDER ────────────────────────────────────────────────────
+function renderMessage(role, content) {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'assist');
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = role === 'user' ? '👤' : '🧭';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = formatContent(content);
+
+  div.appendChild(avatar);
+  div.appendChild(bubble);
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+  return bubble;
+}
+
+function formatContent(text) {
+  // Markdown léger
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/^### (.+)$/gm,'<strong style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--grn-d);display:block;margin:12px 0 4px;">$1</strong>')
+    .replace(/^## (.+)$/gm,'<strong style="font-size:15px;font-family:\'Syne\',sans-serif;font-weight:700;display:block;margin:10px 0 4px;">$1</strong>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>')
+    .replace(/^(?!<)(.+)$/gm, (m) => m.startsWith('<') ? m : `<p>${m}</p>`)
+    .replace(/<p><\/p>/g,'');
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'msg assist';
+  div.id = 'typingMsg';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = '🧭';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+
+  div.appendChild(avatar);
+  div.appendChild(bubble);
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingMsg');
+  if (t) t.remove();
+}
+
+// ── SEND ──────────────────────────────────────────────────────
+async function sendMessage(text) {
+  if (isLoading) return;
+  const input = document.getElementById('userInput');
+  const content = text || input.value.trim();
+  if (!content) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  messages.push({ role:'user', content });
+  renderMessage('user', content);
+  showTyping();
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: messages
+      })
+    });
+
+    const data = await resp.json();
+    removeTyping();
+
+    const reply = data.content && data.content[0] && data.content[0].text
+      ? data.content[0].text
+      : "Désolé, je n'ai pas pu traiter ta question. Réessaie dans un instant.";
+
+    messages.push({ role:'assistant', content: reply });
+    renderMessage('assistant', reply);
+
+  } catch(e) {
+    removeTyping();
+    renderMessage('assistant', "Une erreur de connexion s'est produite. Vérifie ta connexion et réessaie.");
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('userInput').focus();
+}
+
+function sendTopic(topic) {
+  sendMessage(`Je voudrais en savoir plus sur : ${topic}`);
+}
+
+function sendStarter(el) {
+  sendMessage(el.textContent.replace(/^[^\w]+/,'').trim());
+}
+
+function clearChat() {
+  messages = [];
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  // Recréer l'écran d'accueil
+  const w = document.createElement('div');
+  w.className = 'welcome';
+  w.id = 'welcome';
+  w.innerHTML = `
+    <div class="welcome-icon">🧭</div>
+    <h2>Bonjour ! Je suis Prevent'Assist</h2>
+    <p>Ton assistant de formation Preventys. Je suis là pour t'accompagner dans ta progression — pas pour te donner les réponses, mais pour t'aider à les construire.</p>
+    <div class="welcome-starters">
+      <div class="starter" onclick="sendStarter(this)">💡 Je ne comprends pas la différence entre ISO 9001 et ISO 14001</div>
+      <div class="starter" onclick="sendStarter(this)">🔍 Comment préparer un audit interne ?</div>
+      <div class="starter" onclick="sendStarter(this)">📋 C'est quoi le DUER et comment le remplir ?</div>
+      <div class="starter" onclick="sendStarter(this)">⚙️ Explique-moi la démarche DMAIC</div>
+      <div class="starter" onclick="sendStarter(this)">🎯 Comment préparer ma certification CQPM ?</div>
+      <div class="starter" onclick="sendStarter(this)">📉 Qu'est-ce qu'une non-conformité et comment la traiter ?</div>
+    </div>`;
+  area.appendChild(w);
+}
+
+// ── INPUT ──────────────────────────────────────────────────────
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+</script>
+</body>
+</html>

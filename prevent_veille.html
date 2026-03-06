@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevent'Veille — Veille réglementaire Preventys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --prev:#009FC4;--prev-d:#0078A0;--prev-dd:#0C3A5C;
+  --ink:#1a2332;--muted:#64748b;--border:#e2e8f0;--gry:#f8fafc;--white:#fff;
+  --red:#EF4444;--redL:#FEF2F2;--amber:#F59E0B;--amberL:#FFFBEB;
+  --green:#22C55E;--greenL:#F0FDF4;--blue:#3B82F6;--blueL:#EFF6FF;
+  --purple:#8B5CF6;--purpleL:#F5F3FF;
+  --r:8px;--r2:14px;--r3:20px;
+  --sh:0 2px 12px rgba(12,58,92,.08);--sh2:0 8px 32px rgba(12,58,92,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#f0f4f8;color:var(--ink);margin-left:72px;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+#pr-sidebar{position:fixed;left:0;top:0;bottom:0;width:72px;background:var(--prev-dd);
+  display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:2px;z-index:9999;
+  border-right:1px solid rgba(255,255,255,.08);}
+.pr-sb-logo{width:44px;height:44px;background:var(--prev);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;
+  font-size:10px;font-weight:800;color:white;line-height:1.1;text-align:center;
+  margin-bottom:8px;text-decoration:none;flex-shrink:0;}
+.pr-sb-sep{width:36px;height:1px;background:rgba(255,255,255,.12);margin:4px 0;}
+.pr-sb-btn{width:48px;height:48px;border-radius:12px;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:transparent;transition:background .15s;position:relative;text-decoration:none;}
+.pr-sb-btn:hover{background:rgba(255,255,255,.1);}
+.pr-sb-btn.pr-active{background:var(--prev);}
+.pr-sb-btn .pr-icon{font-size:18px;line-height:1;}
+.pr-sb-btn .pr-lbl{font-size:8px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.03em;line-height:1;}
+.pr-sb-btn.pr-active .pr-lbl{color:rgba(255,255,255,.9);}
+.pr-sb-btn .pr-tip{position:absolute;left:66px;background:#1a2332;color:white;
+  font-size:11px;font-weight:600;padding:5px 10px;border-radius:8px;white-space:nowrap;
+  pointer-events:none;opacity:0;transition:opacity .15s;z-index:10000;border:1px solid rgba(255,255,255,.1);}
+.pr-sb-btn:hover .pr-tip{opacity:1;}
+
+/* ── TOPBAR ── */
+#topbar{background:var(--prev-dd);padding:14px 28px;display:flex;align-items:center;
+  gap:14px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.08);
+  position:sticky;top:0;z-index:50;}
+.tb-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:white;letter-spacing:-.01em;}
+.tb-brand span{color:#7DD3FA;}
+.tb-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.8);}
+.tb-badge.orange{background:rgba(245,158,11,.2);border-color:rgba(245,158,11,.4);color:#FCD34D;}
+.tb-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.tb-btn{background:var(--prev);border:none;color:white;padding:7px 14px;border-radius:9px;
+  font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:background .15s;display:flex;align-items:center;gap:5px;}
+.tb-btn:hover{background:var(--prev-d);}
+.tb-btn.outline{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);}
+.tb-btn.outline:hover{background:rgba(255,255,255,.2);}
+
+/* ── TABS ── */
+.tabs-bar{background:white;border-bottom:2px solid var(--border);
+  display:flex;gap:0;padding:0 28px;overflow-x:auto;}
+.tab-btn{padding:14px 20px;border:none;background:none;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);
+  border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;
+  white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.tab-btn:hover{color:var(--prev);}
+.tab-btn.active{color:var(--prev-dd);border-bottom-color:var(--prev);}
+.tab-count{background:var(--prev);color:white;font-size:9px;font-weight:800;
+  padding:2px 6px;border-radius:99px;min-width:18px;text-align:center;}
+
+/* ── CONTENT ── */
+#content{padding:24px 28px;max-width:1400px;}
+
+/* ── KPI BAND ── */
+.kpi-band{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
+.kpi-card{background:white;border-radius:var(--r2);border:1px solid var(--border);
+  padding:16px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:4px;}
+.kpi-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;}
+.kpi-lbl{font-size:11px;color:var(--muted);font-weight:500;}
+.kpi-sub{font-size:10px;margin-top:2px;}
+
+/* ── SOURCES PANEL ── */
+.sources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:24px;}
+.source-card{background:white;border-radius:var(--r2);border:1px solid var(--border);
+  padding:14px 16px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:8px;
+  transition:box-shadow .15s;}
+.source-card:hover{box-shadow:var(--sh2);}
+.sc-header{display:flex;align-items:flex-start;gap:10px;}
+.sc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:18px;flex-shrink:0;}
+.sc-info{flex:1;}
+.sc-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--ink);}
+.sc-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.sc-footer{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.sc-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.03em;}
+.sc-link{margin-left:auto;background:var(--prev);color:white;border:none;padding:5px 10px;
+  border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;text-decoration:none;
+  font-family:'DM Sans',sans-serif;transition:background .15s;}
+.sc-link:hover{background:var(--prev-d);}
+
+/* ── VEILLE TABLE ── */
+.veille-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+.vt-search{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border);
+  border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.vt-search:focus{border-color:var(--prev);}
+.vt-filter{padding:7px 12px;border:1.5px solid var(--border);border-radius:9px;
+  font-family:'DM Sans',sans-serif;font-size:12px;background:white;cursor:pointer;outline:none;}
+.vt-filter:focus{border-color:var(--prev);}
+.add-btn{background:var(--prev);border:none;color:white;padding:8px 16px;border-radius:9px;
+  font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.add-btn:hover{background:var(--prev-d);}
+
+.veille-table{width:100%;border-collapse:collapse;background:white;
+  border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh);border:1px solid var(--border);}
+.veille-table th{background:var(--prev-dd);color:white;padding:10px 14px;
+  font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;
+  text-align:left;white-space:nowrap;}
+.veille-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;
+  vertical-align:middle;}
+.veille-table tr:last-child td{border-bottom:none;}
+.veille-table tr:hover td{background:#F8FAFC;}
+.vt-statut{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
+  border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;}
+.vt-impact{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;}
+.vt-actions{display:flex;gap:4px;}
+.vt-act-btn{width:26px;height:26px;border-radius:7px;border:none;cursor:pointer;
+  font-size:12px;display:flex;align-items:center;justify-content:center;transition:opacity .15s;}
+.vt-act-btn:hover{opacity:.75;}
+
+/* ── FORM MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.65);
+  z-index:500;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:white;border-radius:var(--r3);max-width:620px;width:100%;
+  max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25);}
+.modal-head{background:var(--prev-dd);padding:18px 22px;border-radius:var(--r3) var(--r3) 0 0;
+  display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:white;}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer;}
+.modal-body{padding:22px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid.full{grid-template-columns:1fr;}
+.form-field{display:flex;flex-direction:column;gap:5px;}
+.form-field.span2{grid-column:1/-1;}
+.form-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;}
+.form-input,.form-select,.form-textarea{padding:9px 12px;border:1.5px solid var(--border);
+  border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;
+  transition:border-color .15s;width:100%;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--prev);}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:16px;
+  border-top:1px solid var(--border);margin-top:16px;}
+.form-cancel{background:var(--gry);border:1.5px solid var(--border);color:var(--muted);
+  padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;}
+.form-save{background:var(--prev);border:none;color:white;padding:9px 22px;border-radius:9px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.form-save:hover{background:var(--prev-d);}
+
+/* ── PLAN ACTIONS ── */
+.plan-card{background:white;border-radius:var(--r2);border:1px solid var(--border);
+  box-shadow:var(--sh);margin-bottom:12px;overflow:hidden;}
+.plan-head{padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:background .15s;}
+.plan-head:hover{background:var(--gry);}
+.plan-priority{width:6px;border-radius:99px;align-self:stretch;flex-shrink:0;}
+.plan-titre{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;flex:1;}
+.plan-meta{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--muted);}
+.plan-body{padding:12px 16px 16px;border-top:1px solid var(--border);display:none;}
+.plan-body.open{display:block;}
+.plan-actions-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.plan-action-row{display:flex;align-items:center;gap:10px;padding:8px 10px;
+  background:var(--gry);border-radius:8px;border:1px solid var(--border);}
+.plan-action-check{width:18px;height:18px;cursor:pointer;accent-color:var(--green);}
+.plan-action-txt{flex:1;font-size:12px;}
+.plan-action-resp{font-size:10px;color:var(--muted);white-space:nowrap;}
+.plan-action-date{font-size:10px;color:var(--muted);white-space:nowrap;}
+
+/* ── REVUE MENSUELLE ── */
+.revue-card{background:white;border-radius:var(--r2);border:2px solid var(--prev);
+  box-shadow:var(--sh2);padding:22px;margin-bottom:20px;}
+.revue-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--prev-dd);margin-bottom:14px;}
+.revue-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.revue-section{background:var(--gry);border-radius:var(--r);padding:12px;border:1px solid var(--border);}
+.revue-sec-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;
+  color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.revue-item{font-size:12px;color:var(--ink);padding:4px 0;border-bottom:1px dashed var(--border);}
+.revue-item:last-child{border-bottom:none;}
+
+/* ── HISTORIQUE ── */
+.hist-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+.hist-item:last-child{border-bottom:none;}
+.hist-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.hist-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;width:70px;flex-shrink:0;}
+.hist-content{flex:1;}
+.hist-titre{font-size:13px;font-weight:600;color:var(--ink);}
+.hist-detail{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ── EXPORT BAR ── */
+.export-bar{background:var(--prev-dd);border-radius:var(--r2);padding:14px 18px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:24px;}
+.export-lbl{font-size:12px;color:rgba(255,255,255,.6);font-weight:600;}
+.export-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:white;padding:7px 14px;border-radius:8px;font-size:11px;font-weight:700;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;
+  display:flex;align-items:center;gap:5px;}
+.export-btn:hover{background:rgba(255,255,255,.22);}
+.export-btn.primary{background:var(--prev);border-color:var(--prev);}
+.export-btn.primary:hover{background:var(--prev-d);}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted);}
+.empty-state .es-icon{font-size:40px;margin-bottom:12px;}
+.empty-state h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+
+@media(max-width:700px){
+  body{margin-left:0;}#pr-sidebar{display:none;}
+  .kpi-band{grid-template-columns:1fr 1fr;}
+  .revue-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="pr-sidebar">
+  <a class="pr-sb-logo" href="prevent_road.html">P'<br>Road</a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_road.html"><span class="pr-icon">🗓</span><span class="pr-lbl">Road</span><div class="pr-tip">Prevent'Road</div></a>
+  <a class="pr-sb-btn" href="preventcards_parcours__2_.html"><span class="pr-icon">🃏</span><span class="pr-lbl">Cards</span><div class="pr-tip">Prevent'Cards</div></a>
+  <a class="pr-sb-btn" href="preventis_obeya_qraft_v2__2_.html"><span class="pr-icon">📊</span><span class="pr-lbl">QRAFT</span><div class="pr-tip">QRAFT Obeya</div></a>
+  <a class="pr-sb-btn" href="prevent_andon.html"><span class="pr-icon">🚨</span><span class="pr-lbl">Andon</span><div class="pr-tip">Prevent'Andon</div></a>
+  <a class="pr-sb-btn" href="preventis_dashboard.html"><span class="pr-icon">📈</span><span class="pr-lbl">Board</span><div class="pr-tip">Dashboard</div></a>
+  <div class="pr-sb-sep"></div>
+  <a class="pr-sb-btn" href="prevent_assist.html"><span class="pr-icon">🤖</span><span class="pr-lbl">Assist</span><div class="pr-tip">Prevent'Assist</div></a>
+  <a class="pr-sb-btn" href="prevent_exam.html"><span class="pr-icon">📝</span><span class="pr-lbl">Exam</span><div class="pr-tip">Prevent'Exam</div></a>
+  <a class="pr-sb-btn pr-active" href="prevent_veille.html"><span class="pr-icon">🔍</span><span class="pr-lbl">Veille</span><div class="pr-tip">Prevent'Veille</div></a>
+  <a class="pr-sb-btn" href="https://digiwall.app/w/3339/e0a26/preventagil" target="_blank"><span class="pr-icon">📚</span><span class="pr-lbl">Agil</span><div class="pr-tip">Prevent'Agil</div></a>
+</nav>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="tb-brand">Prevent'<span>Veille</span></div>
+  <div class="tb-badge">Veille réglementaire Qualiopi · Indicateur 32</div>
+  <div class="tb-badge orange" id="topbarRevue">—</div>
+  <div class="tb-right">
+    <button class="tb-btn outline" onclick="openRevueModal()">📋 Revue mensuelle</button>
+    <button class="tb-btn" onclick="openAddModal()">+ Nouveau signalement</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard">📊 Tableau de bord</button>
+  <button class="tab-btn" onclick="switchTab('sources')" id="tab-sources">🔗 Sources <span class="tab-count">15</span></button>
+  <button class="tab-btn" onclick="switchTab('veille')" id="tab-veille">📋 Registre veille <span class="tab-count" id="cnt-veille">0</span></button>
+  <button class="tab-btn" onclick="switchTab('actions')" id="tab-actions">⚡ Plan d'actions <span class="tab-count" id="cnt-actions">0</span></button>
+  <button class="tab-btn" onclick="switchTab('revue')" id="tab-revue">📅 Revues mensuelles</button>
+  <button class="tab-btn" onclick="switchTab('historique')" id="tab-historique">🕐 Historique référentiel</button>
+</div>
+
+<div id="content">
+
+<!-- ══ TAB DASHBOARD ══ -->
+<div id="pane-dashboard">
+  <div class="kpi-band" id="kpiBand"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <!-- Derniers signalements -->
+    <div style="background:white;border-radius:var(--r2);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;">
+      <div style="padding:14px 18px;background:var(--gry);border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;">
+        📋 Derniers signalements
+      </div>
+      <div id="dashRecentList" style="padding:8px 0;"></div>
+    </div>
+    <!-- Actions en attente -->
+    <div style="background:white;border-radius:var(--r2);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;">
+      <div style="padding:14px 18px;background:var(--gry);border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;">
+        ⚡ Actions prioritaires en attente
+      </div>
+      <div id="dashActionsList" style="padding:8px 0;"></div>
+    </div>
+  </div>
+
+  <!-- Prochaine revue -->
+  <div id="dashProchaine" style="margin-top:20px;"></div>
+</div>
+
+<!-- ══ TAB SOURCES ══ -->
+<div id="pane-sources" style="display:none;">
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+    <button class="add-btn" onclick="filterSources('all')" id="sf-all" style="background:var(--prev-dd);">Toutes</button>
+    <button class="add-btn" onclick="filterSources('OF')" id="sf-OF" style="background:var(--purple);">OF · Formation</button>
+    <button class="add-btn" onclick="filterSources('metier')" id="sf-metier" style="background:var(--green);filter:brightness(.85);">Métier QHSE</button>
+    <button class="add-btn" onclick="filterSources('norme')" id="sf-norme" style="background:var(--blue);">Normes</button>
+    <button class="add-btn" onclick="filterSources('sst')" id="sf-sst" style="background:var(--amber);filter:brightness(.85);">SST</button>
+    <button class="add-btn" onclick="filterSources('env')" id="sf-env" style="background:var(--green);">Environnement</button>
+  </div>
+  <div class="sources-grid" id="sourcesGrid"></div>
+</div>
+
+<!-- ══ TAB VEILLE ══ -->
+<div id="pane-veille" style="display:none;">
+  <div class="veille-toolbar">
+    <input class="vt-search" id="veilleSearch" placeholder="🔍 Rechercher…" oninput="renderVeilleTable()">
+    <select class="vt-filter" id="veilleFilterPerimetre" onchange="renderVeilleTable()">
+      <option value="">Tous périmètres</option>
+      <option value="OF">OF · Formation</option>
+      <option value="Métier">Métier QHSE</option>
+    </select>
+    <select class="vt-filter" id="veilleFilterStatut" onchange="renderVeilleTable()">
+      <option value="">Tous statuts</option>
+      <option value="Nouveau">Nouveau</option>
+      <option value="Analysé">Analysé</option>
+      <option value="En cours">En cours</option>
+      <option value="Traité">Traité</option>
+      <option value="Sans impact">Sans impact</option>
+    </select>
+    <select class="vt-filter" id="veilleFilterImpact" onchange="renderVeilleTable()">
+      <option value="">Tous impacts</option>
+      <option value="Critique">Critique</option>
+      <option value="Majeur">Majeur</option>
+      <option value="Mineur">Mineur</option>
+      <option value="Aucun">Aucun</option>
+    </select>
+    <button class="add-btn" onclick="openAddModal()">+ Signaler</button>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="veille-table" id="veilleTableEl">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Périmètre</th>
+          <th>Source</th>
+          <th>Titre / Texte</th>
+          <th>Impact</th>
+          <th>Statut</th>
+          <th>Responsable</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="veilleTableBody"></tbody>
+    </table>
+  </div>
+  <div id="veilleEmpty" class="empty-state" style="display:none;">
+    <div class="es-icon">📋</div>
+    <h3>Aucun signalement</h3>
+    <p>Cliquez sur "+ Signaler" pour enregistrer un texte réglementaire.</p>
+  </div>
+</div>
+
+<!-- ══ TAB ACTIONS ══ -->
+<div id="pane-actions" style="display:none;">
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+    <select class="vt-filter" id="actionsFilter" onchange="renderActions()">
+      <option value="">Toutes priorités</option>
+      <option value="Critique">Critique</option>
+      <option value="Haute">Haute</option>
+      <option value="Normale">Normale</option>
+    </select>
+    <select class="vt-filter" id="actionsFilterStatut" onchange="renderActions()">
+      <option value="">Tous statuts</option>
+      <option value="open">En cours</option>
+      <option value="done">Terminées</option>
+    </select>
+    <span style="font-size:12px;color:var(--muted);margin-left:auto;" id="actionsStats"></span>
+  </div>
+  <div id="actionsList"></div>
+  <div id="actionsEmpty" class="empty-state" style="display:none;">
+    <div class="es-icon">⚡</div>
+    <h3>Aucune action en cours</h3>
+    <p>Les actions de mise en conformité apparaissent ici dès qu'un signalement est créé avec un impact.</p>
+  </div>
+</div>
+
+<!-- ══ TAB REVUE ══ -->
+<div id="pane-revue" style="display:none;">
+  <div id="revueList"></div>
+  <div id="revueEmpty" class="empty-state" style="display:none;">
+    <div class="es-icon">📅</div>
+    <h3>Aucune revue enregistrée</h3>
+    <p>Cliquez sur "Revue mensuelle" pour formaliser votre prochaine revue.</p>
+  </div>
+</div>
+
+<!-- ══ TAB HISTORIQUE ══ -->
+<div id="pane-historique" style="display:none;">
+  <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
+    <span style="font-size:13px;font-weight:600;color:var(--ink);">Historique des mises à jour du référentiel Preventys</span>
+    <button class="add-btn" onclick="openHistModal()" style="margin-left:auto;">+ Ajouter une mise à jour</button>
+  </div>
+  <div style="background:white;border-radius:var(--r2);border:1px solid var(--border);box-shadow:var(--sh);padding:20px 24px;">
+    <div id="historiqueList"></div>
+    <div id="historiqueEmpty" class="empty-state" style="display:none;">
+      <div class="es-icon">🕐</div>
+      <h3>Aucune mise à jour enregistrée</h3>
+      <p>Tracez ici chaque évolution du référentiel Preventys suite à une veille réglementaire.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT BAR -->
+<div class="export-bar">
+  <span class="export-lbl">📤 Exports Qualiopi :</span>
+  <button class="export-btn primary" onclick="exportExcel()">📊 Export Excel — Registre complet</button>
+  <button class="export-btn" onclick="exportRapportPDF()">📄 Rapport de synthèse PDF</button>
+  <button class="export-btn" onclick="exportFicheImpact()">📋 Fiches d'impact sélectionnées</button>
+  <span style="font-size:10px;color:rgba(255,255,255,.35);margin-left:auto;" id="exportTimestamp"></span>
+</div>
+
+</div><!-- /content -->
+
+<!-- ════ MODAL SIGNALEMENT ════ -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title" id="addModalTitle">📋 Nouveau signalement réglementaire</div>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label">Date de signalement</label>
+          <input type="date" class="form-input" id="fDate">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Périmètre</label>
+          <select class="form-select" id="fPerimetre">
+            <option value="OF">OF · Formation professionnelle</option>
+            <option value="Métier">Métier QHSE</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Source</label>
+          <select class="form-select" id="fSource">
+            <option>Légifrance</option>
+            <option>Journal Officiel</option>
+            <option>France Compétences</option>
+            <option>DREETS</option>
+            <option>CARIF-OREF</option>
+            <option>Mon Compte Formation</option>
+            <option>INRS</option>
+            <option>AFNOR</option>
+            <option>OPPBTP</option>
+            <option>INERIS</option>
+            <option>Ministère Travail</option>
+            <option>DREAL</option>
+            <option>CNAM</option>
+            <option>EUR-Lex</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Type de texte</label>
+          <select class="form-select" id="fType">
+            <option>Loi</option>
+            <option>Décret</option>
+            <option>Arrêté</option>
+            <option>Circulaire</option>
+            <option>Norme ISO</option>
+            <option>Guide technique</option>
+            <option>Jurisprudence</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Titre / Intitulé du texte</label>
+          <input type="text" class="form-input" id="fTitre" placeholder="ex: Décret n°2023-XXX relatif à…">
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Résumé et portée</label>
+          <textarea class="form-textarea" id="fResume" placeholder="Décrivez les principales dispositions et leur portée pour Preventys…"></textarea>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Niveau d'impact</label>
+          <select class="form-select" id="fImpact">
+            <option value="Aucun">Aucun impact</option>
+            <option value="Mineur">Mineur — surveillance</option>
+            <option value="Majeur">Majeur — adaptation requise</option>
+            <option value="Critique">Critique — conformité urgente</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Statut</label>
+          <select class="form-select" id="fStatut">
+            <option>Nouveau</option>
+            <option>Analysé</option>
+            <option>En cours</option>
+            <option>Traité</option>
+            <option>Sans impact</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Responsable</label>
+          <input type="text" class="form-input" id="fResponsable" placeholder="Dominique BRU">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Échéance de traitement</label>
+          <input type="date" class="form-input" id="fEcheance">
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Actions de mise en conformité</label>
+          <textarea class="form-textarea" id="fActions" placeholder="Liste des actions à mener, séparées par des retours à la ligne…" style="min-height:70px;"></textarea>
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Lien vers le texte (URL)</label>
+          <input type="url" class="form-input" id="fUrl" placeholder="https://www.legifrance.gouv.fr/…">
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Impact sur le référentiel Preventys</label>
+          <textarea class="form-textarea" id="fImpactRef" placeholder="Modules concernés, contenus à mettre à jour, certifications impactées…" style="min-height:60px;"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="form-cancel" onclick="closeAddModal()">Annuler</button>
+        <button class="form-save" onclick="saveSignalement()">✓ Enregistrer le signalement</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL REVUE ════ -->
+<div class="modal-overlay" id="revueModal">
+  <div class="modal-box" style="max-width:700px;">
+    <div class="modal-head">
+      <div class="modal-title">📅 Formaliser la revue mensuelle</div>
+      <button class="modal-close" onclick="closeRevueModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label">Mois de la revue</label>
+          <input type="month" class="form-input" id="rMois">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Date de la réunion</label>
+          <input type="date" class="form-input" id="rDate">
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Participants</label>
+          <input type="text" class="form-input" id="rParticipants" placeholder="Dominique BRU, Thomas …">
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Signalements traités ce mois</label>
+          <textarea class="form-textarea" id="rSignalements" placeholder="Résumez les textes traités ce mois…"></textarea>
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Décisions prises</label>
+          <textarea class="form-textarea" id="rDecisions" placeholder="Actions décidées, responsables, délais…"></textarea>
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Mises à jour du référentiel</label>
+          <textarea class="form-textarea" id="rMaj" placeholder="Modules modifiés, contenus actualisés…"></textarea>
+        </div>
+        <div class="form-field span2">
+          <label class="form-label">Observations / Points de vigilance</label>
+          <textarea class="form-textarea" id="rObs" placeholder="Sujets à surveiller le mois prochain…"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="form-cancel" onclick="closeRevueModal()">Annuler</button>
+        <button class="form-save" onclick="saveRevue()">✓ Enregistrer la revue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL HISTORIQUE ════ -->
+<div class="modal-overlay" id="histModal">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-head">
+      <div class="modal-title">🕐 Mise à jour du référentiel</div>
+      <button class="modal-close" onclick="closeHistModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid full">
+        <div class="form-field">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" id="hDate">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Type de mise à jour</label>
+          <select class="form-select" id="hType">
+            <option>Mise à jour contenu module</option>
+            <option>Nouvelle certification ajoutée</option>
+            <option>Certification supprimée</option>
+            <option>Mise à jour référentiel CQPM</option>
+            <option>Mise à jour process interne</option>
+            <option>Mise à jour règlement intérieur</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Titre</label>
+          <input type="text" class="form-input" id="hTitre" placeholder="ex: Mise à jour Module 6 — Audit ISO 9001">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Texte réglementaire à l'origine</label>
+          <input type="text" class="form-input" id="hTexte" placeholder="ex: Décret 2023-XXX">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Description des modifications</label>
+          <textarea class="form-textarea" id="hDesc" placeholder="Détaillez les modifications apportées…"></textarea>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Auteur de la modification</label>
+          <input type="text" class="form-input" id="hAuteur" placeholder="Dominique BRU">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="form-cancel" onclick="closeHistModal()">Annuler</button>
+        <button class="form-save" onclick="saveHist()">✓ Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DONNÉES SOURCES
+// ══════════════════════════════════════════
+const SOURCES = [
+  {id:'legifrance', nom:'Légifrance', desc:'Base officielle des textes législatifs et réglementaires français', url:'https://www.legifrance.gouv.fr', cat:'OF', icon:'⚖️', color:'#1D4ED8', bg:'#DBEAFE'},
+  {id:'jo', nom:'Journal Officiel', desc:'Publications officielles de la République française', url:'https://www.journal-officiel.gouv.fr', cat:'OF', icon:'📰', color:'#1D4ED8', bg:'#DBEAFE'},
+  {id:'francecomp', nom:'France Compétences', desc:'Régulation de la formation professionnelle et de l\'apprentissage', url:'https://www.francecompetences.fr', cat:'OF', icon:'🎓', color:'#7C3AED', bg:'#EDE9FE'},
+  {id:'dreets', nom:'DREETS', desc:'Directions régionales de l\'économie, emploi, travail et solidarités', url:'https://www.dreets.gouv.fr', cat:'OF', icon:'🏛️', color:'#7C3AED', bg:'#EDE9FE'},
+  {id:'cariforef', nom:'CARIF-OREF', desc:'Centre d\'animation et de ressources de l\'information sur la formation', url:'https://www.intercariforef.org', cat:'OF', icon:'📚', color:'#7C3AED', bg:'#EDE9FE'},
+  {id:'mcf', nom:'Mon Compte Formation', desc:'Plateforme CPF — évolutions réglementaires et techniques', url:'https://www.moncompteformation.gouv.fr', cat:'OF', icon:'💳', color:'#7C3AED', bg:'#EDE9FE'},
+  {id:'qualiopi', nom:'Qualiopi / Cofrac', desc:'Référentiel national qualité RNQ — évolutions indicateurs', url:'https://www.cofrac.fr', cat:'OF', icon:'✅', color:'#15803D', bg:'#DCFCE7'},
+  {id:'inrs', nom:'INRS', desc:'Institut National de Recherche et de Sécurité — prévention SST', url:'https://www.inrs.fr', cat:'sst', icon:'🦺', color:'#D97706', bg:'#FEF3C7'},
+  {id:'oppbtp', nom:'OPPBTP', desc:'Organisme professionnel de prévention du BTP', url:'https://www.oppbtp.fr', cat:'sst', icon:'🏗️', color:'#D97706', bg:'#FEF3C7'},
+  {id:'afnor', nom:'AFNOR', desc:'Normalisation française — ISO, EN, NF', url:'https://www.afnor.org', cat:'norme', icon:'📐', color:'#2563EB', bg:'#DBEAFE'},
+  {id:'iso', nom:'ISO', desc:'Organisation internationale de normalisation', url:'https://www.iso.org', cat:'norme', icon:'🌐', color:'#2563EB', bg:'#DBEAFE'},
+  {id:'ineris', nom:'INERIS', desc:'Institut national de l\'environnement industriel et des risques', url:'https://www.ineris.fr', cat:'env', icon:'🧪', color:'#15803D', bg:'#DCFCE7'},
+  {id:'dreal', nom:'DREAL', desc:'Directions régionales de l\'environnement, de l\'aménagement et du logement', url:'https://www.ecologie.gouv.fr', cat:'env', icon:'🌿', color:'#15803D', bg:'#DCFCE7'},
+  {id:'eurlex', nom:'EUR-Lex', desc:'Droit de l\'Union européenne — directives et règlements', url:'https://eur-lex.europa.eu', cat:'metier', icon:'🇪🇺', color:'#1D4ED8', bg:'#DBEAFE'},
+  {id:'travail', nom:'Ministère Travail', desc:'Actualités législatives travail, emploi, formation', url:'https://travail-emploi.gouv.fr', cat:'OF', icon:'👔', color:'#DC2626', bg:'#FEE2E2'},
+];
+
+const CAT_LABELS = {OF:'OF · Formation',metier:'Métier QHSE',norme:'Normes',sst:'SST',env:'Environnement'};
+const CAT_COLORS = {OF:'#7C3AED',metier:'#15803D',norme:'#1D4ED8',sst:'#D97706',env:'#15803D'};
+const CAT_BG = {OF:'#EDE9FE',metier:'#DCFCE7',norme:'#DBEAFE',sst:'#FEF3C7',env:'#DCFCE7'};
+
+// ══════════════════════════════════════════
+// ÉTAT
+// ══════════════════════════════════════════
+let DATA = {signalements:[], revues:[], historique:[]};
+let editId = null;
+let currentSourceFilter = 'all';
+
+function loadData(){
+  const saved = localStorage.getItem('pv_data');
+  if(saved) try{ DATA = JSON.parse(saved); }catch(e){}
+}
+function saveData(){
+  localStorage.setItem('pv_data', JSON.stringify(DATA));
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION ONGLETS
+// ══════════════════════════════════════════
+const PANES = ['dashboard','sources','veille','actions','revue','historique'];
+function switchTab(tab){
+  PANES.forEach(p => {
+    document.getElementById('pane-'+p).style.display = p===tab?'':'none';
+    document.getElementById('tab-'+p).classList.toggle('active', p===tab);
+  });
+  if(tab==='dashboard') renderDashboard();
+  if(tab==='sources') renderSources();
+  if(tab==='veille') renderVeilleTable();
+  if(tab==='actions') renderActions();
+  if(tab==='revue') renderRevues();
+  if(tab==='historique') renderHistorique();
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function renderDashboard(){
+  const S = DATA.signalements;
+  const total = S.length;
+  const critiques = S.filter(s=>s.impact==='Critique').length;
+  const enCours = S.filter(s=>['Nouveau','Analysé','En cours'].includes(s.statut)).length;
+  const traites = S.filter(s=>s.statut==='Traité'||s.statut==='Sans impact').length;
+  const actionsTotal = S.reduce((acc,s)=>acc+(s.actions||[]).length,0);
+  const actionsDone = S.reduce((acc,s)=>acc+(s.actions||[]).filter(a=>a.done).length,0);
+
+  document.getElementById('kpiBand').innerHTML = [
+    {val:total, lbl:'Signalements total', sub:'depuis le début', col:'#009FC4', bg:'#E0F4FB'},
+    {val:critiques, lbl:'Critiques actifs', sub:'conformité urgente', col:'#EF4444', bg:'#FEF2F2'},
+    {val:enCours, lbl:'En cours de traitement', sub:'à finaliser', col:'#F59E0B', bg:'#FFFBEB'},
+    {val:traites, lbl:'Traités / Clôturés', sub:'', col:'#22C55E', bg:'#F0FDF4'},
+    {val:DATA.revues.length, lbl:'Revues mensuelles', sub:'formalisées', col:'#8B5CF6', bg:'#F5F3FF'},
+    {val:actionsTotal-actionsDone+'/'+actionsTotal, lbl:'Actions ouvertes/total', sub:'plan de conformité', col:'#3B82F6', bg:'#EFF6FF'},
+  ].map(k=>`<div class="kpi-card" style="border-top:3px solid ${k.col};background:${k.bg};">
+    <div class="kpi-val" style="color:${k.col};">${k.val}</div>
+    <div class="kpi-lbl">${k.lbl}</div>
+    ${k.sub?`<div class="kpi-sub" style="color:${k.col};opacity:.7;">${k.sub}</div>`:''}
+  </div>`).join('');
+
+  // Derniers signalements
+  const recent = [...S].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  document.getElementById('dashRecentList').innerHTML = recent.length ? recent.map(s=>`
+    <div style="padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:${impactColor(s.impact)};flex-shrink:0;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.titre}</div>
+        <div style="font-size:10px;color:var(--muted);">${s.source} · ${formatDate(s.date)}</div>
+      </div>
+      <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:${statutBg(s.statut)};color:${statutColor(s.statut)};">${s.statut}</span>
+    </div>`).join('') : '<div class="empty-state" style="padding:24px;"><div class="es-icon" style="font-size:24px;">📋</div><p>Aucun signalement</p></div>';
+
+  // Actions prioritaires
+  const actions = [];
+  S.forEach(s => (s.actions||[]).filter(a=>!a.done).forEach(a => actions.push({...a, signalement:s.titre, impact:s.impact})));
+  actions.sort((a,b)=>impactRank(b.impact)-impactRank(a.impact));
+  document.getElementById('dashActionsList').innerHTML = actions.slice(0,5).length ? actions.slice(0,5).map(a=>`
+    <div style="padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:${impactColor(a.impact)};flex-shrink:0;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.text}</div>
+        <div style="font-size:10px;color:var(--muted);">↳ ${a.signalement}</div>
+      </div>
+      ${a.echeance?`<span style="font-size:10px;color:var(--muted);">${formatDate(a.echeance)}</span>`:''}
+    </div>`).join('') : '<div class="empty-state" style="padding:24px;"><div class="es-icon" style="font-size:24px;">✅</div><p>Aucune action en attente</p></div>';
+
+  // Prochaine revue
+  const mois = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const now = new Date();
+  const prochainMois = mois[now.getMonth()==11?0:now.getMonth()+1];
+  document.getElementById('dashProchaine').innerHTML = `
+    <div style="background:linear-gradient(135deg,var(--prev-dd),var(--prev));border-radius:var(--r2);padding:18px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:white;">📅 Prochaine revue mensuelle</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:3px;">${prochainMois} ${now.getFullYear()} · ${enCours} signalement(s) à traiter</div>
+      </div>
+      <button class="tb-btn" onclick="openRevueModal()" style="margin-left:auto;">Formaliser la revue →</button>
+    </div>`;
+
+  // Topbar
+  document.getElementById('topbarRevue').textContent = enCours > 0 ? `⚠️ ${enCours} en cours` : '✅ À jour';
+  document.getElementById('exportTimestamp').textContent = 'Dernière export : ' + new Date().toLocaleDateString('fr-FR');
+}
+
+// ══════════════════════════════════════════
+// SOURCES
+// ══════════════════════════════════════════
+function renderSources(){
+  const grid = document.getElementById('sourcesGrid');
+  const filtered = currentSourceFilter==='all' ? SOURCES : SOURCES.filter(s=>s.cat===currentSourceFilter);
+  grid.innerHTML = filtered.map(s=>`
+    <div class="source-card">
+      <div class="sc-header">
+        <div class="sc-icon" style="background:${s.bg};">${s.icon}</div>
+        <div class="sc-info">
+          <div class="sc-name">${s.nom}</div>
+          <div class="sc-desc">${s.desc}</div>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <span class="sc-tag" style="background:${CAT_BG[s.cat]||'#F1F5F9'};color:${CAT_COLORS[s.cat]||'#475569'};">${CAT_LABELS[s.cat]||s.cat}</span>
+        <a class="sc-link" href="${s.url}" target="_blank">Ouvrir →</a>
+      </div>
+    </div>`).join('');
+}
+function filterSources(cat){
+  currentSourceFilter = cat;
+  renderSources();
+}
+
+// ══════════════════════════════════════════
+// REGISTRE VEILLE
+// ══════════════════════════════════════════
+function renderVeilleTable(){
+  const search = (document.getElementById('veilleSearch').value||'').toLowerCase();
+  const fp = document.getElementById('veilleFilterPerimetre').value;
+  const fs = document.getElementById('veilleFilterStatut').value;
+  const fi = document.getElementById('veilleFilterImpact').value;
+  let rows = DATA.signalements.filter(s=>{
+    if(fp && s.perimetre!==fp) return false;
+    if(fs && s.statut!==fs) return false;
+    if(fi && s.impact!==fi) return false;
+    if(search && !s.titre.toLowerCase().includes(search) && !s.source.toLowerCase().includes(search) && !(s.resume||'').toLowerCase().includes(search)) return false;
+    return true;
+  }).sort((a,b)=>b.date.localeCompare(a.date));
+
+  document.getElementById('cnt-veille').textContent = DATA.signalements.length;
+  const tbody = document.getElementById('veilleTableBody');
+  const empty = document.getElementById('veilleEmpty');
+  if(!rows.length){ tbody.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  tbody.innerHTML = rows.map(s=>`
+    <tr>
+      <td><span style="font-family:'DM Mono',monospace;font-size:11px;">${formatDate(s.date)}</span></td>
+      <td><span class="sc-tag" style="background:${s.perimetre==='OF'?'#EDE9FE':'#DCFCE7'};color:${s.perimetre==='OF'?'#7C3AED':'#15803D'};">${s.perimetre}</span></td>
+      <td style="font-size:11px;color:var(--muted);">${s.source}</td>
+      <td>
+        <div style="font-weight:600;font-size:12px;max-width:280px;line-height:1.3;">${s.titre}</div>
+        ${s.url?`<a href="${s.url}" target="_blank" style="font-size:10px;color:var(--prev);">→ Lien</a>`:''}
+      </td>
+      <td><span class="vt-impact" style="background:${impactBg(s.impact)};color:${impactColor(s.impact)};">${s.impact}</span></td>
+      <td><span class="vt-statut" style="background:${statutBg(s.statut)};color:${statutColor(s.statut)};">${s.statut}</span></td>
+      <td style="font-size:11px;">${s.responsable||'—'}</td>
+      <td>
+        <div class="vt-actions">
+          <button class="vt-act-btn" style="background:#DBEAFE;color:#1D4ED8;" onclick="editSignalement('${s.id}')" title="Modifier">✏️</button>
+          <button class="vt-act-btn" style="background:#FEE2E2;color:#DC2626;" onclick="deleteSignalement('${s.id}')" title="Supprimer">🗑</button>
+          ${s.url?`<button class="vt-act-btn" style="background:#DCFCE7;color:#15803D;" onclick="window.open('${s.url}','_blank')" title="Ouvrir source">🔗</button>`:''}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ══════════════════════════════════════════
+// PLAN D'ACTIONS
+// ══════════════════════════════════════════
+function renderActions(){
+  const fp = document.getElementById('actionsFilter').value;
+  const fs = document.getElementById('actionsFilterStatut').value;
+  const list = document.getElementById('actionsList');
+  const empty = document.getElementById('actionsEmpty');
+  const prioMap = {Critique:0,Majeur:1,Mineur:2,Aucun:3};
+
+  let items = DATA.signalements
+    .filter(s=>s.actions&&s.actions.length&&s.impact!=='Aucun')
+    .filter(s=>!fp||s.impact===fp)
+    .sort((a,b)=>(prioMap[a.impact]||9)-(prioMap[b.impact]||9));
+
+  if(fs==='open') items = items.filter(s=>s.actions.some(a=>!a.done));
+  if(fs==='done') items = items.filter(s=>s.actions.every(a=>a.done));
+
+  let totalOpen=0, totalAll=0;
+  DATA.signalements.forEach(s=>(s.actions||[]).forEach(a=>{totalAll++;if(!a.done)totalOpen++;}));
+  document.getElementById('actionsStats').textContent = `${totalOpen} action(s) ouvertes sur ${totalAll}`;
+  document.getElementById('cnt-actions').textContent = totalOpen;
+
+  if(!items.length){ list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+
+  list.innerHTML = items.map(s=>{
+    const allDone = s.actions.every(a=>a.done);
+    return `<div class="plan-card">
+      <div class="plan-head" onclick="togglePlan('pc-${s.id}')">
+        <div class="plan-priority" style="background:${impactColor(s.impact)};"></div>
+        <div class="plan-titre">${s.titre}</div>
+        <div class="plan-meta">
+          <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:${impactBg(s.impact)};color:${impactColor(s.impact)};">${s.impact}</span>
+          <span>${s.actions.filter(a=>a.done).length}/${s.actions.length} ✓</span>
+          ${allDone?'<span style="color:var(--green);font-weight:700;">✅ Terminé</span>':''}
+        </div>
+      </div>
+      <div class="plan-body" id="pc-${s.id}">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Responsable : ${s.responsable||'—'} · Échéance : ${s.echeance?formatDate(s.echeance):'—'}</div>
+        <div class="plan-actions-list">
+          ${s.actions.map((a,i)=>`
+            <div class="plan-action-row">
+              <input type="checkbox" class="plan-action-check" ${a.done?'checked':''} onchange="toggleAction('${s.id}',${i},this.checked)">
+              <div class="plan-action-txt" style="${a.done?'text-decoration:line-through;opacity:.5;':''}">${a.text}</div>
+              <div class="plan-action-resp">${a.resp||''}</div>
+            </div>`).join('')}
+        </div>
+        ${s.impactRef?`<div style="margin-top:10px;padding:8px 10px;background:#EFF6FF;border-radius:8px;border-left:3px solid var(--prev);font-size:11px;"><strong>Impact référentiel :</strong> ${s.impactRef}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePlan(id){
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function toggleAction(sigId, idx, checked){
+  const s = DATA.signalements.find(s=>s.id===sigId);
+  if(s && s.actions[idx]) s.actions[idx].done = checked;
+  saveData();
+  renderActions();
+}
+
+// ══════════════════════════════════════════
+// REVUES
+// ══════════════════════════════════════════
+function renderRevues(){
+  const list = document.getElementById('revueList');
+  const empty = document.getElementById('revueEmpty');
+  if(!DATA.revues.length){ list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  list.innerHTML = [...DATA.revues].sort((a,b)=>b.mois.localeCompare(a.mois)).map(r=>`
+    <div class="revue-card">
+      <div class="revue-title">📅 Revue mensuelle — ${formatMois(r.mois)} · ${r.participants||'—'}</div>
+      <div class="revue-grid">
+        <div class="revue-section">
+          <div class="revue-sec-title">📋 Signalements traités</div>
+          <div class="revue-item">${r.signalements||'—'}</div>
+        </div>
+        <div class="revue-section">
+          <div class="revue-sec-title">⚡ Décisions</div>
+          <div class="revue-item">${r.decisions||'—'}</div>
+        </div>
+        <div class="revue-section">
+          <div class="revue-sec-title">🔄 MAJ référentiel</div>
+          <div class="revue-item">${r.maj||'—'}</div>
+        </div>
+      </div>
+      ${r.obs?`<div style="margin-top:10px;padding:8px 12px;background:#FFFBEB;border-radius:8px;border-left:3px solid var(--amber);font-size:11px;"><strong>Observations :</strong> ${r.obs}</div>`:''}
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <button class="export-btn" onclick="deleteRevue('${r.id}')" style="background:#FEE2E2;color:#DC2626;border-color:#FEE2E2;font-size:10px;padding:4px 10px;">🗑 Supprimer</button>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// HISTORIQUE
+// ══════════════════════════════════════════
+function renderHistorique(){
+  const list = document.getElementById('historiqueList');
+  const empty = document.getElementById('historiqueEmpty');
+  if(!DATA.historique.length){ list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  const typeColors = {'Mise à jour contenu module':'#009FC4','Nouvelle certification ajoutée':'#22C55E','Certification supprimée':'#EF4444','Mise à jour référentiel CQPM':'#8B5CF6','Mise à jour process interne':'#F59E0B','Mise à jour règlement intérieur':'#3B82F6','Autre':'#64748B'};
+  list.innerHTML = [...DATA.historique].sort((a,b)=>b.date.localeCompare(a.date)).map(h=>`
+    <div class="hist-item">
+      <div class="hist-dot" style="background:${typeColors[h.type]||'#64748B'};"></div>
+      <div class="hist-date">${formatDate(h.date)}</div>
+      <div class="hist-content">
+        <div class="hist-titre">${h.titre}</div>
+        <div class="hist-detail">${h.type}${h.texte?' · ↳ '+h.texte:''} · par ${h.auteur||'—'}</div>
+        ${h.desc?`<div style="font-size:11px;color:var(--ink);margin-top:3px;">${h.desc}</div>`:''}
+      </div>
+      <button class="vt-act-btn" style="background:#FEE2E2;color:#DC2626;" onclick="deleteHist('${h.id}')">🗑</button>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// CRUD SIGNALEMENTS
+// ══════════════════════════════════════════
+function openAddModal(){
+  editId = null;
+  document.getElementById('addModalTitle').textContent = '📋 Nouveau signalement réglementaire';
+  document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+  ['fPerimetre','fSource','fType','fTitre','fResume','fImpact','fStatut','fResponsable','fEcheance','fActions','fUrl','fImpactRef'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el.tagName==='SELECT') el.selectedIndex=0;
+    else el.value='';
+  });
+  document.getElementById('fResponsable').value='Dominique BRU';
+  document.getElementById('addModal').classList.add('open');
+}
+
+function editSignalement(id){
+  const s = DATA.signalements.find(s=>s.id===id);
+  if(!s) return;
+  editId = id;
+  document.getElementById('addModalTitle').textContent = '✏️ Modifier le signalement';
+  document.getElementById('fDate').value = s.date;
+  document.getElementById('fPerimetre').value = s.perimetre;
+  document.getElementById('fSource').value = s.source;
+  document.getElementById('fType').value = s.type;
+  document.getElementById('fTitre').value = s.titre;
+  document.getElementById('fResume').value = s.resume||'';
+  document.getElementById('fImpact').value = s.impact;
+  document.getElementById('fStatut').value = s.statut;
+  document.getElementById('fResponsable').value = s.responsable||'';
+  document.getElementById('fEcheance').value = s.echeance||'';
+  document.getElementById('fActions').value = (s.actions||[]).map(a=>a.text).join('\n');
+  document.getElementById('fUrl').value = s.url||'';
+  document.getElementById('fImpactRef').value = s.impactRef||'';
+  document.getElementById('addModal').classList.add('open');
+}
+
+function saveSignalement(){
+  const titre = document.getElementById('fTitre').value.trim();
+  if(!titre){ alert('Le titre est obligatoire'); return; }
+  const actionsRaw = document.getElementById('fActions').value.trim();
+  let actionsArr = actionsRaw ? actionsRaw.split('\n').filter(l=>l.trim()).map(text=>({text:text.trim(),done:false,resp:document.getElementById('fResponsable').value})) : [];
+
+  if(editId){
+    const s = DATA.signalements.find(s=>s.id===editId);
+    if(s){
+      // Préserver l'état done des actions existantes
+      actionsArr = actionsArr.map((a,i)=>({...a,done:(s.actions&&s.actions[i])?s.actions[i].done:false}));
+      Object.assign(s,{perimetre:document.getElementById('fPerimetre').value,source:document.getElementById('fSource').value,type:document.getElementById('fType').value,titre,resume:document.getElementById('fResume').value,impact:document.getElementById('fImpact').value,statut:document.getElementById('fStatut').value,responsable:document.getElementById('fResponsable').value,echeance:document.getElementById('fEcheance').value,actions:actionsArr,url:document.getElementById('fUrl').value,impactRef:document.getElementById('fImpactRef').value});
+    }
+  } else {
+    DATA.signalements.push({
+      id:'sig-'+Date.now(),
+      date:document.getElementById('fDate').value,
+      perimetre:document.getElementById('fPerimetre').value,
+      source:document.getElementById('fSource').value,
+      type:document.getElementById('fType').value,
+      titre,
+      resume:document.getElementById('fResume').value,
+      impact:document.getElementById('fImpact').value,
+      statut:document.getElementById('fStatut').value,
+      responsable:document.getElementById('fResponsable').value,
+      echeance:document.getElementById('fEcheance').value,
+      actions:actionsArr,
+      url:document.getElementById('fUrl').value,
+      impactRef:document.getElementById('fImpactRef').value,
+      createdAt:new Date().toISOString()
+    });
+  }
+  saveData();
+  closeAddModal();
+  renderDashboard();
+  renderVeilleTable();
+  renderActions();
+}
+
+function deleteSignalement(id){
+  if(!confirm('Supprimer ce signalement ?')) return;
+  DATA.signalements = DATA.signalements.filter(s=>s.id!==id);
+  saveData(); renderVeilleTable(); renderDashboard(); renderActions();
+}
+
+function closeAddModal(){ document.getElementById('addModal').classList.remove('open'); editId=null; }
+
+// ══════════════════════════════════════════
+// CRUD REVUE
+// ══════════════════════════════════════════
+function openRevueModal(){
+  const now = new Date();
+  document.getElementById('rMois').value = now.toISOString().slice(0,7);
+  document.getElementById('rDate').value = now.toISOString().split('T')[0];
+  document.getElementById('rParticipants').value = 'Dominique BRU';
+  ['rSignalements','rDecisions','rMaj','rObs'].forEach(id=>document.getElementById(id).value='');
+  const enCours = DATA.signalements.filter(s=>['Nouveau','Analysé','En cours'].includes(s.statut));
+  if(enCours.length) document.getElementById('rSignalements').value = enCours.map(s=>`• ${s.titre} (${s.impact})`).join('\n');
+  document.getElementById('revueModal').classList.add('open');
+}
+function closeRevueModal(){ document.getElementById('revueModal').classList.remove('open'); }
+function saveRevue(){
+  DATA.revues.push({
+    id:'rev-'+Date.now(),
+    mois:document.getElementById('rMois').value,
+    date:document.getElementById('rDate').value,
+    participants:document.getElementById('rParticipants').value,
+    signalements:document.getElementById('rSignalements').value,
+    decisions:document.getElementById('rDecisions').value,
+    maj:document.getElementById('rMaj').value,
+    obs:document.getElementById('rObs').value,
+    createdAt:new Date().toISOString()
+  });
+  saveData(); closeRevueModal(); switchTab('revue');
+}
+function deleteRevue(id){ if(!confirm('Supprimer ?')) return; DATA.revues=DATA.revues.filter(r=>r.id!==id); saveData(); renderRevues(); }
+
+// ══════════════════════════════════════════
+// CRUD HISTORIQUE
+// ══════════════════════════════════════════
+function openHistModal(){
+  document.getElementById('hDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('hAuteur').value='Dominique BRU';
+  ['hType','hTitre','hTexte','hDesc'].forEach(id=>{const el=document.getElementById(id);if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
+  document.getElementById('histModal').classList.add('open');
+}
+function closeHistModal(){ document.getElementById('histModal').classList.remove('open'); }
+function saveHist(){
+  const titre=document.getElementById('hTitre').value.trim();
+  if(!titre){ alert('Le titre est obligatoire'); return; }
+  DATA.historique.push({id:'hist-'+Date.now(),date:document.getElementById('hDate').value,type:document.getElementById('hType').value,titre,texte:document.getElementById('hTexte').value,desc:document.getElementById('hDesc').value,auteur:document.getElementById('hAuteur').value,createdAt:new Date().toISOString()});
+  saveData(); closeHistModal(); renderHistorique();
+}
+function deleteHist(id){ if(!confirm('Supprimer ?')) return; DATA.historique=DATA.historique.filter(h=>h.id!==id); saveData(); renderHistorique(); }
+
+// ══════════════════════════════════════════
+// EXPORTS
+// ══════════════════════════════════════════
+function exportExcel(){
+  const rows = [['Date','Périmètre','Source','Type','Titre','Résumé','Impact','Statut','Responsable','Échéance','Actions','URL','Impact référentiel','Créé le']];
+  DATA.signalements.forEach(s=>{
+    rows.push([s.date,s.perimetre,s.source,s.type,s.titre,s.resume||'',s.impact,s.statut,s.responsable||'',s.echeance||'',(s.actions||[]).map(a=>(a.done?'[✓] ':'[ ] ')+a.text).join(' | '),s.url||'',s.impactRef||'',s.createdAt?.slice(0,10)||'']);
+  });
+  const csv = rows.map(r=>r.map(c=>'"'+(c||'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const bom = '\uFEFF';
+  const blob = new Blob([bom+csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='Preventys_Veille_Reglementaire_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function exportRapportPDF(){
+  const now = new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  const S = DATA.signalements;
+  const critiques = S.filter(s=>s.impact==='Critique');
+  const majeurs = S.filter(s=>s.impact==='Majeur');
+  const enCours = S.filter(s=>['Nouveau','Analysé','En cours'].includes(s.statut));
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+  <title>Rapport Veille Réglementaire — Preventys — ${now}</title>
+  <style>
+    body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;color:#1a2332;font-size:13px;}
+    h1{color:#0C3A5C;font-size:22px;border-bottom:3px solid #009FC4;padding-bottom:8px;}
+    h2{color:#0C3A5C;font-size:16px;margin-top:28px;}
+    h3{color:#374151;font-size:14px;margin-top:16px;}
+    table{width:100%;border-collapse:collapse;margin:12px 0;}
+    th{background:#0C3A5C;color:white;padding:8px 10px;font-size:11px;text-align:left;}
+    td{padding:7px 10px;border-bottom:1px solid #e2e8f0;font-size:11px;}
+    .kpi{display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 20px;margin:6px;text-align:center;}
+    .kpi-val{font-size:28px;font-weight:800;color:#009FC4;}
+    .kpi-lbl{font-size:10px;color:#64748b;}
+    .badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;}
+    .critique{background:#FEF2F2;color:#EF4444;}
+    .majeur{background:#FFFBEB;color:#F59E0B;}
+    .mineur{background:#F0FDF4;color:#22C55E;}
+    .footer{margin-top:40px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center;}
+    @media print{body{margin:20px;}}
+  </style></head><body>
+  <h1>📋 Rapport de Veille Réglementaire</h1>
+  <p>Organisme de formation <strong>Preventys</strong> · Qualiopi — Indicateur 32 · Édité le ${now}</p>
+  <div>
+    <div class="kpi"><div class="kpi-val">${S.length}</div><div class="kpi-lbl">Signalements</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#EF4444;">${critiques.length}</div><div class="kpi-lbl">Critiques</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#F59E0B;">${majeurs.length}</div><div class="kpi-lbl">Majeurs</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#F59E0B;">${enCours.length}</div><div class="kpi-lbl">En cours</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#8B5CF6;">${DATA.revues.length}</div><div class="kpi-lbl">Revues</div></div>
+  </div>
+  ${critiques.length?`<h2>⚠️ Signalements Critiques</h2>
+  <table><tr><th>Date</th><th>Source</th><th>Titre</th><th>Responsable</th><th>Échéance</th><th>Statut</th></tr>
+  ${critiques.map(s=>`<tr><td>${formatDate(s.date)}</td><td>${s.source}</td><td>${s.titre}</td><td>${s.responsable||'—'}</td><td>${s.echeance?formatDate(s.echeance):'—'}</td><td>${s.statut}</td></tr>`).join('')}</table>`:''}
+  <h2>📋 Registre complet</h2>
+  <table><tr><th>Date</th><th>Périm.</th><th>Source</th><th>Titre</th><th>Impact</th><th>Statut</th><th>Resp.</th></tr>
+  ${[...S].sort((a,b)=>b.date.localeCompare(a.date)).map(s=>`<tr><td>${formatDate(s.date)}</td><td>${s.perimetre}</td><td>${s.source}</td><td>${s.titre}</td><td><span class="badge ${s.impact.toLowerCase()}">${s.impact}</span></td><td>${s.statut}</td><td>${s.responsable||'—'}</td></tr>`).join('')}
+  </table>
+  ${DATA.revues.length?`<h2>📅 Revues mensuelles (${DATA.revues.length})</h2>
+  ${[...DATA.revues].sort((a,b)=>b.mois.localeCompare(a.mois)).map(r=>`<h3>${formatMois(r.mois)} · ${r.participants||'—'}</h3><p><strong>Signalements :</strong> ${r.signalements||'—'}</p><p><strong>Décisions :</strong> ${r.decisions||'—'}</p>${r.maj?`<p><strong>MAJ référentiel :</strong> ${r.maj}</p>`:''}`).join('')}`:''}
+  ${DATA.historique.length?`<h2>🕐 Historique mises à jour référentiel</h2>
+  <table><tr><th>Date</th><th>Type</th><th>Titre</th><th>Texte origine</th><th>Auteur</th></tr>
+  ${[...DATA.historique].sort((a,b)=>b.date.localeCompare(a.date)).map(h=>`<tr><td>${formatDate(h.date)}</td><td>${h.type}</td><td>${h.titre}</td><td>${h.texte||'—'}</td><td>${h.auteur||'—'}</td></tr>`).join('')}</table>`:''}
+  <div class="footer">Document généré par Prevent'Veille — Preventys · ${now} · Qualiopi Indicateur 32</div>
+  <script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
+  win.document.close();
+}
+
+function exportFicheImpact(){
+  const with_impact = DATA.signalements.filter(s=>s.impact!=='Aucun'&&s.impactRef);
+  if(!with_impact.length){ alert('Aucune fiche d\'impact à exporter (renseignez le champ "Impact sur le référentiel" lors de la saisie).'); return; }
+  exportRapportPDF();
+}
+
+// ══════════════════════════════════════════
+// UTILITAIRES
+// ══════════════════════════════════════════
+function impactColor(i){ return {Critique:'#EF4444',Majeur:'#F59E0B',Mineur:'#22C55E',Aucun:'#94A3B8'}[i]||'#64748B'; }
+function impactBg(i){ return {Critique:'#FEF2F2',Majeur:'#FFFBEB',Mineur:'#F0FDF4',Aucun:'#F8FAFC'}[i]||'#F1F5F9'; }
+function impactRank(i){ return {Critique:0,Majeur:1,Mineur:2,Aucun:3}[i]||9; }
+function statutColor(s){ return {Nouveau:'#3B82F6',Analysé:'#8B5CF6','En cours':'#F59E0B',Traité:'#22C55E','Sans impact':'#94A3B8'}[s]||'#64748B'; }
+function statutBg(s){ return {Nouveau:'#DBEAFE',Analysé:'#EDE9FE','En cours':'#FFFBEB',Traité:'#F0FDF4','Sans impact':'#F8FAFC'}[s]||'#F1F5F9'; }
+function formatDate(d){ if(!d)return'—'; try{return new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});}catch(e){return d;} }
+function formatMois(m){ if(!m)return'—'; const [y,mo]=m.split('-'); const mois=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']; return (mois[parseInt(mo)-1]||mo)+' '+y; }
+
+// Fermeture modales au clic extérieur
+document.addEventListener('click', e=>{
+  ['addModal','revueModal','histModal'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(e.target===el) el.classList.remove('open');
+  });
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') ['addModal','revueModal','histModal'].forEach(id=>document.getElementById(id).classList.remove('open')); });
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  loadData();
+  renderDashboard();
+  renderSources();
+  document.getElementById('exportTimestamp').textContent='';
+});
+</script>
+</body>
+</html>
